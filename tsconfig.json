@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "alwaysStrict": true,
+    "pretty": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "rootDir": "src",
+    "resolveJsonModule": true
+  },
+  "exclude": ["node_modules", "examples", "**/__tests__/**"]
+}
