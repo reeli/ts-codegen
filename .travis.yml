@@ -1,0 +1,12 @@
+language: node_js
+
+node_js:
+  - "10"
+
+script:
+  - npm install codecov -g
+  - npm test
+
+after_success:
+  - codecov
+  - bash <(curl -s https://codecov.io/bash)

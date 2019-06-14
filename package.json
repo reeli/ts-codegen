@@ -1,0 +1,73 @@
+{
+  "name": "@ts-tool/ts-codegen",
+  "version": "0.1.0",
+  "description": "Typescript code generator, which is able to convert swagger to ts code.",
+  "main": "dist/index.js",
+  "bin": {
+    "ts-codegen": "bin/ts-codegen.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "test": "jest",
+    "build": "rm -rf dist/ && tsc",
+    "prepare": "npm run build && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reeli/ts-codegen.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reeli/ts-codegen/issues"
+  },
+  "homepage": "https://github.com/reeli/ts-codegen#readme",
+  "devDependencies": {
+    "@babel/core": "7.4.3",
+    "@babel/preset-env": "7.4.3",
+    "@babel/preset-typescript": "7.3.3",
+    "@types/axios": "0.14.0",
+    "@types/jest": "24.0.11",
+    "@types/lodash": "4.14.123",
+    "@types/node": "11.13.6",
+    "@types/prettier": "1.16.3",
+    "@types/swagger-schema-official": "2.0.15",
+    "axios": "0.19.0",
+    "babel-jest": "24.7.1",
+    "jest": "24.7.1",
+    "prettier": "1.17.0",
+    "ts-node": "8.1.0",
+    "typescript": "3.4.4"
+  },
+  "dependencies": {
+    "lodash": "4.17.11"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "testRegex": ".*/__tests__/.+\\.(generator|test|spec)\\.(ts|tsx)$",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/__types__/**",
+      "!src/__tests__/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      },
+      "coverageReporters": [
+        "xml",
+        "html"
+      ]
+    }
+  }
+}

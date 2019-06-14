@@ -1,0 +1,15 @@
+node_modules/
+*.jsx
+*.js.map
+public/
+coverage/
+.tmp/
+
+.package-lock.json
+.DS_Store
+.idea/
+.code/
+yarn.lock
+wsEndpoint
+.output/
+dist/
