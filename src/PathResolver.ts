@@ -37,11 +37,11 @@ interface IParams {
 export class PathResolver {
   resolvedPaths: IResolvedPath[] = [];
 
-  static of(paths: TPaths, basePath: string = "", typeNames: Dictionary<string>) {
-    return new PathResolver(paths, basePath, typeNames);
+  static of(paths: TPaths, basePath: string = "") {
+    return new PathResolver(paths, basePath);
   }
 
-  constructor(private paths: TPaths, private basePath: string, private typeNames: Dictionary<string>) {}
+  constructor(private paths: TPaths, private basePath: string) {}
 
   resolve = () => {
     this.resolvedPaths = reduce(
@@ -154,7 +154,6 @@ export class PathResolver {
           schema: v.schema,
           key: v.name,
           parentKey: v.name,
-          typeNames: this.typeNames,
         }).resolve(),
       }),
       {},
@@ -169,7 +168,6 @@ export class PathResolver {
           schema: v as Schema,
           key: v.name,
           parentKey: v.name,
-          typeNames: this.typeNames,
         }).resolve(),
       }),
       {},
@@ -186,7 +184,6 @@ export class PathResolver {
             schema: param.schema,
             key: param.name,
             parentKey: param.name,
-            typeNames: this.typeNames,
           }).resolve(),
         };
       }
@@ -202,7 +199,6 @@ export class PathResolver {
     SchemaResolver.of({
       results: extraDefinitions,
       schema: get(responses, "200.schema") || get(responses, "201.schema"),
-      typeNames: this.typeNames,
     }).resolve();
 
   // TODO: when parameters has enum

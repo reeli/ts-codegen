@@ -1,13 +1,5 @@
 import { Schema } from "swagger-schema-official";
-import {
-  addPrefixForInterface,
-  addPrefixForType,
-  arrayToObject,
-  getTypeNames,
-  isNumber,
-  toCapitalCase,
-  toTypes,
-} from "./utils";
+import { addPrefixForInterface, arrayToObject, isNumber, toCapitalCase, toTypes } from "./utils";
 import { compact, Dictionary, forEach, includes, replace, some } from "lodash";
 import { SchemaResolver } from "./SchemaResolver";
 
@@ -46,7 +38,6 @@ export class DefinitionsResolver {
           schema: v,
           key: k,
           parentKey: k,
-          typeNames: getTypeNames(this.definitions),
         }).resolve()),
     );
 
@@ -61,7 +52,7 @@ export class DefinitionsResolver {
       }
 
       if (this.resolvedDefinitions[key] === "object") {
-        return `export type ${addPrefixForType(toCapitalCase(key))} = {[key:string]:any}`;
+        return `export interface ${addPrefixForInterface(toCapitalCase(key))} {[key:string]:any}`;
       }
       const val = toTypes(this.resolvedDefinitions[key]);
       if (val) {

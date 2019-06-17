@@ -1,18 +1,16 @@
 import { PathResolver } from "../PathResolver";
 import swagger from "./mock-data/swagger.json";
-import { getTypeNames } from "../utils";
 
 describe("PathResolver", () => {
   it("should get resolved paths by swagger schema", () => {
-    expect(
-      PathResolver.of((swagger as any).paths, swagger.basePath, getTypeNames((swagger as any).definitions)).resolve()
-        .resolvedPaths,
-    ).toEqual(expectedPathResolvedData);
+    expect(PathResolver.of((swagger as any).paths, swagger.basePath).resolve().resolvedPaths).toEqual(
+      expectedPathResolvedData,
+    );
   });
 
   it("should get correct action creator by resolved paths", () => {
     expect(
-      PathResolver.of((swagger as any).paths, swagger.basePath, getTypeNames((swagger as any).definitions))
+      PathResolver.of((swagger as any).paths, swagger.basePath)
         .resolve()
         .toRequest(),
     ).toEqual(expectedRequest);
