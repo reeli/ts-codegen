@@ -1,11 +1,12 @@
 import { Schema } from "swagger-schema-official";
 import { isArray, isNumber, toCapitalCase } from "./utils";
-import { get, indexOf, map, reduce, some } from "lodash";
+import { Dictionary, get, indexOf, map, reduce, some } from "lodash";
 
 type TDictionary<T> = { [key: string]: T };
 
 interface ISchemaResolverInputs {
   results: TDictionary<any>;
+  typeNames: Dictionary<string>;
   schema?: Schema;
   key?: string;
   parentKey?: string;
@@ -63,7 +64,8 @@ export class SchemaResolver {
     }
 
     const refType = toCapitalCase(this.pickTypeByRef($ref));
-    return type === "array" ? `${refType}[]` : refType;
+    const prefixedRef = this.inputs.typeNames[refType] ? this.inputs.typeNames[refType] : refType;
+    return type === "array" ? `${prefixedRef}[]` : prefixedRef;
   };
 
   getBasicType = (basicType: string = "", advancedType?: string): string => {

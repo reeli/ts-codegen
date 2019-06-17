@@ -467,7 +467,7 @@
     }
   },
   "definitions": {
-    "AttachmentBO": {
+    "BookDetailVo": {
       "type": "object",
       "properties": {
         "authorName": {
@@ -490,7 +490,29 @@
           "type": "string"
         }
       },
-      "title": "AttachmentBO"
+      "title": "BookDetailVo"
+    },
+    "ScheduleVO": {
+      "type": "object",
+      "properties": {
+        "team": {
+          "type": "string"
+        },
+        "schedules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ScheduleVO"
+          }
+        },
+        "shiftId": {
+          "type": "string"
+        }
+      },
+      "title": "ScheduleVO"
+    },
+    "InputStream": {
+      "type": "object",
+      "title": "InputStream"
     },
     "Resource": {
       "type": "object",
@@ -631,6 +653,108 @@
     "URLStreamHandler": {
       "type": "object",
       "title": "URLStreamHandler"
+    },
+    "UpdateBookRequest": {
+      "type": "object",
+      "properties": {
+        "birthCountry": {
+          "type": "string",
+          "example": "CN"
+        },
+        "citizenship": {
+          "type": "string",
+          "example": "A"
+        },
+        "roleId": {
+          "type": "string"
+        },
+        "dateOfBirth": {
+          "type": "integer",
+          "format": "int64",
+          "example": "1992-10-10"
+        },
+        "employmentStatus": {
+          "type": "string",
+          "example": "EMP001"
+        },
+        "ethnicity": {
+          "type": "string",
+          "example": "CN"
+        },
+        "gender": {
+          "type": "string",
+          "example": "F"
+        },
+        "idNumber": {
+          "type": "string",
+          "example": "S6362682T"
+        },
+        "idType": {
+          "type": "string",
+          "example": "FD"
+        },
+        "spokenLanguage": {
+          "type": "array",
+          "example": [
+            "AH",
+            "AK"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "title": "UpdateBookRequest"
+    },
+    "DocumentVO": {
+      "type": "object",
+      "properties": {
+        "attachment": {
+          "$ref": "#/definitions/BookDetailVo"
+        },
+        "authorName": {
+          "type": "string"
+        },
+        "createdDate": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "title": "DocumentVO"
+    },
+    "AttachmentBO": {
+      "type": "object",
+      "properties": {
+        "authorName": {
+          "type": "string"
+        },
+        "createdDate": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "fileName": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "title": "AttachmentBO"
     }
   }
 }

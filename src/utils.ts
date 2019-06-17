@@ -56,3 +56,21 @@ export const quoteKey = (k: string) => {
   const isOptional = indexOf(k, "?") > -1;
   return `'${trimEnd(k, "?")}'${isOptional ? "?" : ""}`;
 };
+
+export const getTypeNames = (definitions?: Dictionary<any>) => {
+  if (!definitions) {
+    return {};
+  }
+
+  const result: Dictionary<any> = {};
+  Object.keys(definitions).forEach((key) => {
+    const formattedKey = toCapitalCase(key);
+
+    if (definitions[key].type === "object" && !definitions[key].properties) {
+      result[formattedKey] = addPrefixForType(formattedKey);
+    } else {
+      result[formattedKey] = addPrefixForInterface(formattedKey);
+    }
+  });
+  return result;
+};

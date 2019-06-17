@@ -1,6 +1,14 @@
 import { Schema } from "swagger-schema-official";
-import { arrayToObject, isNumber, toCapitalCase, toTypes } from "./utils";
-import { compact, forEach, includes, replace, some, Dictionary } from "lodash";
+import {
+  addPrefixForInterface,
+  addPrefixForType,
+  arrayToObject,
+  getTypeNames,
+  isNumber,
+  toCapitalCase,
+  toTypes,
+} from "./utils";
+import { compact, Dictionary, forEach, includes, replace, some } from "lodash";
 import { SchemaResolver } from "./SchemaResolver";
 
 // TODO: 1. Handle required params.
@@ -38,6 +46,7 @@ export class DefinitionsResolver {
           schema: v,
           key: k,
           parentKey: k,
+          typeNames: getTypeNames(this.definitions),
         }).resolve()),
     );
 
@@ -52,11 +61,11 @@ export class DefinitionsResolver {
       }
 
       if (this.resolvedDefinitions[key] === "object") {
-        return `export type ${toCapitalCase(key)} = {[key:string]:any}`;
+        return `export type ${addPrefixForType(toCapitalCase(key))} = {[key:string]:any}`;
       }
       const val = toTypes(this.resolvedDefinitions[key]);
       if (val) {
-        return `export interface ${toCapitalCase(key)} ${val}`;
+        return `export interface ${addPrefixForInterface(toCapitalCase(key))} ${val}`;
       }
     });
     return compact(arr);

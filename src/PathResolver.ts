@@ -12,7 +12,7 @@ import {
 } from "swagger-schema-official";
 import { SchemaResolver } from "./SchemaResolver";
 import { generateEnums } from "./DefinitionsResolver";
-import { chain, filter, get, isEmpty, map, pick, reduce, Dictionary } from "lodash";
+import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce } from "lodash";
 import { toTypes } from "./utils";
 
 type TPaths = { [pathName: string]: Path };
@@ -37,11 +37,11 @@ interface IParams {
 export class PathResolver {
   resolvedPaths: IResolvedPath[] = [];
 
-  static of(paths: TPaths, basePath: string = "") {
-    return new PathResolver(paths, basePath);
+  static of(paths: TPaths, basePath: string = "", typeNames: Dictionary<string>) {
+    return new PathResolver(paths, basePath, typeNames);
   }
 
-  constructor(private paths: TPaths, private basePath: string) {}
+  constructor(private paths: TPaths, private basePath: string, private typeNames: Dictionary<string>) {}
 
   resolve = () => {
     this.resolvedPaths = reduce(
@@ -154,6 +154,7 @@ export class PathResolver {
           schema: v.schema,
           key: v.name,
           parentKey: v.name,
+          typeNames: this.typeNames,
         }).resolve(),
       }),
       {},
@@ -168,6 +169,7 @@ export class PathResolver {
           schema: v as Schema,
           key: v.name,
           parentKey: v.name,
+          typeNames: this.typeNames,
         }).resolve(),
       }),
       {},
@@ -184,6 +186,7 @@ export class PathResolver {
             schema: param.schema,
             key: param.name,
             parentKey: param.name,
+            typeNames: this.typeNames,
           }).resolve(),
         };
       }
@@ -195,13 +198,11 @@ export class PathResolver {
   };
 
   // TODO: handle Response or Reference
-  getResponseTypes = (
-    extraDefinitions: Dictionary<any>,
-    responses: { [responseName: string]: Response | Reference },
-  ) =>
+  getResponseTypes = (extraDefinitions: Dictionary<any>, responses: { [responseName: string]: Response | Reference }) =>
     SchemaResolver.of({
       results: extraDefinitions,
       schema: get(responses, "200.schema") || get(responses, "201.schema"),
+      typeNames: this.typeNames,
     }).resolve();
 
   // TODO: when parameters has enum
