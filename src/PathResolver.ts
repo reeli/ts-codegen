@@ -10,10 +10,10 @@ import {
   Response,
   Schema,
 } from "swagger-schema-official";
-import { SchemaResolver } from "./SchemaResolver";
-import { generateEnums } from "./DefinitionsResolver";
-import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce } from "lodash";
-import { toTypes } from "./utils";
+import {SchemaResolver} from "./SchemaResolver";
+import {generateEnums} from "./DefinitionsResolver";
+import {chain, Dictionary, filter, get, isEmpty, map, pick, reduce} from "lodash";
+import {toTypes} from "./utils";
 
 type TPaths = { [pathName: string]: Path };
 
@@ -21,6 +21,7 @@ type TPaths = { [pathName: string]: Path };
 
 interface IResolvedPath extends IParams {
   url: string;
+  method:string;
   TResp: any;
   TReq: any;
   extraDefinitions: Dictionary<any>;
@@ -63,7 +64,7 @@ export class PathResolver {
 
       return `export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.operationId}', (${
         !isEmpty(requestParamList) ? `${this.toRequestParams(requestParamList)}` : ""
-      }) => ({url: \`${v.url}\`,${body ? `data: ${body},` : ""}${params ? `params: ${params},` : ""}${
+      }) => ({url: \`${v.url}\`, method: "${v.method}", ${body ? `data: ${body},` : ""}${params ? `params: ${params},` : ""}${
         body ? `headers: {'Content-Type': ${formData ? "'multipart/form-data'" : "'application/json'"}}` : ""
       }}));${
         v.extraDefinitions ? Object.keys(v.extraDefinitions).map((k) => generateEnums(v.extraDefinitions, k)) : ""
