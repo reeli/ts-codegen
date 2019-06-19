@@ -50,7 +50,7 @@ export class DefinitionsResolver {
   };
 
   toDeclarations = (): string[] => {
-    const arr = Object.keys(this.resolvedDefinitions).map((key) => {
+    const arr = Object.keys(this.resolvedDefinitions).sort().map((key) => {
       if (includes(key, ENUM_SUFFIX)) {
         return generateEnums(this.resolvedDefinitions, key);
       }

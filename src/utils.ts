@@ -47,7 +47,7 @@ export const toTypes = (obj: Dictionary<any> | string) => {
   return (
     obj &&
     `{
-        ${list.sort((a, b) => a.indexOf("?") - b.indexOf("?")).join("\n")}
+        ${list.sort().join("\n")}
       }`
   );
 };
