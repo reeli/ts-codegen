@@ -12,7 +12,7 @@ import {
 } from "swagger-schema-official";
 import { SchemaResolver } from "./SchemaResolver";
 import { generateEnums } from "./DefinitionsResolver";
-import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce } from "lodash";
+import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
 import { toTypes } from "./utils";
 
 type TPaths = { [pathName: string]: Path };
@@ -54,7 +54,8 @@ export class PathResolver {
   };
 
   toRequest = (): string[] => {
-    const requests = this.resolvedPaths.map((v: IResolvedPath) => {
+    const data = sortBy(this.resolvedPaths, (o) => o.operationId);
+    const requests = data.map((v: IResolvedPath) => {
       const TReq = !isEmpty(v.TReq) ? toTypes(v.TReq) : undefined;
       const requestParamList = [...v.pathParams, ...v.queryParams, ...v.bodyParams, ...v.formDataParams];
       const bodyData = get(v.bodyParams, "[0]");
