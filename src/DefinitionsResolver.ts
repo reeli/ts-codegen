@@ -11,6 +11,10 @@ import { SchemaResolver } from "./SchemaResolver";
 const ENUM_SUFFIX = `#EnumTypeSuffix`;
 
 export function generateEnums(data: Dictionary<any>, key: string) {
+  if (!data) {
+    return "";
+  }
+
   const enums = data[key];
   const hasNumber = some(enums, (v) => isNumber(v));
   const enumName = replace(key, ENUM_SUFFIX, "");

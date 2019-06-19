@@ -10,10 +10,10 @@ import {
   Response,
   Schema,
 } from "swagger-schema-official";
-import {SchemaResolver} from "./SchemaResolver";
-import {generateEnums} from "./DefinitionsResolver";
-import {chain, Dictionary, filter, get, isEmpty, map, pick, reduce} from "lodash";
-import {toTypes} from "./utils";
+import { SchemaResolver } from "./SchemaResolver";
+import { generateEnums } from "./DefinitionsResolver";
+import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce } from "lodash";
+import { toTypes } from "./utils";
 
 type TPaths = { [pathName: string]: Path };
 
@@ -21,10 +21,9 @@ type TPaths = { [pathName: string]: Path };
 
 interface IResolvedPath extends IParams {
   url: string;
-  method:string;
+  method: string;
   TResp: any;
   TReq: any;
-  extraDefinitions: Dictionary<any>;
   operationId?: string;
 }
 
@@ -37,6 +36,7 @@ interface IParams {
 
 export class PathResolver {
   resolvedPaths: IResolvedPath[] = [];
+  extraDefinitions = {};
 
   static of(paths: TPaths, basePath: string = "") {
     return new PathResolver(paths, basePath);
@@ -53,8 +53,8 @@ export class PathResolver {
     return this;
   };
 
-  toRequest = (): string[] =>
-    this.resolvedPaths.map((v: IResolvedPath) => {
+  toRequest = (): string[] => {
+    const requests = this.resolvedPaths.map((v: IResolvedPath) => {
       const TReq = !isEmpty(v.TReq) ? toTypes(v.TReq) : undefined;
       const requestParamList = [...v.pathParams, ...v.queryParams, ...v.bodyParams, ...v.formDataParams];
       const bodyData = get(v.bodyParams, "[0]");
@@ -64,12 +64,14 @@ export class PathResolver {
 
       return `export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.operationId}', (${
         !isEmpty(requestParamList) ? `${this.toRequestParams(requestParamList)}` : ""
-      }) => ({url: \`${v.url}\`, method: "${v.method}", ${body ? `data: ${body},` : ""}${params ? `params: ${params},` : ""}${
-        body ? `headers: {'Content-Type': ${formData ? "'multipart/form-data'" : "'application/json'"}}` : ""
-      }}));${
-        v.extraDefinitions ? Object.keys(v.extraDefinitions).map((k) => generateEnums(v.extraDefinitions, k)) : ""
-      }`;
+      }) => ({url: \`${v.url}\`, method: "${v.method}", ${body ? `data: ${body},` : ""}${
+        params ? `params: ${params},` : ""
+      }${body ? `headers: {'Content-Type': ${formData ? "'multipart/form-data'" : "'application/json'"}}` : ""}}));`;
     });
+
+    const enums = Object.keys(this.extraDefinitions).map((k) => generateEnums(this.extraDefinitions, k));
+    return [...requests, ...enums];
+  };
 
   toRequestParams = (data: any[] = []) =>
     !isEmpty(data)
@@ -102,7 +104,6 @@ export class PathResolver {
 
   // TODO: handle the case when v.parameters = Reference
   resolveOperation = (v: Operation) => {
-    const extraDefinitions = {};
     const pickParamsByType = this.pickParams(v.parameters as Parameter[]);
     const params = {
       pathParams: pickParamsByType("path") as PathParameter[],
@@ -113,10 +114,9 @@ export class PathResolver {
 
     return {
       operationId: v.operationId,
-      TResp: this.getResponseTypes(extraDefinitions, v.responses),
-      TReq: this.getRequestTypes(params, extraDefinitions),
+      TResp: this.getResponseTypes(v.responses),
+      TReq: this.getRequestTypes(params),
       ...this.getParamsNames(params),
-      extraDefinitions,
     };
   };
 
@@ -130,11 +130,11 @@ export class PathResolver {
     };
   };
 
-  getRequestTypes = (params: IParams, extraDefinitions: Dictionary<any> = {}) => ({
+  getRequestTypes = (params: IParams) => ({
     ...this.getPathParamsTypes(params.pathParams),
-    ...this.getQueryParamsTypes(params.queryParams, extraDefinitions),
-    ...this.getBodyParamsTypes(params.bodyParams, extraDefinitions),
-    ...this.getFormDataParamsTypes(params.formDataParams, extraDefinitions),
+    ...this.getQueryParamsTypes(params.queryParams),
+    ...this.getBodyParamsTypes(params.bodyParams),
+    ...this.getFormDataParamsTypes(params.formDataParams),
   });
 
   getPathParamsTypes = (pathParams: PathParameter[]) =>
@@ -146,12 +146,12 @@ export class PathResolver {
       {},
     );
 
-  getBodyParamsTypes = (bodyParams: BodyParameter[], extraDefinitions: Dictionary<any>) =>
+  getBodyParamsTypes = (bodyParams: BodyParameter[]) =>
     bodyParams.reduce(
       (o, v) => ({
         ...o,
         [`${v.name}${v.required ? "" : "?"}`]: SchemaResolver.of({
-          results: extraDefinitions,
+          results: this.extraDefinitions,
           schema: v.schema,
           key: v.name,
           parentKey: v.name,
@@ -160,12 +160,12 @@ export class PathResolver {
       {},
     );
 
-  getQueryParamsTypes = (queryParams: QueryParameter[], extraDefinitions: Dictionary<any>) =>
+  getQueryParamsTypes = (queryParams: QueryParameter[]) =>
     queryParams.reduce(
       (o, v) => ({
         ...o,
         [`${v.name}${v.required ? "" : "?"}`]: SchemaResolver.of({
-          results: extraDefinitions,
+          results: this.extraDefinitions,
           schema: v as Schema,
           key: v.name,
           parentKey: v.name,
@@ -175,13 +175,13 @@ export class PathResolver {
     );
 
   // TODO: handle other params here?
-  getFormDataParamsTypes = (formDataParams: any[], extraDefinitions: Dictionary<any>) => {
+  getFormDataParamsTypes = (formDataParams: any[]) => {
     return formDataParams.reduce((results, param) => {
       if (param.schema) {
         return {
           ...results,
           [`${param.name}${param.required ? "" : "?"}`]: SchemaResolver.of({
-            results: extraDefinitions,
+            results: this.extraDefinitions,
             schema: param.schema,
             key: param.name,
             parentKey: param.name,
@@ -196,9 +196,9 @@ export class PathResolver {
   };
 
   // TODO: handle Response or Reference
-  getResponseTypes = (extraDefinitions: Dictionary<any>, responses: { [responseName: string]: Response | Reference }) =>
+  getResponseTypes = (responses: { [responseName: string]: Response | Reference }) =>
     SchemaResolver.of({
-      results: extraDefinitions,
+      results: this.extraDefinitions,
       schema: get(responses, "200.schema") || get(responses, "201.schema"),
     }).resolve();
 
