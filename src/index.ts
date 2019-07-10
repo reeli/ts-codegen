@@ -55,7 +55,7 @@ const codegen = (schema: Spec) => {
 
 if (codegenConfig.clients) {
   const instance = axios.create({
-    timeout: 1000,
+    timeout: codegenConfig.timeout || 10 * 1000,
   });
 
   map(codegenConfig.clients, (client) => {

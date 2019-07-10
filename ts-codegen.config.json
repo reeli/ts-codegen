@@ -1,8 +1,6 @@
 {
   "output": ".output",
   "actionCreatorImport": "import { createRequestAction } from 'examples/requestActionCreators';\n\n",
-  "clients": [],
-  "data": [
-    "./examples/swagger.json"
-  ]
+  "clients": ["https://dev.dssjira.com/api/web/v2/api-docs"],
+  "data": ["./examples/swagger.json"]
 }
