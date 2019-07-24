@@ -193,14 +193,10 @@
     },
     "/book/{id}": {
       "get": {
-        "tags": [
-          "book-controller"
-        ],
+        "tags": ["book-controller"],
         "summary": "get book by id",
         "operationId": "findBookByIdUsingGET",
-        "produces": [
-          "*/*"
-        ],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -251,17 +247,11 @@
         "deprecated": false
       },
       "put": {
-        "tags": [
-          "book-controller"
-        ],
+        "tags": ["book-controller"],
         "summary": "update book by given id",
         "operationId": "updateBookByIdUsingPUT",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -323,14 +313,10 @@
     },
     "/schedules": {
       "get": {
-        "tags": [
-          "schedule-controller"
-        ],
+        "tags": ["schedule-controller"],
         "summary": "getScheduleDetailsByDate",
         "operationId": "getScheduleDetailsByDateUsingGET",
-        "produces": [
-          "*/*"
-        ],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -396,14 +382,10 @@
     },
     "/documents/{documentId}/doc": {
       "get": {
-        "tags": [
-          "documents-controller"
-        ],
+        "tags": ["documents-controller"],
         "summary": "getDocument",
         "operationId": "getDocumentByIdUsingGET",
-        "produces": [
-          "*/*"
-        ],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -432,10 +414,7 @@
             "description": "from",
             "required": false,
             "type": "string",
-            "enum": [
-              "AAA",
-              "BBB"
-            ]
+            "enum": ["AAA", "BBB"]
           },
           {
             "name": "documentId",
@@ -471,23 +450,32 @@
       "type": "object",
       "properties": {
         "authorName": {
-          "type": "string"
+          "type": "string",
+          "example": "Tony"
         },
         "createdDate": {
           "type": "integer",
-          "format": "int64"
+          "format": "int64",
+          "example": 19920010
         },
         "fileName": {
-          "type": "string"
+          "type": "string",
+          "example": "aaa"
         },
         "id": {
-          "type": "string"
+          "type": "string",
+          "example": "001"
         },
         "mimeType": {
-          "type": "string"
+          "type": "string",
+          "example": ".png"
         },
         "path": {
-          "type": "string"
+          "type": "string",
+          "example": "/home"
+        },
+        "attachment": {
+          "$ref": "#/definitions/ScheduleVO"
         }
       },
       "title": "BookDetailVo"
@@ -695,10 +683,7 @@
         },
         "spokenLanguage": {
           "type": "array",
-          "example": [
-            "AH",
-            "AK"
-          ],
+          "example": ["AH", "AK"],
           "items": {
             "type": "string"
           }
