@@ -7,28 +7,27 @@ import axios from "axios";
 import { map } from "lodash";
 import { Spec } from "swagger-schema-official";
 
-const tsgenConfigPath = path.resolve("ts-codegen.config.json");
+const codegenConfigPath = path.resolve("ts-codegen.config.json");
 
-const codegenConfig = fs.existsSync(tsgenConfigPath)
-  ? require(tsgenConfigPath)
-  : {
-      output: ".output",
-      actionCreatorImport: "",
-      clients: [],
-    };
+export const getCodegenConfig = () => {
+  return fs.existsSync(codegenConfigPath)
+    ? require(codegenConfigPath)
+    : {
+        output: ".output",
+        actionCreatorImport: "",
+        clients: [],
+      };
+};
+
+const { output, actionCreatorImport, timeout, data, clients } = getCodegenConfig();
 
 const codegen = (schema: Spec) => {
-  // 合法的 JSON 没有注释，否则会 parse 失败
-
-  const dir = codegenConfig.output;
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+  if (!fs.existsSync(output)) {
+    fs.mkdirSync(output);
   }
 
-  // fs.writeFileSync(path.resolve(__dirname, "../.output/definitions.ts"), res, "utf-8");
-
   const fileStr =
-    codegenConfig.actionCreatorImport +
+    actionCreatorImport +
     [
       ...PathResolver.of(schema.paths, schema.basePath)
         .resolve()
@@ -41,24 +40,24 @@ const codegen = (schema: Spec) => {
   const getFilename = (basePath?: string) => (basePath ? basePath.split("/").join(".") : "request");
 
   fs.writeFileSync(
-    path.resolve(codegenConfig.output, `./${getFilename(schema.basePath).slice(1)}.ts`),
+    path.resolve(output, `./${getFilename(schema.basePath).slice(1)}.ts`),
     prettifyCode(fileStr),
     "utf-8",
   );
 };
 
-(codegenConfig.data || []).map((file: string) => {
+(data || []).map((file: string) => {
   const schemaStr = fs.readFileSync(file, "utf8");
   const schema = JSON.parse(schemaStr) as Spec;
   codegen(schema);
 });
 
-if (codegenConfig.clients) {
+if (clients) {
   const instance = axios.create({
-    timeout: codegenConfig.timeout || 10 * 1000,
+    timeout: timeout || 10 * 1000,
   });
 
-  map(codegenConfig.clients, (client) => {
+  map(clients, (client) => {
     instance
       .get(client)
       .then((response) => {
