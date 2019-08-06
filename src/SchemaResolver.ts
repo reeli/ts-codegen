@@ -89,21 +89,22 @@ export class SchemaResolver {
     return list[list.length - 1];
   };
 
-  resolveItems = (items?: Schema | Schema[], type?: string) => {
+  resolveItems = (items?: Schema | Schema[], type?: string): any => {
     if (!items) {
       return {};
     }
 
-    // TODO: Handle the case when item.type = array, and has enums
-    if (type === "array" && !get(items, "$ref")) {
-      return `${get(items, "type")}[]`;
+    const child = get(items, "items");
+    if (type === "array" && child) {
+      return this.resolveItems(child, (items as any).type);
     }
 
     if (isArray(items)) {
       return map(items, (item) => this.resolve(item as Schema));
     }
 
-    return this.resolve(items as Schema, undefined, type);
+    const t = this.resolve(items as Schema, undefined, type);
+    return type === "array" ? `${t}[]` : t;
   };
 
   resolveProperties = (

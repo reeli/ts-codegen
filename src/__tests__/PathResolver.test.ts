@@ -75,7 +75,7 @@ const expectedPathResolvedData = [
   },
   {
     TReq: { scheduleDate: "number", "roleId?": "string" },
-    TResp: "IScheduleVo[]",
+    TResp: "IScheduleVo[][]",
     bodyParams: [],
     formDataParams: [],
     operationId: "getScheduleDetailsByDateUsingGET",
@@ -116,7 +116,7 @@ const expectedRequest = [
   "export const getScheduleDetailsByDateUsingGET = " +
     "createRequestAction<{\n        'roleId'?: string;\n" +
     "'scheduleDate': number;\n      }, " +
-    "IScheduleVo[]>('getScheduleDetailsByDateUsingGET', ({\n    " +
+    "IScheduleVo[][]>('getScheduleDetailsByDateUsingGET', ({\n    " +
     "scheduleDate,\nroleId\n    }) => ({url: `/api/test/schedules`, " +
     'method: "get", params: {\n    scheduleDate,\nroleId\n    },}));',
   "export const updateBookByIdUsingPUT = createRequestAction<{\n     " +

@@ -24,7 +24,7 @@ export function generateEnums(data: Dictionary<any>, key: string) {
 }
 
 export class DefinitionsResolver {
-  private resolvedDefinitions: any;
+  resolvedDefinitions: any;
 
   static of(definitions?: { [definitionsName: string]: Schema }) {
     return new DefinitionsResolver(definitions);
@@ -50,19 +50,21 @@ export class DefinitionsResolver {
   };
 
   toDeclarations = (): string[] => {
-    const arr = Object.keys(this.resolvedDefinitions).sort().map((key) => {
-      if (includes(key, ENUM_SUFFIX)) {
-        return generateEnums(this.resolvedDefinitions, key);
-      }
+    const arr = Object.keys(this.resolvedDefinitions)
+      .sort()
+      .map((key) => {
+        if (includes(key, ENUM_SUFFIX)) {
+          return generateEnums(this.resolvedDefinitions, key);
+        }
 
-      if (this.resolvedDefinitions[key] === "object") {
-        return `export interface ${addPrefixForInterface(toCapitalCase(key))} {[key:string]:any}`;
-      }
-      const val = toTypes(this.resolvedDefinitions[key]);
-      if (val) {
-        return `export interface ${addPrefixForInterface(toCapitalCase(key))} ${val}`;
-      }
-    });
+        if (this.resolvedDefinitions[key] === "object") {
+          return `export interface ${addPrefixForInterface(toCapitalCase(key))} {[key:string]:any}`;
+        }
+        const val = toTypes(this.resolvedDefinitions[key]);
+        if (val) {
+          return `export interface ${addPrefixForInterface(toCapitalCase(key))} ${val}`;
+        }
+      });
     return compact(arr);
   };
 }
