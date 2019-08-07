@@ -489,7 +489,10 @@
         "schedules": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ScheduleVO"
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/BookVO"
+            }
           }
         },
         "shiftId": {
@@ -497,6 +500,18 @@
         }
       },
       "title": "ScheduleVO"
+    },
+    "BookVO": {
+      "type": "object",
+      "properties": {
+        "price": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        }
+      },
+      "title": "BookVO"
     },
     "InputStream": {
       "type": "object",
@@ -807,6 +822,31 @@
         }
       },
       "title": "File"
+    },
+    "BookingResponse": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/DocumentVO"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ErrorInfo"
+          }
+        }
+      },
+      "title": "BookingResponse"
+    },
+    "ErrorInfo": {
+      "type": "object",
+      "properties": {
+        "errorMessage": {
+          "type": "string"
+        }
+      },
+      "title": "ErrorInfo"
     }
   }
 }

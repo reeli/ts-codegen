@@ -19,7 +19,7 @@ const expected = {
     "path?": "string",
     "attachment?": "IScheduleVo",
   },
-  ScheduleVO: { "team?": "string", "schedules?": "IScheduleVo[][]", "shiftId?": "string" },
+  ScheduleVO: { "team?": "string", "schedules?": "IBookVo[][]", "shiftId?": "string" },
   InputStream: "object",
   Resource: {
     "description?": "string",
@@ -78,6 +78,14 @@ const expected = {
     "idType?": "string",
     "spokenLanguage?": "string[]",
   },
+  BookVO: {
+    "address?": "string",
+    "price?": "string",
+  },
+  BookingResponse: {
+    data: "IDocumentVo",
+    "errors?": "IErrorInfo[]",
+  },
   DocumentVO: {
     "attachment?": "IBookDetailVo",
     "authorName?": "string",
@@ -93,6 +101,9 @@ const expected = {
     "id?": "string",
     "mimeType?": "string",
     "path?": "string",
+  },
+  ErrorInfo: {
+    "errorMessage?": "string",
   },
   File: {
     "absolute?": "boolean",
