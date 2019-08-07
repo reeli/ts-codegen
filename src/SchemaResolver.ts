@@ -95,16 +95,22 @@ export class SchemaResolver {
     }
 
     const child = get(items, "items");
-    if (type === "array" && child) {
-      return this.resolveItems(child, (items as any).type);
+
+    if (type === "array") {
+      if (child) {
+        return `${this.resolveItems(child, (items as any).type)}[]`;
+      }
+
+      if (!get(items, "$ref")) {
+        return `${get(items, "type")}[]`;
+      }
     }
 
     if (isArray(items)) {
       return map(items, (item) => this.resolve(item as Schema));
     }
 
-    const t = this.resolve(items as Schema, undefined, type);
-    return type === "array" ? `${t}[]` : t;
+    return this.resolve(items as Schema, undefined, type);
   };
 
   resolveProperties = (
