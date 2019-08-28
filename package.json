@@ -42,6 +42,7 @@
     "babel-jest": "24.8.0",
     "jest": "24.8.0",
     "prettier": "1.18.2",
+    "ts-jest": "24.0.2",
     "ts-node": "8.3.0",
     "typescript": "3.5.3"
   },
@@ -57,6 +58,10 @@
       "src/**/*.{ts,tsx}",
       "!src/__types__/**",
       "!src/__tests__/**"
-    ]
+    ],
+    "transform": {
+      "^.+\\.ts?$": "ts-jest",
+      "^.+\\.tsx?$": "ts-jest"
+    }
   }
 }
