@@ -1,27 +1,32 @@
 import * as fs from "fs";
 import { DefinitionsResolver } from "./DefinitionsResolver";
 import * as path from "path";
-import { prettifyCode } from "./utils";
+import { prettifyCode, testJSON } from "./utils";
 import { PathResolver } from "./PathResolver";
 import axios from "axios";
 import { map } from "lodash";
 import { Spec } from "swagger-schema-official";
+import { ERROR_MESSAGES } from "./constants";
 
 const codegenConfigPath = path.resolve("ts-codegen.config.json");
 
-export const getCodegenConfig = () => {
-  return fs.existsSync(codegenConfigPath)
+export const getCodegenConfig = () =>
+  fs.existsSync(codegenConfigPath)
     ? require(codegenConfigPath)
     : {
         output: ".output",
         actionCreatorImport: "",
         clients: [],
       };
-};
 
 const { output, actionCreatorImport, timeout, data, clients } = getCodegenConfig();
 
-const codegen = (schema: Spec) => {
+const codegen = (schema: Spec | string) => {
+  if (typeof schema === "string") {
+    console.error(ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
+    return;
+  }
+
   if (!fs.existsSync(output)) {
     fs.mkdirSync(output);
   }
@@ -48,8 +53,11 @@ const codegen = (schema: Spec) => {
 
 (data || []).map((file: string) => {
   const schemaStr = fs.readFileSync(file, "utf8");
-  const schema = JSON.parse(schemaStr) as Spec;
-  codegen(schema);
+  const schema = testJSON(schemaStr);
+
+  if (schema) {
+    codegen(schema);
+  }
 });
 
 if (clients) {
@@ -64,9 +72,7 @@ if (clients) {
         codegen(response.data);
       })
       .catch((error) => {
-        console.log(
-          `${error.code}: Fetch client failed! Please check your network or client url in ts-codegen.config.ts.`,
-        );
+        console.error(`${error.code}: ${ERROR_MESSAGES.FETCH_CLIENT_FAILED_ERROR}`);
       });
   });
 }

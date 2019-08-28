@@ -1,5 +1,6 @@
 import { camelCase, Dictionary, forEach, indexOf, map, replace, trimEnd } from "lodash";
 import prettier from "prettier";
+import { ERROR_MESSAGES } from "./constants";
 
 export const toCapitalCase = (str?: string): string => {
   if (!str) {
@@ -56,3 +57,20 @@ export const quoteKey = (k: string) => {
   const isOptional = indexOf(k, "?") > -1;
   return `'${trimEnd(k, "?")}'${isOptional ? "?" : ""}`;
 };
+
+export function testJSON(
+  str: unknown,
+  errorMsg: string = ERROR_MESSAGES.INVALID_JSON_FILE_ERROR,
+  output: (message: string) => void = console.error,
+) {
+  if (typeof str !== "string") {
+    return;
+  }
+
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    output(errorMsg);
+    return;
+  }
+}
