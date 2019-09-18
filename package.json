@@ -1,6 +1,6 @@
 {
   "name": "@ts-tool/ts-codegen",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "Typescript code generator, which is able to convert swagger to ts code.",
   "main": "dist/index.js",
   "module": "module/index.js",
