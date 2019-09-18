@@ -11,6 +11,8 @@
   "files": [
     "bin",
     "dist",
+    "module",
+    "src",
     "README.md"
   ],
   "scripts": {
