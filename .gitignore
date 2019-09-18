@@ -13,3 +13,4 @@ yarn.lock
 wsEndpoint
 .output/
 dist/
+module/

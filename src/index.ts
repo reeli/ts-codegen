@@ -8,6 +8,8 @@ import { map } from "lodash";
 import { Spec } from "swagger-schema-official";
 import { ERROR_MESSAGES } from "./constants";
 
+export * from "./PathResolver";
+
 const codegenConfigPath = path.resolve("ts-codegen.config.json");
 
 export const getCodegenConfig = () =>
