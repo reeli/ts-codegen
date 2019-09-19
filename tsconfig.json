@@ -15,5 +15,5 @@
     "rootDir": "src",
     "resolveJsonModule": true
   },
-  "exclude": ["node_modules", "examples", "**/__tests__/**"]
+  "exclude": ["node_modules", "examples", "**/__tests__/**", "rollup.config.ts"]
 }

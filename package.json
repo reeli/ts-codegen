@@ -20,7 +20,7 @@
     "test": "jest",
     "build": "rm -rf dist && tsc",
     "release": "rm -rf lib/ && rm -rf module/ && rollup -c rollup.config.ts",
-    "prepare": "npm run release && npm test"
+    "prepare": "npm run build && npm run release && npm test"
   },
   "repository": {
     "type": "git",
