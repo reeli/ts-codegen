@@ -2,7 +2,7 @@
   "name": "@ts-tool/ts-codegen",
   "version": "0.7.1",
   "description": "Typescript code generator, which is able to convert swagger to ts code.",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "module": "module/index.js",
   "types": "src/index.ts",
   "bin": {
@@ -10,7 +10,7 @@
   },
   "files": [
     "bin",
-    "dist",
+    "lib",
     "module",
     "src",
     "README.md"
@@ -18,10 +18,11 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "test": "jest",
-    "build": "npm run build:es5 && npm run build:es6",
-    "build:es5": "rm -rf dist/ && tsc",
+    "build": "rm -rf dist && tsc",
+    "release": "npm run build:es5 && npm run build:es6",
+    "build:es5": "rm -rf lib && tsc --build ./tsconfig.build.es5.json",
     "build:es6": "rm -rf module && tsc --build ./tsconfig.build.es6.json",
-    "prepare": "npm run build && npm test"
+    "prepare": "npm run release && npm test"
   },
   "repository": {
     "type": "git",
