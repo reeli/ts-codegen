@@ -62,7 +62,8 @@
     "axios": "0.19.x"
   },
   "peerDependencies": {
-    "lodash": ">=4.17.0"
+    "lodash": ">=4.17.0",
+    "tslib": "1.10.x"
   },
   "jest": {
     "testEnvironment": "node",
