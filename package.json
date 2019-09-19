@@ -63,7 +63,7 @@
   },
   "peerDependencies": {
     "lodash": ">=4.17.0",
-    "tslib": "1.10.x"
+    "tslib": ">=1.9.0"
   },
   "jest": {
     "testEnvironment": "node",
