@@ -19,9 +19,7 @@
     "start": "ts-node src/index.ts",
     "test": "jest",
     "build": "rm -rf dist && tsc",
-    "release": "npm run build:es5 && npm run build:es6",
-    "build:es5": "rm -rf lib && tsc --build ./tsconfig.build.es5.json",
-    "build:es6": "rm -rf module && tsc --build ./tsconfig.build.es6.json",
+    "release": "rm -rf lib/ && rm -rf module/ && rollup -c rollup.config.ts",
     "prepare": "npm run release && npm test"
   },
   "repository": {
@@ -43,18 +41,22 @@
     "@types/lodash": "4.14.x",
     "@types/node": "12.7.x",
     "@types/prettier": "1.18.x",
+    "@types/rollup": "0.54.x",
     "@types/swagger-schema-official": "2.0.x",
     "axios": "0.19.x",
     "babel-core": "6.26.x",
     "babel-jest": "24.9.x",
+    "babel-plugin-pure-calls-annotation": "0.2.x",
     "jest": "24.9.x",
+    "lodash": "4.17.x",
     "prettier": "1.18.x",
+    "rollup": "1.21.x",
+    "rollup-plugin-babel": "4.3.x",
+    "rollup-plugin-typescript": "1.0.x",
     "ts-jest": "24.1.x",
     "ts-node": "8.4.x",
+    "tslib": "1.10.x",
     "typescript": "3.6.x"
-  },
-  "dependencies": {
-    "lodash": "4.17.15"
   },
   "jest": {
     "testEnvironment": "node",
