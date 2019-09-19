@@ -9,6 +9,7 @@
     "ts-codegen": "bin/ts-codegen.js"
   },
   "files": [
+    "dist",
     "bin",
     "lib",
     "module",
