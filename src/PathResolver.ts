@@ -197,6 +197,12 @@ export class PathResolver {
   };
 
   // TODO: handle Response or Reference
+  // TODO: responses.200.schema.type ==="array"
+  // TODO: response.200.schema.type ==="object" (additionalProperties)
+  // TODO: response.200.schema.type==="string" | "number" | "integer" | "boolean"
+  // TODO: responses.200.headers 存在时
+  // TODO: responses.201 同上
+
   getResponseTypes = (responses: { [responseName: string]: Response | Reference }) =>
     SchemaResolver.of({
       results: this.extraDefinitions,
