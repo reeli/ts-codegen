@@ -1,21 +1,12 @@
-import { SchemaResolver } from "../SchemaResolver";
 import { Dictionary, forEach } from "lodash";
 import swaggerV3 from "../../examples/swagger.v3.petstore.json";
 import swaggerV2 from "../../examples/swagger.json";
+import { SchemaResolver2 } from "../SchemaResolver2";
 
 describe("SchemaResolver", () => {
   it("should resolve swagger definitions schema correctly", () => {
     const results: Dictionary<any> = {};
-    forEach(
-      swaggerV2.definitions as any,
-      (v, k) =>
-        (results[k] = SchemaResolver.of({
-          results,
-          schema: v,
-          key: k,
-          parentKey: k,
-        }).resolve()),
-    );
+    forEach(swaggerV2.definitions as any, (v, k) => (results[k] = SchemaResolver2.of(v, k, k, results).resolve()));
     expect(results).toEqual({
       ApiResponse: {
         "code?": "number",
@@ -63,16 +54,7 @@ describe("SchemaResolver", () => {
 
   it("should resolve swagger components schema correctly", () => {
     const results: Dictionary<any> = {};
-    forEach(
-      swaggerV3.components.schemas as any,
-      (v, k) =>
-        (results[k] = SchemaResolver.of({
-          results,
-          schema: v,
-          key: k,
-          parentKey: k,
-        }).resolve()),
-    );
+    forEach(swaggerV3.components.schemas as any, (v, k) => (results[k] = SchemaResolver2.of(v, k).resolve()));
     expect(results).toEqual({
       Error: {
         code: "number",
@@ -84,6 +66,32 @@ describe("SchemaResolver", () => {
         "tag?": "string",
       },
       Pets: "IPet[]",
+    });
+  });
+
+  it("should resolve single schema correctly", () => {
+    const results = SchemaResolver2.of({
+      type: "array",
+      items: {
+        $ref: "#/components/schemas/Pet",
+      },
+    }).resolve();
+
+    const enums = {};
+    const results1 = SchemaResolver2.of(
+      {
+        type: "string",
+        enum: ["AAA", "BBB"],
+      },
+      "PetStatus",
+      "Parent",
+      enums,
+    ).resolve();
+
+    expect(results).toEqual("IPet[]");
+    expect(results1).toEqual("keyof typeof ParentPetStatus#EnumTypeSuffix");
+    expect(enums).toEqual({
+      "ParentPetStatus#EnumTypeSuffix": ["AAA", "BBB"],
     });
   });
 });
