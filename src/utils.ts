@@ -74,3 +74,25 @@ export function testJSON(
     return;
   }
 }
+
+const toArrayType = (customType?: string) => (customType ? `${customType}[]` : "Array<any>");
+
+export const toType = (builtInType: string = "", customType?: string): string => {
+  if (customType) {
+    return builtInType === "array" ? toArrayType(customType) : customType;
+  }
+
+  if (builtInType === "integer") {
+    return "number";
+  }
+
+  return builtInType;
+};
+
+export const getTypeByRef = (str?: string) => {
+  if (!str) {
+    return;
+  }
+  const list = str.split("/");
+  return list[list.length - 1];
+};

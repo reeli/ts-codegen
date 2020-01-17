@@ -1,5 +1,5 @@
 import { Schema } from "swagger-schema-official";
-import { addPrefixForInterface, isArray, isNumber, toCapitalCase } from "./utils";
+import { addPrefixForInterface, getTypeByRef, isArray, isNumber, toCapitalCase, toType } from "./utils";
 import { indexOf, map, reduce, some } from "lodash";
 
 type TDictionary<T> = { [key: string]: T };
@@ -48,36 +48,13 @@ export class SchemaResolver2 {
       return schema.properties ? this.resolveProperties(schema.properties, schema.required) : schema.type;
     }
 
-    return this.getBasicType(schema.type, advancedType);
+    return toType(schema.type, advancedType);
   };
 
   getEnumName = (propertyName: string, parentKey: string) =>
     `${toCapitalCase(parentKey)}${toCapitalCase(propertyName)}${ENUM_SUFFIX}`;
 
-  resolveRef = ($ref?: string): string => ($ref ? addPrefixForInterface(toCapitalCase(this.pickTypeByRef($ref))) : "");
-
-  getBasicType = (basicType: string = "", advancedType?: string): string => {
-    switch (basicType) {
-      case "integer":
-        return "number";
-      case "array":
-        return this.getTypeForArray(advancedType);
-      case "":
-        return advancedType || "";
-      default:
-        return basicType;
-    }
-  };
-
-  getTypeForArray = (advancedType?: string) => (advancedType ? `${advancedType}[]` : "Array<any>");
-
-  pickTypeByRef = (str?: string) => {
-    if (!str) {
-      return;
-    }
-    const list = str.split("/");
-    return list[list.length - 1];
-  };
+  resolveRef = ($ref?: string): string => ($ref ? addPrefixForInterface(toCapitalCase(getTypeByRef($ref))) : "");
 
   resolveItems = (items?: Schema | Schema[], type?: string): any => {
     if (!items) {
