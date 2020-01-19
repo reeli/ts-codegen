@@ -1,5 +1,5 @@
 import { Schema } from "swagger-schema-official";
-import { generateEnumName, isArray, isNumber, toRefType, toType } from "./utils";
+import { generateEnumName, handleRef, isArray, isNumber } from "./utils";
 import { indexOf, map, reduce, some } from "lodash";
 
 type TDictionary<T> = { [key: string]: T };
@@ -17,38 +17,54 @@ export class SchemaResolver2 {
   ) {}
 
   resolve = (
-    schema: Schema = this.schema,
+    schema: Schema = this.schema || {},
     propertyName = this.propertyName,
     parentKey = this.parentKey,
     results = this.results || ({} as any),
   ): TDictionary<any> | string => {
     if (schema.$ref) {
-      return toRefType(schema.$ref);
+      return handleRef(schema.$ref);
     }
 
     if (schema.items) {
-      return this.resolveItems(schema.items, schema.type);
+      return this.handleItems(schema.items, schema.type);
     }
 
     if (schema.enum) {
-      const enumKey = generateEnumName(propertyName!, parentKey!);
-      const hasNumber = some(schema.enum, (v) => isNumber(v));
-      results[enumKey] = schema.enum;
-      if (hasNumber) {
-        return enumKey;
-      }
-
-      return `keyof typeof ${enumKey}`;
+      return this.handleEnum(schema.enum, propertyName, parentKey, results);
     }
 
-    if (schema.type === "object") {
-      return schema.properties ? this.resolveProperties(schema.properties, schema.required) : schema.type;
-    }
-
-    return toType(schema.type);
+    return this.handleBuiltInTypes(schema);
   };
 
-  resolveItems = (items?: Schema | Schema[], type?: string): any => {
+  handleBuiltInTypes = (schema: Schema) => {
+    switch (schema.type) {
+      case "object":
+        return schema.properties ? this.handleProperties(schema.properties, schema.required) : schema.type;
+      case "integer":
+        return "number";
+      default:
+        return schema.type || "";
+    }
+  };
+
+  handleEnum = (
+    schemaEnum: any[],
+    propertyName = this.propertyName,
+    parentKey = this.parentKey,
+    results = this.results || ({} as any),
+  ) => {
+    const enumKey = generateEnumName(propertyName!, parentKey!);
+    const hasNumber = some(schemaEnum, (v) => isNumber(v));
+    results[enumKey] = schemaEnum;
+    if (hasNumber) {
+      return enumKey;
+    }
+
+    return `keyof typeof ${enumKey}`;
+  };
+
+  handleItems = (items?: Schema | Schema[], type?: string): any => {
     if (!items) {
       return {};
     }
@@ -62,10 +78,7 @@ export class SchemaResolver2 {
     return type === "array" ? `${itemType}[]` : itemType;
   };
 
-  resolveProperties = (
-    properties: { [propertyName: string]: Schema } = {},
-    required: string[] = [],
-  ): TDictionary<any> =>
+  handleProperties = (properties: { [propertyName: string]: Schema } = {}, required: string[] = []): TDictionary<any> =>
     reduce(
       properties,
       (o, v, k) => ({
