@@ -1,10 +1,8 @@
 import { Schema } from "swagger-schema-official";
-import { addPrefixForInterface, getTypeByRef, isArray, isNumber, toCapitalCase, toType } from "./utils";
+import { generateEnumName, isArray, isNumber, toRefType, toType } from "./utils";
 import { indexOf, map, reduce, some } from "lodash";
 
 type TDictionary<T> = { [key: string]: T };
-
-const ENUM_SUFFIX = `#EnumTypeSuffix`;
 
 export class SchemaResolver2 {
   static of(schema: Schema, key?: string, parentKey?: string, results?: TDictionary<any>) {
@@ -24,9 +22,8 @@ export class SchemaResolver2 {
     parentKey = this.parentKey,
     results = this.results || ({} as any),
   ): TDictionary<any> | string => {
-    const advancedType = this.resolveRef(schema.$ref);
     if (schema.$ref) {
-      return advancedType;
+      return toRefType(schema.$ref);
     }
 
     if (schema.items) {
@@ -34,7 +31,7 @@ export class SchemaResolver2 {
     }
 
     if (schema.enum) {
-      const enumKey = this.getEnumName(propertyName!, parentKey!);
+      const enumKey = generateEnumName(propertyName!, parentKey!);
       const hasNumber = some(schema.enum, (v) => isNumber(v));
       results[enumKey] = schema.enum;
       if (hasNumber) {
@@ -48,13 +45,8 @@ export class SchemaResolver2 {
       return schema.properties ? this.resolveProperties(schema.properties, schema.required) : schema.type;
     }
 
-    return toType(schema.type, advancedType);
+    return toType(schema.type);
   };
-
-  getEnumName = (propertyName: string, parentKey: string) =>
-    `${toCapitalCase(parentKey)}${toCapitalCase(propertyName)}${ENUM_SUFFIX}`;
-
-  resolveRef = ($ref?: string): string => ($ref ? addPrefixForInterface(toCapitalCase(getTypeByRef($ref))) : "");
 
   resolveItems = (items?: Schema | Schema[], type?: string): any => {
     if (!items) {

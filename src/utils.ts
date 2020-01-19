@@ -75,13 +75,9 @@ export function testJSON(
   }
 }
 
-const toArrayType = (customType?: string) => (customType ? `${customType}[]` : "Array<any>");
+export const toArrayType = (customType?: string) => (customType ? `${customType}[]` : "Array<any>");
 
-export const toType = (builtInType: string = "", customType?: string): string => {
-  if (customType) {
-    return builtInType === "array" ? toArrayType(customType) : customType;
-  }
-
+export const toType = (builtInType: string = ""): string => {
   if (builtInType === "integer") {
     return "number";
   }
@@ -96,3 +92,9 @@ export const getTypeByRef = (str?: string) => {
   const list = str.split("/");
   return list[list.length - 1];
 };
+
+
+export const generateEnumName = (propertyName: string, parentKey: string) =>
+    `${toCapitalCase(parentKey)}${toCapitalCase(propertyName)}${ENUM_SUFFIX}`;
+
+export const toRefType = ($ref?: string): string => ($ref ? addPrefixForInterface(toCapitalCase(getTypeByRef($ref))) : "");
