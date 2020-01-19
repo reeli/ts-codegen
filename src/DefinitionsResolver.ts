@@ -1,7 +1,7 @@
 import { Schema } from "swagger-schema-official";
 import { addPrefixForInterface, arrayToObject, isNumber, toCapitalCase, toTypes } from "./utils";
 import { compact, Dictionary, forEach, includes, replace, some } from "lodash";
-import { SchemaResolver } from "./SchemaResolver";
+import { SchemaResolver2 } from "./SchemaResolver2";
 
 // TODO: 1. Handle required params.
 // TODO: handle `in: fromData`
@@ -34,16 +34,7 @@ export class DefinitionsResolver {
 
   scanDefinitions = () => {
     const results: Dictionary<any> = {};
-    forEach(
-      this.definitions,
-      (v, k) =>
-        (results[k] = SchemaResolver.of({
-          results,
-          schema: v,
-          key: k,
-          parentKey: k,
-        }).resolve()),
-    );
+    forEach(this.definitions, (v, k) => (results[k] = SchemaResolver2.of(v, k, k, results).resolve()));
 
     this.resolvedDefinitions = results;
     return this;

@@ -10,10 +10,10 @@ import {
   Response,
   Schema,
 } from "swagger-schema-official";
-import { SchemaResolver } from "./SchemaResolver";
 import { generateEnums } from "./DefinitionsResolver";
 import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
 import { toTypes } from "./utils";
+import { SchemaResolver2 } from "./SchemaResolver2";
 
 type TPaths = { [pathName: string]: Path };
 
@@ -151,12 +151,12 @@ export class PathResolver {
     bodyParams.reduce(
       (o, v) => ({
         ...o,
-        [`${v.name}${v.required ? "" : "?"}`]: SchemaResolver.of({
-          results: this.extraDefinitions,
-          schema: v.schema,
-          key: v.name,
-          parentKey: v.name,
-        }).resolve(),
+        [`${v.name}${v.required ? "" : "?"}`]: SchemaResolver2.of(
+          v.schema!,
+          v.name,
+          v.name,
+          this.extraDefinitions,
+        ).resolve(),
       }),
       {},
     );
@@ -165,12 +165,12 @@ export class PathResolver {
     queryParams.reduce(
       (o, v) => ({
         ...o,
-        [`${v.name}${v.required ? "" : "?"}`]: SchemaResolver.of({
-          results: this.extraDefinitions,
-          schema: v as Schema,
-          key: v.name,
-          parentKey: v.name,
-        }).resolve(),
+        [`${v.name}${v.required ? "" : "?"}`]: SchemaResolver2.of(
+          v as Schema,
+          v.name,
+          v.name,
+          this.extraDefinitions,
+        ).resolve(),
       }),
       {},
     );
@@ -181,12 +181,12 @@ export class PathResolver {
       if (param.schema) {
         return {
           ...results,
-          [`${param.name}${param.required ? "" : "?"}`]: SchemaResolver.of({
-            results: this.extraDefinitions,
-            schema: param.schema,
-            key: param.name,
-            parentKey: param.name,
-          }).resolve(),
+          [`${param.name}${param.required ? "" : "?"}`]: SchemaResolver2.of(
+            param.schema,
+            param.name,
+            param.name,
+            this.extraDefinitions,
+          ).resolve(),
         };
       }
       return {
@@ -204,10 +204,12 @@ export class PathResolver {
   // TODO: responses.201 同上
 
   getResponseTypes = (responses: { [responseName: string]: Response | Reference }) =>
-    SchemaResolver.of({
-      results: this.extraDefinitions,
-      schema: get(responses, "200.schema") || get(responses, "201.schema"),
-    }).resolve();
+    SchemaResolver2.of(
+      get(responses, "200.schema") || get(responses, "201.schema"),
+      undefined,
+      undefined,
+      this.extraDefinitions,
+    ).resolve();
 
   // TODO: when parameters has enum
   pickParams = (parameters: Parameter[]) => (type: "path" | "query" | "body" | "formData") =>
