@@ -6,7 +6,7 @@ import { SchemaResolver2 } from "../SchemaResolver2";
 describe("SchemaResolver", () => {
   it("should resolve swagger definitions schema correctly", () => {
     const results: Dictionary<any> = {};
-    forEach(swaggerV2.definitions as any, (v, k) => (results[k] = SchemaResolver2.of(v, k, k, results).resolve()));
+    forEach(swaggerV2.definitions as any, (v, k) => (results[k] = SchemaResolver2.of(v).resolve()));
     expect(results).toEqual({
       ApiResponse: {
         "code?": "number",
@@ -54,7 +54,7 @@ describe("SchemaResolver", () => {
 
   it("should resolve swagger components schema correctly", () => {
     const results: Dictionary<any> = {};
-    forEach(swaggerV3.components.schemas as any, (v, k) => (results[k] = SchemaResolver2.of(v, k).resolve()));
+    forEach(swaggerV3.components.schemas as any, (v, k) => (results[k] = SchemaResolver2.of(v).resolve()));
     expect(results).toEqual({
       Error: {
         code: "number",
@@ -77,44 +77,33 @@ describe("SchemaResolver", () => {
       },
     }).resolve();
 
-    const enums = {};
-    const results1 = SchemaResolver2.of(
-      {
-        type: "string",
-        enum: ["AAA", "BBB"],
-      },
-      "PetStatus",
-      "Parent",
-      enums,
-    ).resolve();
+    const results1 = SchemaResolver2.of({
+      type: "string",
+      enum: ["AAA", "BBB"],
+    }).resolve();
 
     expect(results).toEqual("IPet[]");
     expect(results1).toEqual("keyof typeof ParentPetStatus#EnumTypeSuffix");
-    expect(enums).toEqual({
+    expect(results1).toEqual({
       "ParentPetStatus#EnumTypeSuffix": ["AAA", "BBB"],
     });
   });
 
   it("should resolve properties with enum", () => {
     const enums = {};
-    const results = SchemaResolver2.of(
-      {
-        type: "object",
-        properties: {
-          visitsCount: {
-            type: "array",
-            example: ["ZERO"],
-            items: {
-              type: "string",
-              enum: ["ZERO", "ONE", "TWO", "THREE", "MORE_THAN_THREE", "FOUR", "FIVE", "FIVE_OR_MORE"],
-            },
+    const results = SchemaResolver2.of({
+      type: "object",
+      properties: {
+        visitsCount: {
+          type: "array",
+          example: ["ZERO"],
+          items: {
+            type: "string",
+            enum: ["ZERO", "ONE", "TWO", "THREE", "MORE_THAN_THREE", "FOUR", "FIVE", "FIVE_OR_MORE"],
           },
         },
       },
-      undefined,
-      undefined,
-      enums,
-    ).resolve();
+    }).resolve();
 
     expect(results).toEqual({
       "visitsCount?": "keyof typeof VisitsCount#EnumTypeSuffix[]",

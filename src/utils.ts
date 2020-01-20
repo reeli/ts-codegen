@@ -1,13 +1,13 @@
-import {camelCase, Dictionary, forEach, indexOf, map, replace, trimEnd} from "lodash";
+import { camelCase, Dictionary, forEach, indexOf, map, replace, trimEnd } from "lodash";
 import prettier from "prettier";
-import {ERROR_MESSAGES} from "./constants";
+import { ERROR_MESSAGES } from "./constants";
 
 export const toCapitalCase = (str?: string): string => {
-    if (!str) {
-        return "";
-    }
-    const camelStr = camelCase(str);
-    return `${camelStr.charAt(0).toUpperCase()}${camelStr.slice(1)}`;
+  if (!str) {
+    return "";
+  }
+  const camelStr = camelCase(str);
+  return `${camelStr.charAt(0).toUpperCase()}${camelStr.slice(1)}`;
 };
 
 export const addPrefix = (prefix: string) => (str: string = "") => `${prefix}${str}`;
@@ -17,81 +17,72 @@ export const addPrefixForInterface = addPrefix("I");
 export const addPrefixForType = addPrefix("T");
 
 export const arrayToObject = (arr: any[] = []) => {
-    let obj: any = {};
-    forEach(arr, (item) => {
-        obj[item] = item;
-    });
-    return obj;
+  let obj: any = {};
+  forEach(arr, (item) => {
+    obj[item] = item;
+  });
+  return obj;
 };
 
 export const isArray = (data: any) => Object.prototype.toString.call(data) === "[object Array]";
 export const isObject = (data: any) => Object.prototype.toString.call(data) === "[object Object]";
 export const isNumber = (n: any) => {
-    return !isNaN(parseFloat(n)) && isFinite(n);
+  return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
 export const prettifyCode = (code: string) =>
-    prettier.format(code, {
-        printWidth: 120,
-        trailingComma: "all",
-        arrowParens: "always",
-        parser: "typescript",
-    });
+  prettier.format(code, {
+    printWidth: 120,
+    trailingComma: "all",
+    arrowParens: "always",
+    parser: "typescript",
+  });
 
 const ENUM_SUFFIX = `#EnumTypeSuffix`;
 
 export const toTypes = (obj: Dictionary<any> | string) => {
-    if (!obj) {
-        return;
-    }
-    const list = map<string, any>(obj, (v: any, k: string) => `${quoteKey(k)}: ${replace(v, ENUM_SUFFIX, "")};`);
-    return (
-        obj &&
-        `{
+  if (!obj) {
+    return;
+  }
+  const list = map<string, any>(obj, (v: any, k: string) => `${quoteKey(k)}: ${replace(v, ENUM_SUFFIX, "")};`);
+  return (
+    obj &&
+    `{
         ${list.sort().join("\n")}
       }`
-    );
+  );
 };
 
 export const quoteKey = (k: string) => {
-    const isOptional = indexOf(k, "?") > -1;
-    return `'${trimEnd(k, "?")}'${isOptional ? "?" : ""}`;
+  const isOptional = indexOf(k, "?") > -1;
+  return `'${trimEnd(k, "?")}'${isOptional ? "?" : ""}`;
 };
 
 export function testJSON(
-    str: unknown,
-    errorMsg: string = ERROR_MESSAGES.INVALID_JSON_FILE_ERROR,
-    output: (message: string) => void = console.error,
+  str: unknown,
+  errorMsg: string = ERROR_MESSAGES.INVALID_JSON_FILE_ERROR,
+  output: (message: string) => void = console.error,
 ) {
-    if (typeof str !== "string") {
-        return;
-    }
+  if (typeof str !== "string") {
+    return;
+  }
 
-    try {
-        return JSON.parse(str);
-    } catch (e) {
-        output(errorMsg);
-        return;
-    }
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    output(errorMsg);
+    return;
+  }
 }
 
 export const toArrayType = (customType?: string) => (customType ? `${customType}[]` : "Array<any>");
 
 export const toType = (builtInType: string = ""): string => {
-    if (builtInType === "integer") {
-        return "number";
-    }
+  if (builtInType === "integer") {
+    return "number";
+  }
 
-    return builtInType;
+  return builtInType;
 };
 
-export const getTypeByRef = (str?: string) => {
-    if (!str) {
-        return;
-    }
-    const list = str.split("/");
-    return list[list.length - 1];
-};
-
-export const generateEnumName = (propertyName = "", parentKey = "") =>
-    `${toCapitalCase(parentKey)}${toCapitalCase(propertyName)}${ENUM_SUFFIX}`;
+export const generateEnumType = (p = "", k = "") => `${toCapitalCase(p)}${toCapitalCase(k)}${ENUM_SUFFIX}`;
