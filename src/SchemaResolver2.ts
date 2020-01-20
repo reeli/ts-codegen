@@ -1,5 +1,5 @@
 import { Schema } from "swagger-schema-official";
-import { generateEnumName, handleRef, isArray, isNumber } from "./utils";
+import { addPrefixForInterface, generateEnumName, getTypeByRef, isArray, isNumber, toCapitalCase } from "./utils";
 import { indexOf, map, reduce, some } from "lodash";
 
 type TDictionary<T> = { [key: string]: T };
@@ -22,17 +22,16 @@ export class SchemaResolver2 {
     parentKey = this.parentKey,
     results = this.results || ({} as any),
   ): TDictionary<any> | string => {
-
     if (schema.$ref) {
-      return handleRef(schema.$ref);
+      return this.toRefType(schema.$ref);
     }
 
     if (schema.items) {
-      return this.handleItems(schema.items, schema.type, propertyName, parentKey);
+      return this.toArrayType(schema.items, schema.type, propertyName, parentKey);
     }
 
     if (schema.enum) {
-      return this.handleEnum(schema.enum, propertyName, parentKey, results);
+      return this.toEnumType(schema.enum, propertyName, parentKey, results);
     }
 
     return this.handleBuiltInTypes(schema);
@@ -49,7 +48,9 @@ export class SchemaResolver2 {
     }
   };
 
-  handleEnum = (
+  toRefType = ($ref?: string): string => ($ref ? addPrefixForInterface(toCapitalCase(getTypeByRef($ref))) : "");
+
+  toEnumType = (
     schemaEnum: any[],
     propertyName = this.propertyName,
     parentKey = this.parentKey,
@@ -65,7 +66,7 @@ export class SchemaResolver2 {
     return `keyof typeof ${enumKey}`;
   };
 
-  handleItems = (items?: Schema | Schema[], type?: string, propertyName?: string, parentKey?:string): any => {
+  toArrayType = (items?: Schema | Schema[], type?: string, propertyName?: string, parentKey?: string): any => {
     if (!items) {
       return {};
     }

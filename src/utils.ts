@@ -95,6 +95,3 @@ export const getTypeByRef = (str?: string) => {
 
 export const generateEnumName = (propertyName = "", parentKey = "") =>
     `${toCapitalCase(parentKey)}${toCapitalCase(propertyName)}${ENUM_SUFFIX}`;
-
-export const handleRef = ($ref?: string): string =>
-    $ref ? addPrefixForInterface(toCapitalCase(getTypeByRef($ref))) : "";
