@@ -94,4 +94,33 @@ describe("SchemaResolver", () => {
       "ParentPetStatus#EnumTypeSuffix": ["AAA", "BBB"],
     });
   });
+
+  it("should resolve properties with enum", () => {
+    const enums = {};
+    const results = SchemaResolver2.of(
+      {
+        type: "object",
+        properties: {
+          visitsCount: {
+            type: "array",
+            example: ["ZERO"],
+            items: {
+              type: "string",
+              enum: ["ZERO", "ONE", "TWO", "THREE", "MORE_THAN_THREE", "FOUR", "FIVE", "FIVE_OR_MORE"],
+            },
+          },
+        },
+      },
+      undefined,
+      undefined,
+      enums,
+    ).resolve();
+
+    expect(results).toEqual({
+      "visitsCount?": "keyof typeof VisitsCount#EnumTypeSuffix[]",
+    });
+    expect(enums).toEqual({
+      "VisitsCount#EnumTypeSuffix": ["ZERO", "ONE", "TWO", "THREE", "MORE_THAN_THREE", "FOUR", "FIVE", "FIVE_OR_MORE"],
+    });
+  });
 });

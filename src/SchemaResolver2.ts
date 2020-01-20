@@ -22,12 +22,13 @@ export class SchemaResolver2 {
     parentKey = this.parentKey,
     results = this.results || ({} as any),
   ): TDictionary<any> | string => {
+
     if (schema.$ref) {
       return handleRef(schema.$ref);
     }
 
     if (schema.items) {
-      return this.handleItems(schema.items, schema.type);
+      return this.handleItems(schema.items, schema.type, propertyName, parentKey);
     }
 
     if (schema.enum) {
@@ -54,7 +55,7 @@ export class SchemaResolver2 {
     parentKey = this.parentKey,
     results = this.results || ({} as any),
   ) => {
-    const enumKey = generateEnumName(propertyName!, parentKey!);
+    const enumKey = generateEnumName(propertyName, parentKey);
     const hasNumber = some(schemaEnum, (v) => isNumber(v));
     results[enumKey] = schemaEnum;
     if (hasNumber) {
@@ -64,17 +65,17 @@ export class SchemaResolver2 {
     return `keyof typeof ${enumKey}`;
   };
 
-  handleItems = (items?: Schema | Schema[], type?: string): any => {
+  handleItems = (items?: Schema | Schema[], type?: string, propertyName?: string, parentKey?:string): any => {
     if (!items) {
       return {};
     }
 
     // TODO: Check this logic
     if (isArray(items)) {
-      return map(items, (item) => this.resolve(item as Schema));
+      return map(items, (item) => this.resolve(item as Schema, propertyName, parentKey));
     }
 
-    const itemType = this.resolve(items as Schema);
+    const itemType = this.resolve(items as Schema, propertyName, parentKey);
     return type === "array" ? `${itemType}[]` : itemType;
   };
 
