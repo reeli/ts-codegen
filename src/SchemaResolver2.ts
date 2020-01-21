@@ -4,21 +4,21 @@ import { indexOf, map, reduce, some } from "lodash";
 
 type TDictionary<T> = { [key: string]: T };
 
-export class SchemaResolver2 {
-  private $enums: { [key: string]: any[] } = {};
+type TCustomSchema = Schema & { _propKey?: string; _name?: string };
 
-  static of(schema: Schema = {}) {
-    return new SchemaResolver2(schema);
+export class SchemaResolver2 {
+
+  static of(writeTo:(k:string, ret:any)=>void) {
+    return new SchemaResolver2(writeTo);
   }
 
-  constructor(private schema: Schema) {}
+  constructor(public  writeTo:(k:string, ret:any)=>void) {}
 
-  resolve = (schema: Schema = this.schema) => ({
-    $type: this.toType(schema),
-    $enums: this.$enums,
-  });
+  resolve = (schema: TCustomSchema) => {
+   this.writeTo(schema._name!, this.toType(schema))
+  };
 
-  toType = (schema: Schema = this.schema): TDictionary<any> | string => {
+  toType = (schema: TCustomSchema): TDictionary<any> | string => {
     if (schema.$ref) {
       return this.toRefType(schema);
     }
@@ -42,16 +42,20 @@ export class SchemaResolver2 {
     return schema.type || "";
   };
 
-  toObjectType = (schema: Schema): TDictionary<any> | string => {
+  toObjectType = (schema: TCustomSchema): TDictionary<any> | string => {
     const handleProperties = () =>
-        reduce(
-            schema.properties,
-            (o, v, k) => ({
-              ...o,
-              [`${k}${indexOf(schema.required, k) > -1 ? "" : "?"}`]: this.toType(v),
-            }),
-            {} as any,
-        );
+      reduce(
+        schema.properties,
+        (o, v, k) => ({
+          ...o,
+          [`${k}${indexOf(schema.required, k) > -1 ? "" : "?"}`]: this.toType({
+            ...v,
+            _propKey: k,
+            _name: schema._name
+          }),
+        }),
+        {} as any,
+      );
     return schema.properties ? handleProperties() : schema.type;
   };
 
@@ -66,11 +70,11 @@ export class SchemaResolver2 {
     return addPrefixForInterface(toCapitalCase(getTypeByRef(schema.$ref)));
   };
 
-  toEnumType = (schema: Schema) => {
-    const enumType = generateEnumType(schema.type);
+  toEnumType = (schema: TCustomSchema) => {
+    const enumType = generateEnumType(schema._name, schema._propKey);
     const hasNumber = some(schema.enum, (v) => isNumber(v));
 
-    this.$enums[enumType] = schema.enum!;
+    this.writeTo(enumType, schema.enum);
 
     if (hasNumber) {
       return enumType;
@@ -79,13 +83,21 @@ export class SchemaResolver2 {
     return `keyof typeof ${enumType}`;
   };
 
-  toArrayType = (schema: Schema): any => {
+  toArrayType = (schema: TCustomSchema): any => {
     // TODO: Check this logic
     if (isArray(schema.items)) {
-      return map(schema.items, (item) => this.toType(item as Schema));
+      return map(schema.items, (item:Schema) => this.toType({
+        ...item,
+        _name: schema._name,
+        _propKey: schema._propKey
+      }));
     }
 
-    const itemType = this.toType(schema.items as Schema);
+    const itemType = this.toType({
+      ...schema.items as TCustomSchema,
+      _name: schema._name,
+      _propKey: schema._propKey
+    });
     return schema.type === "array" ? `${itemType}[]` : itemType;
   };
 }

@@ -6,7 +6,18 @@ import { SchemaResolver2 } from "../SchemaResolver2";
 describe("SchemaResolver", () => {
   it("should resolve swagger definitions schema correctly", () => {
     const results: Dictionary<any> = {};
-    forEach(swaggerV2.definitions as any, (v, k) => (results[k] = SchemaResolver2.of(v).resolve()));
+
+    const r = SchemaResolver2.of((k, ret) => {
+      results[k] = ret;
+    });
+
+    forEach(swaggerV2.definitions as any, (v, k) => {
+      return r.resolve({
+        ...v,
+        _name: k,
+      });
+    });
+
     expect(results).toEqual({
       ApiResponse: {
         "code?": "number",
@@ -54,7 +65,17 @@ describe("SchemaResolver", () => {
 
   it("should resolve swagger components schema correctly", () => {
     const results: Dictionary<any> = {};
-    forEach(swaggerV3.components.schemas as any, (v, k) => (results[k] = SchemaResolver2.of(v).resolve()));
+    const r = SchemaResolver2.of((k, ret) => {
+      results[k] = ret;
+    });
+
+    forEach(swaggerV3.components.schemas as any, (v, k) =>
+      r.resolve({
+        ...v,
+        _name: k,
+      }),
+    );
+
     expect(results).toEqual({
       Error: {
         code: "number",
@@ -70,28 +91,34 @@ describe("SchemaResolver", () => {
   });
 
   it("should resolve single schema correctly", () => {
-    const results = SchemaResolver2.of({
+    SchemaResolver2.of((_, results) => {
+      expect(results).toEqual("IPet[]");
+    }).resolve({
       type: "array",
       items: {
         $ref: "#/components/schemas/Pet",
       },
-    }).resolve();
+    });
 
-    const results1 = SchemaResolver2.of({
+    const results1: any = {};
+    SchemaResolver2.of((k, v) => {
+      results1[k] = v;
+    }).resolve({
       type: "string",
       enum: ["AAA", "BBB"],
-    }).resolve();
+      _name: "Parent",
+      _propKey: "PetStatus",
+    });
 
-    expect(results).toEqual("IPet[]");
-    expect(results1).toEqual("keyof typeof ParentPetStatus#EnumTypeSuffix");
     expect(results1).toEqual({
+      Parent: "keyof typeof ParentPetStatus#EnumTypeSuffix",
       "ParentPetStatus#EnumTypeSuffix": ["AAA", "BBB"],
     });
   });
 
   it("should resolve properties with enum", () => {
-    const enums = {};
-    const results = SchemaResolver2.of({
+    const mockWriteTo = jest.fn();
+    SchemaResolver2.of(mockWriteTo).resolve({
       type: "object",
       properties: {
         visitsCount: {
@@ -103,13 +130,17 @@ describe("SchemaResolver", () => {
           },
         },
       },
-    }).resolve();
+    });
 
-    expect(results).toEqual({
-      "visitsCount?": "keyof typeof VisitsCount#EnumTypeSuffix[]",
-    });
-    expect(enums).toEqual({
-      "VisitsCount#EnumTypeSuffix": ["ZERO", "ONE", "TWO", "THREE", "MORE_THAN_THREE", "FOUR", "FIVE", "FIVE_OR_MORE"],
-    });
+    expect(mockWriteTo).toHaveBeenNthCalledWith(1, "VisitsCount#EnumTypeSuffix", [
+      "ZERO",
+      "ONE",
+      "TWO",
+      "THREE",
+      "MORE_THAN_THREE",
+      "FOUR",
+      "FIVE",
+      "FIVE_OR_MORE",
+    ]);
   });
 });
