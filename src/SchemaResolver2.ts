@@ -7,18 +7,17 @@ type TDictionary<T> = { [key: string]: T };
 type TCustomSchema = Schema & { _propKey?: string; _name?: string };
 
 export class SchemaResolver2 {
-
-  static of(writeTo:(k:string, ret:any)=>void) {
+  static of(writeTo: (k: string, ret: any) => void) {
     return new SchemaResolver2(writeTo);
   }
 
-  constructor(public  writeTo:(k:string, ret:any)=>void) {}
+  constructor(public writeTo: (k: string, ret: any) => void) {}
 
-  resolve = (schema: TCustomSchema) => {
-   this.writeTo(schema._name!, this.toType(schema))
+  resolve = (schema: TCustomSchema = {}) => {
+    this.writeTo(schema._name!, this.toType(schema));
   };
 
-  toType = (schema: TCustomSchema): TDictionary<any> | string => {
+  toType = (schema: TCustomSchema = {}): TDictionary<any> | string => {
     if (schema.$ref) {
       return this.toRefType(schema);
     }
@@ -51,7 +50,7 @@ export class SchemaResolver2 {
           [`${k}${indexOf(schema.required, k) > -1 ? "" : "?"}`]: this.toType({
             ...v,
             _propKey: k,
-            _name: schema._name
+            _name: schema._name,
           }),
         }),
         {} as any,
@@ -86,17 +85,19 @@ export class SchemaResolver2 {
   toArrayType = (schema: TCustomSchema): any => {
     // TODO: Check this logic
     if (isArray(schema.items)) {
-      return map(schema.items, (item:Schema) => this.toType({
-        ...item,
-        _name: schema._name,
-        _propKey: schema._propKey
-      }));
+      return map(schema.items, (item: Schema) =>
+        this.toType({
+          ...item,
+          _name: schema._name,
+          _propKey: schema._propKey,
+        }),
+      );
     }
 
     const itemType = this.toType({
-      ...schema.items as TCustomSchema,
+      ...(schema.items as TCustomSchema),
       _name: schema._name,
-      _propKey: schema._propKey
+      _propKey: schema._propKey,
     });
     return schema.type === "array" ? `${itemType}[]` : itemType;
   };

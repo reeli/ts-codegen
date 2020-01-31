@@ -24,7 +24,7 @@ export function generateEnums(data: Dictionary<any>, key: string) {
 }
 
 export class DefinitionsResolver {
-  resolvedDefinitions: any;
+  resolvedDefinitions: any = {};
 
   static of(definitions?: { [definitionsName: string]: Schema }) {
     return new DefinitionsResolver(definitions);
@@ -33,10 +33,18 @@ export class DefinitionsResolver {
   constructor(private definitions?: { [definitionsName: string]: Schema }) {}
 
   scanDefinitions = () => {
-    const results: Dictionary<any> = {};
-    forEach(this.definitions, (v, k) => (results[k] = SchemaResolver2.of(v, k, k, results).resolve()));
+    const r = SchemaResolver2.of((k, v) => {
+      this.resolvedDefinitions[k] = v;
+    });
 
-    this.resolvedDefinitions = results;
+    forEach(this.definitions, (v, k) =>
+      r.resolve({
+        ...v,
+        _name: k,
+        _propKey: k,
+      }),
+    );
+
     return this;
   };
 

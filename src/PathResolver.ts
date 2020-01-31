@@ -35,14 +35,21 @@ interface IParams {
 }
 
 export class PathResolver {
+  resolver: SchemaResolver2;
   resolvedPaths: IResolvedPath[] = [];
-  extraDefinitions = {};
+  extraDefinitions: Dictionary<any> = {};
 
   static of(paths: TPaths, basePath: string = "") {
     return new PathResolver(paths, basePath);
   }
 
-  constructor(private paths: TPaths, private basePath: string) {}
+  constructor(private paths: TPaths, private basePath: string) {
+    this.resolver = SchemaResolver2.of((k, v) => {
+      if (k) {
+        this.extraDefinitions[k] = v;
+      }
+    });
+  }
 
   resolve = () => {
     this.resolvedPaths = reduce(
@@ -151,12 +158,11 @@ export class PathResolver {
     bodyParams.reduce(
       (o, v) => ({
         ...o,
-        [`${v.name}${v.required ? "" : "?"}`]: SchemaResolver2.of(
-          v.schema!,
-          v.name,
-          v.name,
-          this.extraDefinitions,
-        ).resolve(),
+        [`${v.name}${v.required ? "" : "?"}`]: this.resolver.toType({
+          ...v.schema,
+          _name: v.name,
+          _propKey: v.name,
+        }),
       }),
       {},
     );
@@ -165,12 +171,11 @@ export class PathResolver {
     queryParams.reduce(
       (o, v) => ({
         ...o,
-        [`${v.name}${v.required ? "" : "?"}`]: SchemaResolver2.of(
-          v as Schema,
-          v.name,
-          v.name,
-          this.extraDefinitions,
-        ).resolve(),
+        [`${v.name}${v.required ? "" : "?"}`]: this.resolver.toType({
+          ...(v as Schema),
+          _name: v.name,
+          _propKey: v.name,
+        }),
       }),
       {},
     );
@@ -181,12 +186,11 @@ export class PathResolver {
       if (param.schema) {
         return {
           ...results,
-          [`${param.name}${param.required ? "" : "?"}`]: SchemaResolver2.of(
-            param.schema,
-            param.name,
-            param.name,
-            this.extraDefinitions,
-          ).resolve(),
+          [`${param.name}${param.required ? "" : "?"}`]: this.resolver.toType({
+            ...param.schema,
+            _name: param.name,
+            _propKey: param.name,
+          }),
         };
       }
       return {
@@ -204,12 +208,7 @@ export class PathResolver {
   // TODO: responses.201 同上
 
   getResponseTypes = (responses: { [responseName: string]: Response | Reference }) =>
-    SchemaResolver2.of(
-      get(responses, "200.schema") || get(responses, "201.schema"),
-      undefined,
-      undefined,
-      this.extraDefinitions,
-    ).resolve();
+    this.resolver.toType(get(responses, "200.schema") || get(responses, "201.schema"));
 
   // TODO: when parameters has enum
   pickParams = (parameters: Parameter[]) => (type: "path" | "query" | "body" | "formData") =>
