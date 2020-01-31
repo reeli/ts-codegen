@@ -24,7 +24,7 @@ export function generateEnums(data: Dictionary<any>, key: string) {
 }
 
 export class DefinitionsResolver {
-  resolvedDefinitions: any = {};
+  public resolvedDefinitions: Dictionary<any> = {};
 
   static of(definitions?: { [definitionsName: string]: Schema }) {
     return new DefinitionsResolver(definitions);
@@ -32,7 +32,7 @@ export class DefinitionsResolver {
 
   constructor(private definitions?: { [definitionsName: string]: Schema }) {}
 
-  scanDefinitions = () => {
+  scan = () => {
     const r = SchemaResolver2.of((k, v) => {
       this.resolvedDefinitions[k] = v;
     });
@@ -49,21 +49,23 @@ export class DefinitionsResolver {
   };
 
   toDeclarations = (): string[] => {
-    const arr = Object.keys(this.resolvedDefinitions)
+    const resolvedDefinitions = this.resolvedDefinitions;
+    const arr = Object.keys(resolvedDefinitions)
       .sort()
       .map((key) => {
         if (includes(key, ENUM_SUFFIX)) {
-          return generateEnums(this.resolvedDefinitions, key);
+          return generateEnums(resolvedDefinitions, key);
         }
 
-        if (this.resolvedDefinitions[key] === "object") {
+        if (resolvedDefinitions[key] === "object") {
           return `export interface ${addPrefixForInterface(toCapitalCase(key))} {[key:string]:any}`;
         }
-        const val = toTypes(this.resolvedDefinitions[key]);
+        const val = toTypes(resolvedDefinitions[key]);
         if (val) {
           return `export interface ${addPrefixForInterface(toCapitalCase(key))} ${val}`;
         }
       });
+
     return compact(arr);
   };
 }

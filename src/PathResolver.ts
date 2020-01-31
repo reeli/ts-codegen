@@ -51,15 +51,6 @@ export class PathResolver {
     });
   }
 
-  resolve = () => {
-    this.resolvedPaths = reduce(
-      this.paths,
-      (results: IResolvedPath[], p: Path, k: string) => [...results, ...this.resolvePath(p, k)],
-      [],
-    );
-    return this;
-  };
-
   toRequest = (): string[] => {
     const data = sortBy(this.resolvedPaths, (o) => o.operationId);
     const requests = data.map((v: IResolvedPath) => {
@@ -79,6 +70,15 @@ export class PathResolver {
 
     const enums = Object.keys(this.extraDefinitions).map((k) => generateEnums(this.extraDefinitions, k));
     return [...requests, ...enums];
+  };
+
+  scan = () => {
+    this.resolvedPaths = reduce(
+        this.paths,
+        (results: IResolvedPath[], p: Path, k: string) => [...results, ...this.resolvePath(p, k)],
+        [],
+    );
+    return this;
   };
 
   toRequestParams = (data: any[] = []) =>

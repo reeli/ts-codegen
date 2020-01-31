@@ -3,7 +3,7 @@ import swagger from "./mock-data/swagger.json";
 
 describe("PathResolver", () => {
   it("should get resolved paths by swagger schema", () => {
-    expect(PathResolver.of((swagger as any).paths, swagger.basePath).resolve().resolvedPaths).toEqual(
+    expect(PathResolver.of((swagger as any).paths, swagger.basePath).scan().resolvedPaths).toEqual(
       expectedPathResolvedData,
     );
   });
@@ -11,7 +11,7 @@ describe("PathResolver", () => {
   it("should get correct action creator by resolved paths", () => {
     expect(
       PathResolver.of((swagger as any).paths, swagger.basePath)
-        .resolve()
+        .scan()
         .toRequest(),
     ).toEqual(expectedRequest);
   });

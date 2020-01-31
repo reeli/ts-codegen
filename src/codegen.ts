@@ -35,10 +35,10 @@ const codegen = (schema: Spec | string) => {
     actionCreatorImport +
     [
       ...PathResolver.of(schema.paths, schema.basePath)
-        .resolve()
+        .scan()
         .toRequest(),
       ...DefinitionsResolver.of(schema.definitions)
-        .scanDefinitions()
+        .scan()
         .toDeclarations(),
     ].join("\n\n");
 

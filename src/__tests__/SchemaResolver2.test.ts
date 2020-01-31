@@ -4,7 +4,7 @@ import swaggerV2 from "../../examples/swagger.json";
 import { SchemaResolver2 } from "../SchemaResolver2";
 
 describe("SchemaResolver", () => {
-  it("should resolve swagger definitions schema correctly", () => {
+  it("should scan swagger definitions schema correctly", () => {
     const results: Dictionary<any> = {};
 
     const r = SchemaResolver2.of((k, ret) => {
@@ -63,7 +63,7 @@ describe("SchemaResolver", () => {
     });
   });
 
-  it("should resolve swagger components schema correctly", () => {
+  it("should scan swagger components schema correctly", () => {
     const results: Dictionary<any> = {};
     const r = SchemaResolver2.of((k, ret) => {
       results[k] = ret;
@@ -90,7 +90,7 @@ describe("SchemaResolver", () => {
     });
   });
 
-  it("should resolve single schema correctly", () => {
+  it("should scan single schema correctly", () => {
     SchemaResolver2.of((_, results) => {
       expect(results).toEqual("IPet[]");
     }).resolve({
@@ -116,7 +116,7 @@ describe("SchemaResolver", () => {
     });
   });
 
-  it("should resolve properties with enum", () => {
+  it("should scan properties with enum", () => {
     const mockWriteTo = jest.fn();
     SchemaResolver2.of(mockWriteTo).resolve({
       type: "object",

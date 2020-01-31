@@ -3,15 +3,15 @@ import { addPrefixForInterface, generateEnumType, isArray, isNumber, toCapitalCa
 import { indexOf, map, reduce, some } from "lodash";
 
 type TDictionary<T> = { [key: string]: T };
-
 type TCustomSchema = Schema & { _propKey?: string; _name?: string };
+type TWriteTo = (k: string, v: any) => void;
 
 export class SchemaResolver2 {
-  static of(writeTo: (k: string, ret: any) => void) {
+  static of(writeTo: TWriteTo) {
     return new SchemaResolver2(writeTo);
   }
 
-  constructor(public writeTo: (k: string, ret: any) => void) {}
+  constructor(public writeTo: TWriteTo) {}
 
   resolve = (schema: TCustomSchema = {}) => {
     this.writeTo(schema._name!, this.toType(schema));
@@ -99,6 +99,7 @@ export class SchemaResolver2 {
       _name: schema._name,
       _propKey: schema._propKey,
     });
+
     return schema.type === "array" ? `${itemType}[]` : itemType;
   };
 }
