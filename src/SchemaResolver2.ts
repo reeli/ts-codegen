@@ -1,9 +1,10 @@
 import { Schema } from "swagger-schema-official";
 import { addPrefixForInterface, generateEnumType, isArray, isNumber, toCapitalCase } from "./utils";
 import { indexOf, map, reduce, some } from "lodash";
+import { ISchema } from "src/swagger/v3/OpenAPI";
 
 type TDictionary<T> = { [key: string]: T };
-type TCustomSchema = Schema & { _propKey?: string; _name?: string };
+type TCustomSchema = (Schema | ISchema) & { _propKey?: string; _name?: string };
 type TWriteTo = (k: string, v: any) => void;
 
 export class SchemaResolver2 {
@@ -41,7 +42,7 @@ export class SchemaResolver2 {
     return schema.type || "";
   };
 
-  toRefType = (schema: Schema): string => {
+  toRefType = (schema: Schema | ISchema): string => {
     const getTypeByRef = (str?: string) => {
       if (!str) {
         return;
@@ -55,7 +56,7 @@ export class SchemaResolver2 {
   toArrayType = (schema: TCustomSchema): any => {
     // TODO: Check this logic
     if (isArray(schema.items)) {
-      return map(schema.items, (item: Schema) =>
+      return map(schema.items, (item: Schema | ISchema) =>
         this.toType({
           ...item,
           _name: schema._name,
