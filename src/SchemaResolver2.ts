@@ -41,23 +41,6 @@ export class SchemaResolver2 {
     return schema.type || "";
   };
 
-  toObjectType = (schema: TCustomSchema): TDictionary<any> | string => {
-    const handleProperties = () =>
-      reduce(
-        schema.properties,
-        (o, v, k) => ({
-          ...o,
-          [`${k}${indexOf(schema.required, k) > -1 ? "" : "?"}`]: this.toType({
-            ...v,
-            _propKey: k,
-            _name: schema._name,
-          }),
-        }),
-        {} as any,
-      );
-    return schema.properties ? handleProperties() : schema.type;
-  };
-
   toRefType = (schema: Schema): string => {
     const getTypeByRef = (str?: string) => {
       if (!str) {
@@ -67,19 +50,6 @@ export class SchemaResolver2 {
       return list[list.length - 1];
     };
     return addPrefixForInterface(toCapitalCase(getTypeByRef(schema.$ref)));
-  };
-
-  toEnumType = (schema: TCustomSchema) => {
-    const enumType = generateEnumType(schema._name, schema._propKey);
-    const hasNumber = some(schema.enum, (v) => isNumber(v));
-
-    this.writeTo(enumType, schema.enum);
-
-    if (hasNumber) {
-      return enumType;
-    }
-
-    return `keyof typeof ${enumType}`;
   };
 
   toArrayType = (schema: TCustomSchema): any => {
@@ -101,5 +71,35 @@ export class SchemaResolver2 {
     });
 
     return schema.type === "array" ? `${itemType}[]` : itemType;
+  };
+
+  toEnumType = (schema: TCustomSchema) => {
+    const enumType = generateEnumType(schema._name, schema._propKey);
+    const hasNumber = some(schema.enum, (v) => isNumber(v));
+
+    this.writeTo(enumType, schema.enum);
+
+    if (hasNumber) {
+      return enumType;
+    }
+
+    return `keyof typeof ${enumType}`;
+  };
+
+  toObjectType = (schema: TCustomSchema): TDictionary<any> | string => {
+    const handleProperties = () =>
+      reduce(
+        schema.properties,
+        (o, v, k) => ({
+          ...o,
+          [`${k}${indexOf(schema.required, k) > -1 ? "" : "?"}`]: this.toType({
+            ...v,
+            _propKey: k,
+            _name: schema._name,
+          }),
+        }),
+        {} as any,
+      );
+    return schema.properties ? handleProperties() : schema.type;
   };
 }
