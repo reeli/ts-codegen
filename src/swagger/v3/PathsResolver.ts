@@ -1,14 +1,5 @@
 import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce } from "lodash";
-import {
-  IOperation,
-  IPathItem,
-  IPaths,
-  IReference,
-  IRequestBody,
-  IResponse,
-  ISchema,
-  TParameter,
-} from "../v3/OpenAPI";
+import { IOperation, IPathItem, IPaths, IReference, IResponse, ISchema, TParameter } from "../v3/OpenAPI";
 import { SchemaResolver2 } from "../../SchemaResolver2";
 
 interface IParams {
@@ -24,7 +15,7 @@ interface IResolvedPath {
   TReq: any;
   operationId?: string;
   params: IParams;
-  requestBodies: Array<IReference | IRequestBody>;
+  hasRequestBody: boolean;
 }
 
 export class PathsResolver {
@@ -47,10 +38,38 @@ export class PathsResolver {
   scan = () => {
     this.resolvedPaths = reduce(
       this.paths,
-      (results: IResolvedPath[], p: IPathItem, k: string) => [...results, ...this.resolvePath(p, k)],
+      (results: IResolvedPath[], pathItem: IPathItem, pathName: string) => [
+        ...results,
+        ...this.resolve(pathItem, pathName),
+      ],
       [],
     );
     return this;
+  };
+
+  resolve(pathItem: IPathItem, pathName: string) {
+    const operations = pick(pathItem, ["get", "post", "put", "delete", "patch", "head"]);
+
+    return Object.keys(operations).map((method) => {
+      const operation = (operations as Dictionary<IOperation>)[method];
+
+      return {
+        url: this.getUrl(this.basePath, pathName),
+        method,
+        ...this.resolveOperation(operation),
+        hasRequestBody: !!operation.requestBody,
+      };
+    });
+  }
+
+  getUrl = (basePath: string, pathName: string) => {
+    const path = chain(pathName)
+      .split("/")
+      .map((p) => (this.isPathParam(p) ? `$${p}` : p))
+      .join("/")
+      .value();
+
+    return `${basePath}${path === "/" && !!basePath ? "" : path}`;
   };
 
   toRequestParams = (data: any[] = []) =>
@@ -59,26 +78,6 @@ export class PathsResolver {
     ${data.join(",\n")}
     }`
       : undefined;
-
-  resolvePath(path: IPathItem, pathName: string) {
-    const operations = pick(path, ["get", "post", "put", "delete", "patch", "options", "head"]);
-    return Object.keys(operations).map((method) => {
-      const path = this.getRequestURL(pathName);
-      return {
-        url: `${this.basePath}${path === "/" && !!this.basePath ? "" : path}`,
-        method,
-        ...this.resolveOperation((operations as Dictionary<IOperation>)[method]),
-      };
-    });
-  }
-
-  getRequestURL = (pathName: string) => {
-    return chain(pathName)
-      .split("/")
-      .map((p) => (this.isPathParam(p) ? `$${p}` : p))
-      .join("/")
-      .value();
-  };
 
   isPathParam = (str: string) => str.startsWith("{");
 
@@ -96,7 +95,6 @@ export class PathsResolver {
       TResp: this.getResponseTypes(v.responses),
       TReq: this.getRequestTypes(params),
       params: this.getParamsNames(params),
-      requestBodies: [],
     };
   };
 
