@@ -1,6 +1,6 @@
 import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce } from "lodash";
 import { IOperation, IPathItem, IPaths, IReference, IResponse, ISchema, TParameter } from "../v3/OpenAPI";
-import { SchemaResolver2 } from "../../SchemaResolver2";
+import { SchemaResolver2 } from "./SchemaResolver2";
 
 interface IParams {
   pathParams: Array<TParameter | IReference>;

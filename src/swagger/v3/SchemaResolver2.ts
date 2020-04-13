@@ -1,5 +1,5 @@
 import { Schema } from "swagger-schema-official";
-import { addPrefixForInterface, generateEnumType, isArray, isNumber, toCapitalCase } from "./utils";
+import { addPrefixForInterface, generateEnumType, isArray, isNumber, toCapitalCase } from "../../utils";
 import { indexOf, map, reduce, some } from "lodash";
 import { ISchema } from "src/swagger/v3/OpenAPI";
 

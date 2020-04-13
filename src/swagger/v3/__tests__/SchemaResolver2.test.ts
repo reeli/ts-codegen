@@ -1,6 +1,6 @@
 import { Dictionary, forEach } from "lodash";
-import swaggerV3 from "../../examples/swagger.v3.petstore.json";
-import swaggerV2 from "../../examples/swagger.json";
+import swaggerV3 from "../../../../examples/swagger.v3.petstore.json";
+import swaggerV2 from "../../../../examples/swagger.json";
 import { SchemaResolver2 } from "../SchemaResolver2";
 
 describe("SchemaResolver", () => {
