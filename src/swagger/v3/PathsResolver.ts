@@ -1,5 +1,5 @@
 import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce } from "lodash";
-import {IOperation, IPathItem, IPaths, IReference, IResponse, ISchema, TParameter} from "../v3/OpenAPI";
+import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "../v3/OpenAPI";
 import { SchemaResolver2 } from "./SchemaResolver2";
 
 interface IParams {
@@ -20,8 +20,8 @@ interface IResolvedPath {
   TResp: any;
   TReq: any;
   operationId?: string;
-  paramsNames: IParamsNames;
-  hasRequestBody: boolean;
+  params: IParamsNames;
+  requestBody: { required: boolean | undefined } | null;
 }
 
 // TODO: 1. 将 inline 的 requestParams 和 requestBody 抽成单独的 interface，方便外面使用
@@ -67,10 +67,10 @@ export class PathsResolver {
         url: this.getUrl(this.basePath, pathName),
         method,
         operationId: operation.operationId,
-        TReq: this.getRequestTypes(params),
+        TReq: this.getRequestTypes(params, operation.requestBody),
         TResp: this.getResponseTypes(operation.responses),
-        paramsNames: this.getParamsNames(params),
-        hasRequestBody: !!operation.requestBody,
+        params: this.getParamsNames(params),
+        requestBody: this.getRequestBody(operation.requestBody),
       };
     });
   }
@@ -97,7 +97,7 @@ export class PathsResolver {
   // TODO: handle the case when v.parameters = Reference
   getAllParams = (o: IOperation) => {
     // TODO: when parameters has enum
-    const getParamsByType = (type: "path" | "query" | "cookie") => {
+    const getParams = (type: "path" | "query" | "cookie") => {
       return filter(o.parameters, (param) => {
         // TODO: handle $ref here
         if (param.$ref) {
@@ -108,9 +108,9 @@ export class PathsResolver {
     };
 
     return {
-      pathParams: getParamsByType("path"),
-      queryParams: getParamsByType("query"),
-      cookieParams: getParamsByType("cookie"),
+      pathParams: getParams("path"),
+      queryParams: getParams("query"),
+      cookieParams: getParams("cookie"),
     };
   };
 
@@ -123,16 +123,21 @@ export class PathsResolver {
     };
   };
 
-  getRequestTypes = (params: IParams) => ({
+  getRequestTypes = (params: IParams, requestBody?: IReference | IRequestBody) => ({
     ...this.getPathParamsTypes(params.pathParams),
     ...this.getQueryParamsTypes(params.queryParams),
+    ...this.getRequestBodyTypes(requestBody),
   });
 
   getPathParamsTypes = (pathParams: Array<TParameter | IReference>) => {
     return pathParams.reduce(
       (results, param) => ({
         ...results,
-        [`${(param as TParameter).name}${(param as TParameter).required ? "" : "?"}`]: (param as TParameter).type,
+        [`${(param as TParameter).name}${(param as TParameter).required ? "" : "?"}`]: this.resolver.toType({
+          ...(param as TParameter).schema,
+          _name: (param as TParameter).name,
+          _propKey: (param as TParameter).name,
+        }),
       }),
       {},
     );
@@ -143,7 +148,7 @@ export class PathsResolver {
       (o, v) => ({
         ...o,
         [`${(v as TParameter).name}${(v as TParameter).required ? "" : "?"}`]: this.resolver.toType({
-          ...(v as ISchema),
+          ...(v as TParameter).schema,
           _name: (v as TParameter).name,
           _propKey: (v as TParameter).name,
         }),
@@ -153,7 +158,15 @@ export class PathsResolver {
 
   getCookieParamsTypes = (_: Array<TParameter | IReference>) => {};
 
-  getRequestBodyTypes = () => {};
+  getRequestBodyTypes = (requestBody?: IReference | IRequestBody) => {
+    if (!requestBody) {
+      return "";
+    }
+
+    return {
+      requestBody: this.resolver.toType((requestBody as IRequestBody).content["application/json"].schema),
+    };
+  };
 
   // TODO: handle Response or Reference
   // TODO: responses.200.schema.type ==="array"
@@ -162,6 +175,23 @@ export class PathsResolver {
   // TODO: responses.200.headers 存在时
   // TODO: responses.201 同上
 
-  getResponseTypes = (responses: { [responseName: string]: IResponse | IReference }) =>
-    this.resolver.toType(get(responses, "200.schema") || get(responses, "201.schema"));
+  getResponseTypes = (responses: { [responseName: string]: IResponse | IReference }) => {
+    return this.resolver.toType(
+        get(responses, [200, "content", "application/json", "schema"]) ||
+        get(responses, [201, "content", "application/json", "schema"]),
+    );
+  };
+
+  getRequestBody = (requestBody?: IReference | IRequestBody) => {
+    if (!requestBody) {
+      return null;
+    }
+    // TODO: handle IReference
+    if (requestBody.$ref) {
+      return null;
+    }
+    return {
+      required: (requestBody as IRequestBody).required,
+    };
+  };
 }

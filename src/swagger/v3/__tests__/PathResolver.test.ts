@@ -15,7 +15,7 @@ const expectedPathResolvedData = [
       "limit?": "number",
       "tags?": "string[]",
     },
-    TResp: "",
+    TResp: "IPet[]",
     method: "get",
     operationId: "findPets",
     params: {
@@ -24,12 +24,13 @@ const expectedPathResolvedData = [
       queryParams: ["tags", "limit"],
     },
     url: "/api/test/pets",
+    requestBody: null,
   },
   {
     TReq: {
       requestBody: "INewPet",
     },
-    TResp: "Pet",
+    TResp: "IPet",
     method: "post",
     operationId: "addPet",
     params: {
@@ -38,10 +39,15 @@ const expectedPathResolvedData = [
       queryParams: [],
     },
     url: "/api/test/pets",
+    requestBody: {
+      required: true,
+    },
   },
   {
-    TReq: {},
-    TResp: "Pet",
+    TReq: {
+      id: "number",
+    },
+    TResp: "IPet",
     method: "get",
     operationId: "findPetById",
     params: {
@@ -50,9 +56,12 @@ const expectedPathResolvedData = [
       queryParams: [],
     },
     url: "/api/test/pets/${id}",
+    requestBody: null,
   },
   {
-    TReq: {},
+    TReq: {
+      id: "number",
+    },
     TResp: "",
     method: "delete",
     operationId: "deletePet",
@@ -62,5 +71,6 @@ const expectedPathResolvedData = [
       queryParams: [],
     },
     url: "/api/test/pets/${id}",
+    requestBody: null,
   },
 ];
