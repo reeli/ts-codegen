@@ -1,5 +1,5 @@
 import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce } from "lodash";
-import { IOperation, IPathItem, IPaths, IReference, IResponse, ISchema, TParameter } from "../v3/OpenAPI";
+import {IOperation, IPathItem, IPaths, IReference, IResponse, ISchema, TParameter} from "../v3/OpenAPI";
 import { SchemaResolver2 } from "./SchemaResolver2";
 
 interface IParams {
@@ -8,13 +8,19 @@ interface IParams {
   cookieParams: Array<TParameter | IReference>;
 }
 
+interface IParamsNames {
+  pathParams: string[];
+  queryParams: string[];
+  cookieParams: string[];
+}
+
 interface IResolvedPath {
   url: string;
   method: string;
   TResp: any;
   TReq: any;
   operationId?: string;
-  params: IParams;
+  paramsNames: IParamsNames;
   hasRequestBody: boolean;
 }
 
@@ -55,7 +61,7 @@ export class PathsResolver {
 
     return Object.keys(operations).map((method) => {
       const operation = (operations as Dictionary<IOperation>)[method];
-      const params = this.getParams(operation);
+      const params = this.getAllParams(operation);
 
       return {
         url: this.getUrl(this.basePath, pathName),
@@ -63,7 +69,7 @@ export class PathsResolver {
         operationId: operation.operationId,
         TReq: this.getRequestTypes(params),
         TResp: this.getResponseTypes(operation.responses),
-        params: this.getParamsNames(params),
+        paramsNames: this.getParamsNames(params),
         hasRequestBody: !!operation.requestBody,
       };
     });
@@ -89,13 +95,22 @@ export class PathsResolver {
   isPathParam = (str: string) => str.startsWith("{");
 
   // TODO: handle the case when v.parameters = Reference
-  getParams = (o: IOperation) => {
-    const pickParamsByType = this.pickParams(o.parameters as Array<TParameter | IReference>);
+  getAllParams = (o: IOperation) => {
+    // TODO: when parameters has enum
+    const getParamsByType = (type: "path" | "query" | "cookie") => {
+      return filter(o.parameters, (param) => {
+        // TODO: handle $ref here
+        if (param.$ref) {
+          return false;
+        }
+        return (param as TParameter).in === type;
+      });
+    };
 
     return {
-      pathParams: pickParamsByType("path") as Array<TParameter | IReference>,
-      queryParams: pickParamsByType("query") as Array<TParameter | IReference>,
-      cookieParams: pickParamsByType("cookie") as Array<TParameter | IReference>,
+      pathParams: getParamsByType("path"),
+      queryParams: getParamsByType("query"),
+      cookieParams: getParamsByType("cookie"),
     };
   };
 
@@ -123,8 +138,6 @@ export class PathsResolver {
     );
   };
 
-  getRequestBodyTypes = () => {};
-
   getQueryParamsTypes = (queryParams: Array<TParameter | IReference>) =>
     queryParams.reduce(
       (o, v) => ({
@@ -138,6 +151,10 @@ export class PathsResolver {
       {},
     );
 
+  getCookieParamsTypes = (_: Array<TParameter | IReference>) => {};
+
+  getRequestBodyTypes = () => {};
+
   // TODO: handle Response or Reference
   // TODO: responses.200.schema.type ==="array"
   // TODO: response.200.schema.type ==="object" (additionalProperties)
@@ -147,15 +164,4 @@ export class PathsResolver {
 
   getResponseTypes = (responses: { [responseName: string]: IResponse | IReference }) =>
     this.resolver.toType(get(responses, "200.schema") || get(responses, "201.schema"));
-
-  // TODO: when parameters has enum
-  pickParams = (parameters: Array<TParameter | IReference>) => (type: "path" | "query" | "cookie") => {
-    return filter(parameters, (param) => {
-      // TODO: handle $ref here
-      if (param.$ref) {
-        return false;
-      }
-      return (param as TParameter).in === type;
-    });
-  };
 }
