@@ -18,6 +18,9 @@ interface IResolvedPath {
   hasRequestBody: boolean;
 }
 
+// TODO: 1. 将 inline 的 requestParams 和 requestBody 抽成单独的 interface，方便外面使用
+// TODO: 2. query 不要全部 ...，而是以具体的 {[key]: value} 形式，避免外部应用一些不需要的 query
+
 export class PathsResolver {
   resolver: SchemaResolver2;
   resolvedPaths: IResolvedPath[] = [];
@@ -52,11 +55,15 @@ export class PathsResolver {
 
     return Object.keys(operations).map((method) => {
       const operation = (operations as Dictionary<IOperation>)[method];
+      const params = this.getParams(operation);
 
       return {
         url: this.getUrl(this.basePath, pathName),
         method,
-        ...this.resolveOperation(operation),
+        operationId: operation.operationId,
+        TReq: this.getRequestTypes(params),
+        TResp: this.getResponseTypes(operation.responses),
+        params: this.getParamsNames(params),
         hasRequestBody: !!operation.requestBody,
       };
     });
@@ -82,19 +89,13 @@ export class PathsResolver {
   isPathParam = (str: string) => str.startsWith("{");
 
   // TODO: handle the case when v.parameters = Reference
-  resolveOperation = (v: IOperation) => {
-    const pickParamsByType = this.pickParams(v.parameters as Array<TParameter | IReference>);
-    const params: IParams = {
+  getParams = (o: IOperation) => {
+    const pickParamsByType = this.pickParams(o.parameters as Array<TParameter | IReference>);
+
+    return {
       pathParams: pickParamsByType("path") as Array<TParameter | IReference>,
       queryParams: pickParamsByType("query") as Array<TParameter | IReference>,
       cookieParams: pickParamsByType("cookie") as Array<TParameter | IReference>,
-    };
-
-    return {
-      operationId: v.operationId,
-      TResp: this.getResponseTypes(v.responses),
-      TReq: this.getRequestTypes(params),
-      params: this.getParamsNames(params),
     };
   };
 
