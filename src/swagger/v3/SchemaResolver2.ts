@@ -19,6 +19,16 @@ export class SchemaResolver2 {
   };
 
   toType = (schema: TCustomSchema = {}): TDictionary<any> | string => {
+    const oneOf = (schema as ISchema).oneOf;
+    if (oneOf) {
+      return this.toOneOfType(oneOf);
+    }
+
+    const anyOf = (schema as ISchema).anyOf;
+    if (anyOf) {
+      return this.toOneOfType(anyOf);
+    }
+
     if (schema.$ref) {
       return this.toRefType(schema);
     }
@@ -102,5 +112,9 @@ export class SchemaResolver2 {
         {} as any,
       );
     return schema.properties ? handleProperties() : schema.type;
+  };
+
+  toOneOfType = (schemas: TCustomSchema) => {
+    return map(schemas, (schema) => this.toType(schema)).join("|");
   };
 }

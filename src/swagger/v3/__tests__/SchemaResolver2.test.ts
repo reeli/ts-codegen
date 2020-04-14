@@ -143,4 +143,61 @@ describe("SchemaResolver", () => {
       "FIVE_OR_MORE",
     ]);
   });
+
+  it("should handle schema with `allOf` property", () => {
+    const results: any = {};
+
+    SchemaResolver2.of((k, v) => {
+      results[k] = v;
+    }).resolve({
+      Pet: {
+        allOf: [
+          {
+            $ref: "#/components/schemas/NewPet",
+          },
+          {
+            type: "object",
+            required: ["id"],
+            properties: {
+              id: {
+                type: "integer",
+                format: "int64",
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    expect(results).toEqual({
+      "Pet#AllOf": {
+        _extends: ["INewPet"],
+        _values: {
+          id: "number",
+        },
+      },
+    });
+  });
+
+  it("should handle schema with `oneOf` property", () => {
+    const results: any = {};
+
+    SchemaResolver2.of((k, v) => {
+      results[k] = v;
+    }).resolve({
+      _name: "Pet",
+      oneOf: [
+        {
+          $ref: "#/components/schemas/Cat",
+        },
+        {
+          $ref: "#/components/schemas/Dog",
+        },
+      ],
+    });
+
+    expect(results).toEqual({
+      Pet: "ICat|IDog",
+    });
+  });
 });
