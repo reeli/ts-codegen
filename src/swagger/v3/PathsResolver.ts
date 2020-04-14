@@ -1,17 +1,13 @@
-import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce } from "lodash";
+import { chain, compact, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "../v3/OpenAPI";
 import { SchemaResolver2 } from "./SchemaResolver2";
+import { toTypes } from "../../utils";
+import { generateEnums } from "../../DefinitionsResolver";
 
 interface IParams {
   pathParams: Array<TParameter | IReference>;
   queryParams: Array<TParameter | IReference>;
   cookieParams: Array<TParameter | IReference>;
-}
-
-interface IParamsNames {
-  pathParams: string[];
-  queryParams: string[];
-  cookieParams: string[];
 }
 
 interface IResolvedPath {
@@ -20,7 +16,9 @@ interface IResolvedPath {
   TResp: any;
   TReq: any;
   operationId?: string;
-  params: IParamsNames;
+  pathParams: string[];
+  queryParams: string[];
+  cookieParams: string[];
   requestBody: { required: boolean | undefined } | null;
 }
 
@@ -56,6 +54,29 @@ export class PathsResolver {
     return this;
   };
 
+  toRequest = (): string[] => {
+    const data = sortBy(this.resolvedPaths, (o) => o.operationId);
+    const requests = data.map((v: IResolvedPath) => {
+      const TReq = !isEmpty(v.TReq) ? toTypes(v.TReq) : undefined;
+      const requestParamList = [
+        ...v.pathParams,
+        ...v.queryParams,
+        ...v.cookieParams,
+        v.requestBody ? "requestBody" : undefined,
+      ];
+      const params = this.toRequestParams(get(v, "queryParams"));
+
+      return `export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.operationId}', (${
+        !isEmpty(requestParamList) ? `${this.toRequestParams(requestParamList)}` : ""
+      }) => ({url: \`${v.url}\`, method: "${v.method}", ${v.requestBody ? `data: requestBody,` : ""}${
+        params ? `params: ${params},` : ""
+      }}));`;
+    });
+
+    const enums = Object.keys(this.extraDefinitions).map((k) => generateEnums(this.extraDefinitions, k));
+    return [...requests, ...enums];
+  };
+
   resolve(pathItem: IPathItem, pathName: string) {
     const operations = pick(pathItem, ["get", "post", "put", "delete", "patch", "head"]);
 
@@ -69,7 +90,7 @@ export class PathsResolver {
         operationId: operation.operationId,
         TReq: this.getRequestTypes(params, operation.requestBody),
         TResp: this.getResponseTypes(operation.responses),
-        params: this.getParamsNames(params),
+        ...this.getParamsNames(params),
         requestBody: this.getRequestBody(operation.requestBody),
       };
     });
@@ -88,7 +109,7 @@ export class PathsResolver {
   toRequestParams = (data: any[] = []) =>
     !isEmpty(data)
       ? `{
-    ${data.join(",\n")}
+    ${compact(data).join(",\n")}
     }`
       : undefined;
 
@@ -177,7 +198,7 @@ export class PathsResolver {
 
   getResponseTypes = (responses: { [responseName: string]: IResponse | IReference }) => {
     return this.resolver.toType(
-        get(responses, [200, "content", "application/json", "schema"]) ||
+      get(responses, [200, "content", "application/json", "schema"]) ||
         get(responses, [201, "content", "application/json", "schema"]),
     );
   };

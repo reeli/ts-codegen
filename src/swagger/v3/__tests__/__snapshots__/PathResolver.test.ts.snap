@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PathsResolver should generate correct request from swagger data 1`] = `
+"export const addPet = createRequestAction<
+  {
+    requestBody: INewPet;
+  },
+  IPet
+>(\\"addPet\\", ({ requestBody }) => ({ url: \`/api/test/pets\`, method: \\"post\\", data: requestBody }));
+
+export const deletePet = createRequestAction<{
+  id: number;
+}>(\\"deletePet\\", ({ id }) => ({ url: \`/api/test/pets/\${id}\`, method: \\"delete\\" }));
+
+export const findPetById = createRequestAction<
+  {
+    id: number;
+  },
+  IPet
+>(\\"findPetById\\", ({ id }) => ({ url: \`/api/test/pets/\${id}\`, method: \\"get\\" }));
+
+export const findPets = createRequestAction<
+  {
+    limit?: number;
+    tags?: string[];
+  },
+  IPet[]
+>(\\"findPets\\", ({ tags, limit }) => ({
+  url: \`/api/test/pets\`,
+  method: \\"get\\",
+  params: {
+    tags,
+    limit,
+  },
+}));
+"
+`;
