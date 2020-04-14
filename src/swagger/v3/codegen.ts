@@ -35,7 +35,7 @@ const codegen = (schema: ISchema) => {
     actionCreatorImport +
     [
       ...PathsResolver.of(schema.paths, schema.basePath).scan().toRequest(),
-      ...DefinitionsResolver.of(schema.definitions)
+      ...DefinitionsResolver.of(schema.components.schemas)
         .scan()
         .toDeclarations(),
     ].join("\n\n");

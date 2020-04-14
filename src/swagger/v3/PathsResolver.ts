@@ -2,7 +2,7 @@ import { chain, compact, Dictionary, filter, get, isEmpty, map, pick, reduce, so
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "../v3/OpenAPI";
 import { SchemaResolver2 } from "./SchemaResolver2";
 import { toTypes } from "../../utils";
-import { generateEnums } from "../../DefinitionsResolver";
+import { generateEnums } from "./DefinitionsResolver";
 
 interface IParams {
   pathParams: Array<TParameter | IReference>;
