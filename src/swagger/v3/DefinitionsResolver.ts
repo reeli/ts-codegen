@@ -60,6 +60,11 @@ export class DefinitionsResolver {
         if (resolvedDefinitions[key] === "object") {
           return `export interface ${addPrefixForInterface(toCapitalCase(key))} {[key:string]:any}`;
         }
+
+        if(typeof resolvedDefinitions[key]==="string"){
+            return `export type ${toCapitalCase(key)} = ${resolvedDefinitions[key]}`
+        }
+
         const val = toTypes(resolvedDefinitions[key]);
         if (val) {
           return `export interface ${addPrefixForInterface(toCapitalCase(key))} ${val}`;

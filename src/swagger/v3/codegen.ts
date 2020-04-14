@@ -1,12 +1,12 @@
 import * as fs from "fs";
-import { DefinitionsResolver } from "../../DefinitionsResolver";
+import { DefinitionsResolver } from "./DefinitionsResolver";
 import * as path from "path";
-import {prettifyCode, testJSON} from "../../utils";
+import { prettifyCode, testJSON } from "../../utils";
 import axios from "axios";
 import { map } from "lodash";
 import { ERROR_MESSAGES } from "../../constants";
-import { PathsResolver } from "../../swagger/v3/PathsResolver";
-import { ISchema } from "../../swagger/v3/OpenAPI";
+import { PathsResolver } from "./PathsResolver";
+import { ISchema } from "./OpenAPI";
 
 const codegenConfigPath = path.resolve("ts-codegen.config.json");
 
@@ -34,7 +34,9 @@ const codegen = (schema: ISchema) => {
   const fileStr =
     actionCreatorImport +
     [
-      ...PathsResolver.of(schema.paths, schema.basePath).scan().toRequest(),
+      ...PathsResolver.of(schema.paths, schema.basePath)
+        .scan()
+        .toRequest(),
       ...DefinitionsResolver.of(schema.components.schemas)
         .scan()
         .toDeclarations(),
