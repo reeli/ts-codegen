@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import { DefinitionsResolver } from "src/v2/DefinitionsResolver";
 import * as path from "path";
 import { prettifyCode, testJSON } from "src/core/utils";
 import { PathResolver } from "src/v2/PathResolver";
@@ -7,6 +6,7 @@ import axios from "axios";
 import { map } from "lodash";
 import { Spec } from "swagger-schema-official";
 import { ERROR_MESSAGES } from "src/core/constants";
+import { ReusableTypes } from "src/core/ReusableTypes";
 
 const codegenConfigPath = path.resolve("ts-codegen.config.json");
 
@@ -37,9 +37,7 @@ const codegen = (schema: Spec | string) => {
       ...PathResolver.of(schema.paths, schema.basePath)
         .scan()
         .toRequest(),
-      ...DefinitionsResolver.of(schema.definitions)
-        .scan()
-        .toDeclarations(),
+      ...ReusableTypes.of(schema).gen(),
     ].join("\n\n");
 
   const getFilename = (basePath?: string) => (basePath ? basePath.split("/").join(".") : "request");
