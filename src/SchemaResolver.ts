@@ -1,7 +1,7 @@
 import { Schema } from "swagger-schema-official";
 import { addPrefixForInterface, generateEnumType, isArray, isNumber, toCapitalCase } from "src/utils";
 import { forEach, indexOf, map, reduce, some } from "lodash";
-import { ISchema } from "src/swagger/v3/OpenAPI";
+import { ISchema } from "src/v3/OpenAPI";
 
 type TDictionary<T> = { [key: string]: T };
 type TCustomSchema = (Schema | ISchema) & { _propKey?: string; _name?: string };
@@ -68,8 +68,7 @@ export class SchemaResolver {
     return addPrefixForInterface(toCapitalCase(getTypeByRef(schema.$ref)));
   };
 
-  toArrayType = (schema: TCustomSchema): any => {
-    // TODO: Check this logic
+  toArrayType = (schema: TCustomSchema) => {
     if (isArray(schema.items)) {
       return map(schema.items, (item: Schema | ISchema) =>
         this.toType({

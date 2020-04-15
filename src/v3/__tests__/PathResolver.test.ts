@@ -1,6 +1,6 @@
-import { PathsResolver } from "../PathsResolver";
-import swagger from "../../../../examples/swagger.v3.petstore.expanded.json";
-import { prettifyCode } from "../../../utils";
+import { PathsResolver } from "src/v3/PathsResolver";
+import swagger from "examples/swagger.v3.petstore.expanded.json";
+import { prettifyCode } from "src/utils";
 
 describe("PathsResolver", () => {
   it("should get resolved paths by swagger schema", () => {

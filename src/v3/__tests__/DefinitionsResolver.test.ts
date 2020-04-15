@@ -1,5 +1,5 @@
-import { DefinitionsResolver } from "../DefinitionsResolver";
-import swagger from "../../../../examples/swagger.v3.petstore.expanded.json";
+import { DefinitionsResolver } from "src/v3/DefinitionsResolver";
+import swagger from "examples/swagger.v3.petstore.expanded.json";
 
 describe("DefinitionsResolver", () => {
   it("should generate correct definitions", () => {

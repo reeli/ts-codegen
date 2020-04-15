@@ -1,8 +1,8 @@
 import { chain, compact, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
-import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/swagger/v3/OpenAPI";
+import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
 import { SchemaResolver } from "src/SchemaResolver";
 import { toTypes } from "src/utils";
-import { generateEnums } from "src/swagger/v3/DefinitionsResolver";
+import { generateEnums } from "src/v3/DefinitionsResolver";
 
 interface IParams {
   pathParams: Array<TParameter | IReference>;
