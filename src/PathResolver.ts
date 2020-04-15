@@ -13,7 +13,7 @@ import {
 import { generateEnums } from "./DefinitionsResolver";
 import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
 import { toTypes } from "./utils";
-import { SchemaResolver2 } from "src/swagger/v3/SchemaResolver2";
+import { SchemaResolver2 } from "./swagger/v3/SchemaResolver2";
 
 type TPaths = { [pathName: string]: Path };
 
