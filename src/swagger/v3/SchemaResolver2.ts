@@ -119,9 +119,7 @@ export class SchemaResolver2 {
     return schema.properties ? handleProperties() : schema.type;
   };
 
-  toOneOfType = (schemas: TCustomSchema) => {
-    return map(schemas, (schema) => this.toType(schema)).join("|");
-  };
+  toOneOfType = (schemas: TCustomSchema) => map(schemas, (schema) => this.toType(schema)).join("|");
 
   toAllOfType = (schemas: TCustomSchema) => {
     const _extends: any[] = [];

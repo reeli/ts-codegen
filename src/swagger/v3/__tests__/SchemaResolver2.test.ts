@@ -182,30 +182,67 @@ describe("SchemaResolver", () => {
     SchemaResolver2.of((k, v) => {
       results[k] = v;
     }).resolve({
-      Pet: {
-        allOf: [
-          {
-            $ref: "#/components/schemas/NewPet",
-          },
-          {
-            type: "object",
-            required: ["id"],
-            properties: {
-              id: {
-                type: "integer",
-                format: "int64",
-              },
+      _name: "Pet",
+      allOf: [
+        {
+          $ref: "#/components/schemas/NewPet",
+        },
+        {
+          type: "object",
+          required: ["id"],
+          properties: {
+            id: {
+              type: "integer",
+              format: "int64",
             },
           },
-        ],
-      },
+        },
+      ],
     });
 
     expect(results).toEqual({
-      "Pet#AllOf": {
+      Pet: {
         _extends: ["INewPet"],
-        _values: {
+        _others: {
           id: "number",
+        },
+      },
+    });
+  });
+
+  it("should handle `allOf` property with extra enum property", () => {
+    const results: any = {};
+
+    SchemaResolver2.of((k, v) => {
+      results[k] = v;
+    }).resolve({
+      _name: "Dog",
+      allOf: [
+        {
+          $ref: "#/components/schemas/Pet",
+        },
+        {
+          type: "object",
+          properties: {
+            bark: {
+              type: "boolean",
+            },
+            breed: {
+              type: "string",
+              enum: ["Dingo", "Husky", "Retriever", "Shepherd"],
+            },
+          },
+        },
+      ],
+    });
+
+    expect(results).toEqual({
+      "Breed#EnumTypeSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
+      Dog: {
+        _extends: ["IPet"],
+        _others: {
+          "bark?": "boolean",
+          "breed?": "keyof typeof Breed#EnumTypeSuffix",
         },
       },
     });
