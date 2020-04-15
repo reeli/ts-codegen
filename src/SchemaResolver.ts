@@ -1,128 +1,141 @@
 import { Schema } from "swagger-schema-official";
-import { addPrefixForInterface, isArray, isNumber, toCapitalCase } from "./utils";
-import { get, indexOf, map, reduce, some } from "lodash";
+import { addPrefixForInterface, generateEnumType, isArray, isNumber, toCapitalCase } from "src/utils";
+import { forEach, indexOf, map, reduce, some } from "lodash";
+import { ISchema } from "src/swagger/v3/OpenAPI";
 
 type TDictionary<T> = { [key: string]: T };
-
-interface ISchemaResolverInputs {
-  results: TDictionary<any>;
-  schema?: Schema;
-  key?: string;
-  parentKey?: string;
-}
-
-const ENUM_SUFFIX = `#EnumTypeSuffix`;
+type TCustomSchema = (Schema | ISchema) & { _propKey?: string; _name?: string };
+type TWriteTo = (k: string, v: any) => void;
 
 export class SchemaResolver {
-  static of(inputs: ISchemaResolverInputs) {
-    return new SchemaResolver(inputs);
+  static of(writeTo: TWriteTo) {
+    return new SchemaResolver(writeTo);
   }
 
-  constructor(private inputs: ISchemaResolverInputs) {}
+  constructor(public writeTo: TWriteTo) {}
 
-  resolve = (
-    schema: Schema = this.inputs.schema || {},
-    key: string | undefined = this.inputs.key,
-    type?: string,
-  ): TDictionary<any> | string => {
-    const { results, parentKey } = this.inputs;
-    const advancedType = this.resolveRef(schema.$ref, type || schema.type);
+  resolve = (schema: TCustomSchema = {}) => {
+    this.writeTo(schema._name!, this.toType(schema));
+  };
+
+  toType = (schema: TCustomSchema = {}): TDictionary<any> | string => {
+    const oneOf = (schema as ISchema).oneOf;
+    if (oneOf) {
+      return this.toOneOfType(oneOf);
+    }
+
+    const anyOf = (schema as ISchema).anyOf;
+    if (anyOf) {
+      return this.toOneOfType(anyOf);
+    }
+
+    const allOf = (schema as ISchema).allOf;
+    if (allOf) {
+      return this.toAllOfType(allOf);
+    }
+
     if (schema.$ref) {
-      return advancedType;
+      return this.toRefType(schema);
     }
 
     if (schema.items) {
-      return this.resolveItems(schema.items, schema.type);
+      return this.toArrayType(schema);
     }
 
     if (schema.enum) {
-      const enumKey = this.getEnumName(key!, parentKey);
-      results[enumKey] = schema.enum;
-      const hasNumber = some(schema.enum, (v) => isNumber(v));
-
-      if (hasNumber) {
-        return enumKey;
-      }
-
-      return `keyof typeof ${enumKey}`;
+      return this.toEnumType(schema);
     }
 
     if (schema.type === "object") {
-      return schema.properties ? this.resolveProperties(schema.properties, schema.required) : schema.type;
+      return this.toObjectType(schema);
     }
 
-    return this.getBasicType(schema.type, advancedType);
+    if (schema.type === "integer") {
+      return "number";
+    }
+
+    return schema.type || "";
   };
 
-  getEnumName = (propertyName: string, parentKey: string = "") =>
-    `${toCapitalCase(parentKey)}${toCapitalCase(propertyName)}${ENUM_SUFFIX}`;
-
-  resolveRef = ($ref?: string, type?: string): string => {
-    if (!$ref) {
-      return "";
-    }
-
-    const refType = addPrefixForInterface(toCapitalCase(this.pickTypeByRef($ref)));
-    return type === "array" ? `${refType}[]` : refType;
-  };
-
-  getBasicType = (basicType: string = "", advancedType?: string): string => {
-    switch (basicType) {
-      case "integer":
-        return "number";
-      case "array":
-        return this.getTypeForArray(advancedType);
-      case "":
-        return advancedType || "";
-      default:
-        return basicType;
-    }
-  };
-
-  getTypeForArray = (advancedType?: string) => (advancedType ? `${advancedType}[]` : "Array<any>");
-
-  pickTypeByRef = (str?: string) => {
-    if (!str) {
-      return;
-    }
-    const list = str.split("/");
-    return list[list.length - 1];
-  };
-
-  resolveItems = (items?: Schema | Schema[], type?: string): any => {
-    if (!items) {
-      return {};
-    }
-
-    const child = get(items, "items");
-
-    if (type === "array") {
-      if (child) {
-        return `${this.resolveItems(child, (items as any).type)}[]`;
+  toRefType = (schema: Schema | ISchema): string => {
+    const getTypeByRef = (str?: string) => {
+      if (!str) {
+        return;
       }
-
-      if (!get(items, "$ref")) {
-        return `${get(items, "type")}[]`;
-      }
-    }
-
-    if (isArray(items)) {
-      return map(items, (item) => this.resolve(item as Schema));
-    }
-
-    return this.resolve(items as Schema, undefined, type);
+      const list = str.split("/");
+      return list[list.length - 1];
+    };
+    return addPrefixForInterface(toCapitalCase(getTypeByRef(schema.$ref)));
   };
 
-  resolveProperties = (
-    properties: { [propertyName: string]: Schema } = {},
-    required: string[] = [],
-  ): TDictionary<any> =>
-    reduce(
-      properties,
-      (o, v, k) => ({
-        ...o,
-        [`${k}${indexOf(required, k) > -1 ? "" : "?"}`]: this.resolve(v, k),
-      }),
-      {},
-    );
+  toArrayType = (schema: TCustomSchema): any => {
+    // TODO: Check this logic
+    if (isArray(schema.items)) {
+      return map(schema.items, (item: Schema | ISchema) =>
+        this.toType({
+          ...item,
+          _name: schema._name,
+          _propKey: schema._propKey,
+        }),
+      );
+    }
+
+    const itemType = this.toType({
+      ...(schema.items as TCustomSchema),
+      _name: schema._name,
+      _propKey: schema._propKey,
+    });
+
+    return schema.type === "array" ? `${itemType}[]` : itemType;
+  };
+
+  toEnumType = (schema: TCustomSchema) => {
+    const enumType = generateEnumType(schema._name, schema._propKey);
+    const hasNumber = some(schema.enum, (v) => isNumber(v));
+
+    this.writeTo(enumType, schema.enum);
+
+    if (hasNumber) {
+      return enumType;
+    }
+
+    return `keyof typeof ${enumType}`;
+  };
+
+  toObjectType = (schema: TCustomSchema): TDictionary<any> | string => {
+    const handleProperties = () =>
+      reduce(
+        schema.properties,
+        (o, v, k) => ({
+          ...o,
+          [`${k}${indexOf(schema.required, k) > -1 ? "" : "?"}`]: this.toType({
+            ...v,
+            _propKey: k,
+            _name: schema._name,
+          }),
+        }),
+        {} as any,
+      );
+    return schema.properties ? handleProperties() : schema.type;
+  };
+
+  toOneOfType = (schemas: TCustomSchema) => map(schemas, (schema) => this.toType(schema)).join("|");
+
+  toAllOfType = (schemas: TCustomSchema) => {
+    const _extends: any[] = [];
+    let _others = {};
+
+    forEach(schemas, (schema) => {
+      if (schema.$ref) {
+        _extends.push(this.toType(schema));
+      } else {
+        _others = this.toType(schema);
+      }
+    });
+
+    return {
+      _extends,
+      _others,
+    } as TDictionary<any>;
+  };
 }

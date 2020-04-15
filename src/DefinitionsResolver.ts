@@ -1,7 +1,7 @@
 import { Schema } from "swagger-schema-official";
 import { addPrefixForInterface, arrayToObject, isNumber, toCapitalCase, toTypes } from "./utils";
 import { compact, Dictionary, forEach, includes, replace, some } from "lodash";
-import { SchemaResolver2 } from "./swagger/v3/SchemaResolver2";
+import { SchemaResolver } from "src/SchemaResolver";
 
 // TODO: 1. Handle required params.
 // TODO: handle `in: fromData`
@@ -33,7 +33,7 @@ export class DefinitionsResolver {
   constructor(private definitions?: { [definitionsName: string]: Schema }) {}
 
   scan = () => {
-    const r = SchemaResolver2.of((k, v) => {
+    const r = SchemaResolver.of((k, v) => {
       this.resolvedDefinitions[k] = v;
     });
 

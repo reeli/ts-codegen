@@ -1,6 +1,6 @@
 import { chain, compact, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/swagger/v3/OpenAPI";
-import { SchemaResolver2 } from "src/swagger/v3/SchemaResolver2";
+import { SchemaResolver } from "src/SchemaResolver";
 import { toTypes } from "src/utils";
 import { generateEnums } from "src/swagger/v3/DefinitionsResolver";
 
@@ -26,7 +26,7 @@ interface IResolvedPath {
 // TODO: 2. query 不要全部 ...，而是以具体的 {[key]: value} 形式，避免外部应用一些不需要的 query
 
 export class PathsResolver {
-  resolver: SchemaResolver2;
+  resolver: SchemaResolver;
   resolvedPaths: IResolvedPath[] = [];
   extraDefinitions: Dictionary<any> = {};
 
@@ -35,7 +35,7 @@ export class PathsResolver {
   }
 
   constructor(private paths: IPaths, private basePath: string) {
-    this.resolver = SchemaResolver2.of((k, v) => {
+    this.resolver = SchemaResolver.of((k, v) => {
       if (k) {
         this.extraDefinitions[k] = v;
       }

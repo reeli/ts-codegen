@@ -13,7 +13,7 @@ import {
 import { generateEnums } from "./DefinitionsResolver";
 import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
 import { toTypes } from "./utils";
-import { SchemaResolver2 } from "./swagger/v3/SchemaResolver2";
+import { SchemaResolver } from "src/SchemaResolver";
 
 type TPaths = { [pathName: string]: Path };
 
@@ -35,7 +35,7 @@ interface IParams {
 }
 
 export class PathResolver {
-  resolver: SchemaResolver2;
+  resolver: SchemaResolver;
   resolvedPaths: IResolvedPath[] = [];
   extraDefinitions: Dictionary<any> = {};
 
@@ -44,7 +44,7 @@ export class PathResolver {
   }
 
   constructor(private paths: TPaths, private basePath: string) {
-    this.resolver = SchemaResolver2.of((k, v) => {
+    this.resolver = SchemaResolver.of((k, v) => {
       if (k) {
         this.extraDefinitions[k] = v;
       }
