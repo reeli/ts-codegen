@@ -1,12 +1,12 @@
 import * as fs from "fs";
-import { DefinitionsResolver } from "./DefinitionsResolver";
+import { DefinitionsResolver } from "src/swagger/v3/DefinitionsResolver";
 import * as path from "path";
-import { prettifyCode, testJSON } from "../../utils";
+import { prettifyCode, testJSON } from "src/utils";
 import axios from "axios";
 import { map } from "lodash";
-import { ERROR_MESSAGES } from "../../constants";
-import { PathsResolver } from "./PathsResolver";
-import { ISchema } from "./OpenAPI";
+import { ERROR_MESSAGES } from "src/constants";
+import { PathsResolver } from "src/swagger/v3/PathsResolver";
+import { ISchema } from "src/swagger/v3/OpenAPI";
 
 const codegenConfigPath = path.resolve("ts-codegen.config.json");
 

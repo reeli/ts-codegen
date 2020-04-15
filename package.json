@@ -17,7 +17,7 @@
     "README.md"
   ],
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
     "test": "jest",
     "build": "rm -rf dist && tsc",
     "release": "rm -rf lib/ && rm -rf module/ && rollup -c rollup.config.ts",
@@ -54,6 +54,7 @@
     "rollup-plugin-typescript": "1.0.x",
     "ts-jest": "24.3.x",
     "ts-node": "8.6.x",
+    "tsconfig-paths": "3.9.0",
     "tslib": "1.10.x",
     "typescript": "3.7.x"
   },
@@ -68,6 +69,9 @@
   },
   "jest": {
     "testEnvironment": "node",
+    "modulePaths": [
+      "<rootDir>"
+    ],
     "coverageDirectory": "coverage",
     "testRegex": ".*/__tests__/.+\\.(generator|test|spec)\\.(ts|tsx)$",
     "collectCoverage": true,
