@@ -2,7 +2,7 @@ import { Dictionary, forEach } from "lodash";
 import swaggerV3 from "examples/swagger.v3.petstore.json";
 import swaggerV3Expanded from "examples/swagger.v3.petstore.expanded.json";
 import swaggerV2 from "examples/swagger.json";
-import { SchemaResolver } from "src/SchemaResolver";
+import { SchemaResolver } from "src/core/SchemaResolver";
 
 describe("SchemaResolver", () => {
   it("should scan swagger definitions schema correctly", () => {

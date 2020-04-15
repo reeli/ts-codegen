@@ -1,4 +1,4 @@
-import { DefinitionsResolver } from "../DefinitionsResolver";
+import { DefinitionsResolver } from "src/v2/DefinitionsResolver";
 import swagger from "./mock-data/swagger.json";
 
 describe("DefinitionsResolver", () => {

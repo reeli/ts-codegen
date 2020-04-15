@@ -1,6 +1,6 @@
 import { camelCase, Dictionary, forEach, indexOf, map, replace, trimEnd } from "lodash";
 import prettier from "prettier";
-import { ERROR_MESSAGES } from "./constants";
+import { ERROR_MESSAGES } from "src/core/constants";
 
 export const toCapitalCase = (str?: string): string => {
   if (!str) {

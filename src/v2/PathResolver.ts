@@ -10,10 +10,10 @@ import {
   Response,
   Schema,
 } from "swagger-schema-official";
-import { generateEnums } from "./DefinitionsResolver";
+import { generateEnums } from "src/v2/DefinitionsResolver";
 import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
-import { toTypes } from "./utils";
-import { SchemaResolver } from "src/SchemaResolver";
+import { toTypes } from "src/core/utils";
+import { SchemaResolver } from "src/core/SchemaResolver";
 
 type TPaths = { [pathName: string]: Path };
 

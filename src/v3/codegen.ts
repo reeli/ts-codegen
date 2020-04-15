@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import { DefinitionsResolver } from "src/v3/DefinitionsResolver";
 import * as path from "path";
-import { prettifyCode, testJSON } from "src/utils";
+import { prettifyCode, testJSON } from "src/core/utils";
 import axios from "axios";
 import { map } from "lodash";
-import { ERROR_MESSAGES } from "src/constants";
+import { ERROR_MESSAGES } from "src/core/constants";
 import { PathsResolver } from "src/v3/PathsResolver";
 import { ISchema } from "src/v3/OpenAPI";
 

@@ -1,4 +1,4 @@
-import { testJSON, toCapitalCase } from "../utils";
+import { testJSON, toCapitalCase } from "src/core/utils";
 
 describe("#toCapitalCase", () => {
   it("when word is undefined, should return empty string", () => {

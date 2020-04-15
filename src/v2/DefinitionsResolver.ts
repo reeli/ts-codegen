@@ -1,7 +1,7 @@
 import { Schema } from "swagger-schema-official";
-import { addPrefixForInterface, arrayToObject, isNumber, toCapitalCase, toTypes } from "./utils";
+import { addPrefixForInterface, arrayToObject, isNumber, toCapitalCase, toTypes } from "src/core/utils";
 import { compact, Dictionary, forEach, includes, replace, some } from "lodash";
-import { SchemaResolver } from "src/SchemaResolver";
+import { SchemaResolver } from "src/core/SchemaResolver";
 
 // TODO: 1. Handle required params.
 // TODO: handle `in: fromData`

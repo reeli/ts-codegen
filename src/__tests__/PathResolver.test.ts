@@ -1,4 +1,4 @@
-import { PathResolver } from "../PathResolver";
+import { PathResolver } from "src/v2/PathResolver";
 import swagger from "./mock-data/swagger.json";
 
 describe("PathResolver", () => {
