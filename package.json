@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register src/index.ts",
-    "test": "jest",
+    "test": "tsc && jest",
     "build": "rm -rf dist && tsc",
     "release": "rm -rf lib/ && rm -rf module/ && rollup -c rollup.config.ts",
     "prepare": "npm run build && npm run release && npm test"
