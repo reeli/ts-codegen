@@ -1,6 +1,6 @@
 import { Schema } from "swagger-schema-official";
 import { addPrefixForInterface, arrayToObject, isNumber, toCapitalCase, toTypes } from "../../utils";
-import { compact, Dictionary, forEach, includes, replace, some } from "lodash";
+import { compact, Dictionary, forEach, includes, isEmpty, replace, some } from "lodash";
 import { SchemaResolver2 } from "../../swagger/v3/SchemaResolver2";
 
 // TODO: 1. Handle required params.
@@ -61,8 +61,14 @@ export class DefinitionsResolver {
           return `export interface ${addPrefixForInterface(toCapitalCase(key))} {[key:string]:any}`;
         }
 
-        if(typeof resolvedDefinitions[key]==="string"){
-            return `export type ${toCapitalCase(key)} = ${resolvedDefinitions[key]}`
+        if (typeof resolvedDefinitions[key] === "string") {
+          return `export type ${toCapitalCase(key)} = ${resolvedDefinitions[key]}`;
+        }
+
+        if (!isEmpty(resolvedDefinitions[key]?._extends)) {
+          return `export interface ${addPrefixForInterface(toCapitalCase(key))} extends ${resolvedDefinitions[
+            key
+          ]?._extends.join(",")} ${toTypes(resolvedDefinitions[key]?._others)} `;
         }
 
         const val = toTypes(resolvedDefinitions[key]);

@@ -15,7 +15,12 @@ describe("DefinitionsResolver", () => {
         name: "string",
         "tag?": "string",
       },
-      Pet: ""
+      Pet: {
+        _extends: ["INewPet"],
+        _others: {
+          id: "number",
+        },
+      },
     });
   });
 });
