@@ -1,6 +1,6 @@
 import { Schema } from "swagger-schema-official";
 import { addPrefixForInterface, generateEnumType, isArray, isNumber, toCapitalCase } from "../../utils";
-import { indexOf, map, reduce, some } from "lodash";
+import { forEach, indexOf, map, reduce, some } from "lodash";
 import { ISchema } from "src/swagger/v3/OpenAPI";
 
 type TDictionary<T> = { [key: string]: T };
@@ -27,6 +27,11 @@ export class SchemaResolver2 {
     const anyOf = (schema as ISchema).anyOf;
     if (anyOf) {
       return this.toOneOfType(anyOf);
+    }
+
+    const allOf = (schema as ISchema).allOf;
+    if (allOf) {
+      return this.toAllOfType(allOf);
     }
 
     if (schema.$ref) {
@@ -116,5 +121,23 @@ export class SchemaResolver2 {
 
   toOneOfType = (schemas: TCustomSchema) => {
     return map(schemas, (schema) => this.toType(schema)).join("|");
+  };
+
+  toAllOfType = (schemas: TCustomSchema) => {
+    const _extends: any[] = [];
+    let _others = {};
+
+    forEach(schemas, (schema) => {
+      if (schema.$ref) {
+        _extends.push(this.toType(schema));
+      } else {
+        _others = this.toType(schema);
+      }
+    });
+
+    return {
+      _extends,
+      _others,
+    } as TDictionary<any>;
   };
 }

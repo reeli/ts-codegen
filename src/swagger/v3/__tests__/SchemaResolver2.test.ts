@@ -1,5 +1,6 @@
 import { Dictionary, forEach } from "lodash";
 import swaggerV3 from "../../../../examples/swagger.v3.petstore.json";
+import swaggerV3Expanded from "../../../../examples/swagger.v3.petstore.expanded.json";
 import swaggerV2 from "../../../../examples/swagger.json";
 import { SchemaResolver2 } from "../SchemaResolver2";
 
@@ -87,6 +88,37 @@ describe("SchemaResolver", () => {
         "tag?": "string",
       },
       Pets: "IPet[]",
+    });
+  });
+
+  it("should scan swagger components expanded schema correctly", () => {
+    const results: Dictionary<any> = {};
+    const r = SchemaResolver2.of((k, ret) => {
+      results[k] = ret;
+    });
+
+    forEach(swaggerV3Expanded.components.schemas as any, (v, k) =>
+      r.resolve({
+        ...v,
+        _name: k,
+      }),
+    );
+
+    expect(results).toEqual({
+      Error: {
+        code: "number",
+        message: "string",
+      },
+      NewPet: {
+        name: "string",
+        "tag?": "string",
+      },
+      Pet: {
+        _extends: ["INewPet"],
+        _others: {
+          id: "number",
+        },
+      },
     });
   });
 
