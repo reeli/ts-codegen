@@ -1,4 +1,4 @@
-import swaggerV2 from "src/__tests__/mock-data/swagger.json";
+import swaggerV2 from "examples/swagger.v2.json";
 import swaggerV3 from "examples/swagger.v3.petstore.expanded.json";
 import { ReusableTypes } from "src/core/ReusableTypes";
 import {prettifyCode} from "src/core/utils";
