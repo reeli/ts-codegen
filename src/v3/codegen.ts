@@ -1,12 +1,12 @@
 import * as fs from "fs";
-import { DefinitionsResolver } from "src/v3/DefinitionsResolver";
 import * as path from "path";
 import { prettifyCode, testJSON } from "src/core/utils";
 import axios from "axios";
 import { map } from "lodash";
 import { ERROR_MESSAGES } from "src/core/constants";
 import { PathsResolver } from "src/v3/PathsResolver";
-import { ISchema } from "src/v3/OpenAPI";
+import { IOpenAPI } from "src/v3/OpenAPI";
+import { ReusableTypes } from "src/core/ReusableTypes";
 
 const codegenConfigPath = path.resolve("ts-codegen.config.json");
 
@@ -21,7 +21,7 @@ const getCodegenConfig = () =>
 
 const { output, actionCreatorImport, timeout, data, clients } = getCodegenConfig();
 
-const codegen = (schema: ISchema) => {
+const codegen = (schema: IOpenAPI) => {
   if (typeof schema === "string") {
     console.error(ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
     return;
@@ -37,9 +37,7 @@ const codegen = (schema: ISchema) => {
       ...PathsResolver.of(schema.paths, schema.basePath)
         .scan()
         .toRequest(),
-      ...DefinitionsResolver.of(schema.components.schemas)
-        .scan()
-        .toDeclarations(),
+      ...ReusableTypes.of(schema).gen(),
     ].join("\n\n");
 
   const getFilename = (basePath?: string) => (basePath ? basePath.split("/").join(".") : "request");
