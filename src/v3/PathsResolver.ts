@@ -1,8 +1,7 @@
 import { chain, compact, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
 import { SchemaResolver } from "src/core/SchemaResolver";
-import { toTypes } from "src/core/utils";
-import {generateEnums} from "src";
+import {generateEnums, toTypes} from "src/core/utils";
 
 interface IParams {
   pathParams: Array<TParameter | IReference>;

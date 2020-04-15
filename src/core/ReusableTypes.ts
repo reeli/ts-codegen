@@ -1,5 +1,5 @@
 import { IOpenAPI } from "src/v3/OpenAPI";
-import { addPrefixForInterface, generateEnums, SchemaResolver, toCapitalCase, toTypes } from "src";
+import {addPrefixForInterface, generateEnums, SchemaResolver, toCapitalCase, toTypes} from "src";
 import { compact, Dictionary, forEach, includes, isEmpty } from "lodash";
 import { ENUM_SUFFIX } from "src/core/constants";
 import { Spec } from "swagger-schema-official";

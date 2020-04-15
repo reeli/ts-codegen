@@ -1,4 +1,4 @@
-import { camelCase, Dictionary, forEach, indexOf, map, replace, trimEnd } from "lodash";
+import { camelCase, Dictionary, forEach, indexOf, map, replace, some, trimEnd } from "lodash";
 import prettier from "prettier";
 import { ERROR_MESSAGES } from "src/core/constants";
 
@@ -86,3 +86,16 @@ export const toType = (builtInType: string = ""): string => {
 };
 
 export const generateEnumType = (p = "", k = "") => `${toCapitalCase(p)}${toCapitalCase(k)}${ENUM_SUFFIX}`;
+
+export function generateEnums(data: Dictionary<any>, key: string) {
+  if (!data) {
+    return "";
+  }
+
+  const enums = data[key];
+  const hasNumber = some(enums, (v) => isNumber(v));
+  const enumName = replace(key, ENUM_SUFFIX, "");
+  return hasNumber
+    ? `export type ${enumName} = ${enums.map((item: string | number) => JSON.stringify(item)).join("|")}`
+    : `export enum ${enumName} ${JSON.stringify(arrayToObject(enums)).replace(/:/gi, "=")}`;
+}
