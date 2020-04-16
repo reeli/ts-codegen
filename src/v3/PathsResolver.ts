@@ -1,7 +1,7 @@
 import { chain, compact, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
 import { SchemaResolver } from "src/core/SchemaResolver";
-import {generateEnums, toTypes} from "src/core/utils";
+import { generateEnums, toTypes } from "src/core/utils";
 
 interface IParams {
   pathParams: Array<TParameter | IReference>;
@@ -105,12 +105,14 @@ export class PathsResolver {
     return `${basePath}${path === "/" && !!basePath ? "" : path}`;
   };
 
-  toRequestParams = (data: any[] = []) =>
-    !isEmpty(data)
+  toRequestParams = (data: any[] = []) => {
+    const inputs = compact(data);
+    return !isEmpty(inputs)
       ? `{
-    ${compact(data).join(",\n")}
+    ${inputs.join(",\n")}
     }`
-      : undefined;
+      : "";
+  };
 
   isPathParam = (str: string) => str.startsWith("{");
 
