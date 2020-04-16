@@ -1,4 +1,4 @@
-import { camelCase, Dictionary, forEach, indexOf, map, replace, some, trimEnd } from "lodash";
+import { camelCase, chain, Dictionary, forEach, indexOf, map, replace, some, trimEnd } from "lodash";
 import prettier from "prettier";
 import { ERROR_MESSAGES } from "src/core/constants";
 
@@ -101,8 +101,19 @@ export function generateEnums(data: Dictionary<any>, key: string) {
 }
 
 export const setDeprecated = (operationId: string = "") =>
-    `
+  `
   /**
   * @deprecated ${operationId}
   */
   `;
+
+export const getRequestURL = (pathName: string, basePath?: string) => {
+  const isPathParam = (str: string) => str.startsWith("{");
+  const resolvedPathName = chain(pathName)
+    .split("/")
+    .map((p) => (isPathParam(p) ? `$${p}` : p))
+    .join("/")
+    .value();
+
+  return `${basePath}${resolvedPathName === "/" && !!basePath ? "" : resolvedPathName}`;
+};

@@ -1,6 +1,7 @@
 import {
   BodyParameter,
   FormDataParameter,
+  Operation,
   Parameter,
   Path,
   PathParameter,
@@ -9,8 +10,8 @@ import {
   Response,
   Schema,
 } from "swagger-schema-official";
-import { chain, Dictionary, filter, get, isEmpty, keys, map, pick, reduce, sortBy } from "lodash";
-import { generateEnums, setDeprecated, toTypes } from "src/core/utils";
+import { Dictionary, filter, get, isEmpty, keys, map, pick, reduce, sortBy } from "lodash";
+import { generateEnums, getRequestURL, setDeprecated, toTypes } from "src/core/utils";
 import { SchemaResolver } from "src/core/SchemaResolver";
 
 type TPaths = { [pathName: string]: Path };
@@ -73,7 +74,7 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
   scan = () => {
     this.clientConfig = reduce(
       this.paths,
-      (config: IClientConfig[], p: Path, k: string) => [...config, ...this.buildConfig(p, k)],
+      (config: IClientConfig[], path: Path, pathName: string) => [...config, ...this.buildConfig(path, pathName)],
       [],
     );
     return this;
@@ -83,7 +84,6 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
     const operations = pick(path, ["get", "post", "put", "delete", "patch", "options", "head"]);
 
     return keys(operations).map((method) => {
-      const path = this.getRequestURL(pathName);
       // TODO: handle the case when v.parameters = Reference
       const operation = (operations as Dictionary<any>)[method];
       const pickParamsByType = this.pickParams(operation.parameters as Parameter[]);
@@ -97,7 +97,7 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
       const getNames = (list: any[]) => (isEmpty(list) ? [] : map(list, (item) => item.name));
 
       return {
-        url: `${this.basePath}${path === "/" && !!this.basePath ? "" : path}`,
+        url: getRequestURL(pathName, this.basePath),
         method,
         operationId: operation.operationId,
         TResp: this.getResponseTypes(operation.responses),
@@ -111,22 +111,12 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
     });
   }
 
-  getRequestURL = (pathName: string) => {
-    return chain(pathName)
-      .split("/")
-      .map((p) => (this.isPathParam(p) ? `$${p}` : p))
-      .join("/")
-      .value();
-  };
-
   toRequestParams = (data: any[] = []) =>
     !isEmpty(data)
       ? `{
     ${data.join(",\n")}
     }`
       : undefined;
-
-  isPathParam = (str: string) => str.startsWith("{");
 
   getRequestTypes = (params: IParams) => ({
     ...this.getPathParamsTypes(params.pathParams),
@@ -201,8 +191,16 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
   // TODO: responses.200.headers 存在时
   // TODO: responses.201 同上
 
-  getResponseTypes = (responses: { [responseName: string]: Response | Reference }) =>
-    this.schemaResolver.toType(get(responses, "200.schema") || get(responses, "201.schema"));
+  getResponseTypes = (responses: Operation["responses"]) => {
+    const response200 = get(responses, "200");
+    const response201 = get(responses, "201");
+
+    if ((response200 as Reference)?.$ref || (response201 as Reference)?.$ref) {
+      return this.schemaResolver.toType(response200 || response201);
+    }
+
+    return this.schemaResolver.toType((response200 as Response)?.schema || (response201 as Response)?.schema);
+  };
 
   // TODO: when parameters has enum
   pickParams = (parameters: Parameter[]) => (type: "path" | "query" | "body" | "formData") =>
