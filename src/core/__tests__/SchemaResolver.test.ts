@@ -35,18 +35,18 @@ describe("SchemaResolver", () => {
         "petId?": "number",
         "quantity?": "number",
         "shipDate?": "string",
-        "status?": "keyof typeof OrderStatus#EnumTypeSuffix",
+        "status?": "keyof typeof OrderStatus#EnumSuffix",
       },
-      "OrderStatus#EnumTypeSuffix": ["placed", "approved", "delivered"],
+      "OrderStatus#EnumSuffix": ["placed", "approved", "delivered"],
       Pet: {
         "category?": "ICategory",
         "id?": "number",
         name: "string",
         photoUrls: "string[]",
-        "status?": "keyof typeof PetStatus#EnumTypeSuffix",
+        "status?": "keyof typeof PetStatus#EnumSuffix",
         "tags?": "ITag[]",
       },
-      "PetStatus#EnumTypeSuffix": ["available", "pending", "sold"],
+      "PetStatus#EnumSuffix": ["available", "pending", "sold"],
       Tag: {
         "id?": "number",
         "name?": "string",
@@ -143,8 +143,8 @@ describe("SchemaResolver", () => {
     });
 
     expect(results1).toEqual({
-      Parent: "keyof typeof ParentPetStatus#EnumTypeSuffix",
-      "ParentPetStatus#EnumTypeSuffix": ["AAA", "BBB"],
+      Parent: "keyof typeof ParentPetStatus#EnumSuffix",
+      "ParentPetStatus#EnumSuffix": ["AAA", "BBB"],
     });
   });
 
@@ -164,7 +164,7 @@ describe("SchemaResolver", () => {
       },
     });
 
-    expect(mockWriteTo).toHaveBeenNthCalledWith(1, "VisitsCount#EnumTypeSuffix", [
+    expect(mockWriteTo).toHaveBeenNthCalledWith(1, "VisitsCount#EnumSuffix", [
       "ZERO",
       "ONE",
       "TWO",
@@ -237,12 +237,12 @@ describe("SchemaResolver", () => {
     });
 
     expect(results).toEqual({
-      "Breed#EnumTypeSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
+      "Breed#EnumSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
       Dog: {
         _extends: ["IPet"],
         _others: {
           "bark?": "boolean",
-          "breed?": "keyof typeof Breed#EnumTypeSuffix",
+          "breed?": "keyof typeof Breed#EnumSuffix",
         },
       },
     });

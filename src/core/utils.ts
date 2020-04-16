@@ -38,7 +38,7 @@ export const prettifyCode = (code: string) =>
     parser: "typescript",
   });
 
-const ENUM_SUFFIX = `#EnumTypeSuffix`;
+const ENUM_SUFFIX = `#EnumSuffix`;
 
 export const toTypes = (obj: Dictionary<any> | string) => {
   if (!obj) {

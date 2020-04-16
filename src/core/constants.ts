@@ -3,4 +3,4 @@ export const ERROR_MESSAGES = {
   FETCH_CLIENT_FAILED_ERROR: "Fetch client failed! Please check your network or ts-codegen.config.ts file.",
 };
 
-export const ENUM_SUFFIX = `#EnumTypeSuffix`;
+export const ENUM_SUFFIX = `#EnumSuffix`;
