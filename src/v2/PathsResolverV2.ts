@@ -16,8 +16,6 @@ import { SchemaResolver } from "src/core/SchemaResolver";
 
 type TPaths = { [pathName: string]: Path };
 
-// TODO: Should handle `deprecated` and `security` in Operation?
-
 interface IResolvedPath extends IParams {
   url: string;
   method: string;
@@ -31,7 +29,15 @@ interface IParams {
   queryParams: QueryParameter[];
   bodyParams: BodyParameter[];
   formDataParams: FormDataParameter[];
+  deprecated?: boolean;
 }
+
+const setDeprecated = (operationId: string = "") =>
+  `
+  /**
+  * @deprecated ${operationId}
+  */
+  `;
 
 export class PathsResolverV2 {
   resolver: SchemaResolver;
@@ -59,8 +65,9 @@ export class PathsResolverV2 {
       const formData = v.formDataParams;
       const body = !isEmpty(bodyData) ? bodyData : formData;
       const params = this.toRequestParams(get(v, "queryParams"));
-
-      return `export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.operationId}', (${
+      return `
+${v.deprecated ? setDeprecated(v.operationId) : ""}
+export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.operationId}', (${
         !isEmpty(requestParamList) ? `${this.toRequestParams(requestParamList)}` : ""
       }) => ({url: \`${v.url}\`, method: "${v.method}", ${body ? `data: {${body.join(",")}},` : ""}${
         params ? `params: ${params},` : ""
@@ -124,6 +131,7 @@ export class PathsResolverV2 {
       TResp: this.getResponseTypes(v.responses),
       TReq: this.getRequestTypes(params),
       ...this.getParamsNames(params),
+      deprecated: v.deprecated,
     };
   };
 
