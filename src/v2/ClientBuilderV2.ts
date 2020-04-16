@@ -1,7 +1,6 @@
 import {
   BodyParameter,
   FormDataParameter,
-  Operation,
   Parameter,
   Path,
   PathParameter,
@@ -10,7 +9,7 @@ import {
   Response,
   Schema,
 } from "swagger-schema-official";
-import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
+import { chain, Dictionary, filter, get, isEmpty, keys, map, pick, reduce, sortBy } from "lodash";
 import { generateEnums, setDeprecated, toTypes } from "src/core/utils";
 import { SchemaResolver } from "src/core/SchemaResolver";
 
@@ -33,24 +32,24 @@ interface IClientConfig extends IParams {
 }
 
 export class ClientBuilderV2 {
-  resolver: SchemaResolver;
-  resolvedPaths: IClientConfig[] = [];
-  extraDefinitions: Dictionary<any> = {};
+  schemaResolver: SchemaResolver;
+  clientConfig: IClientConfig[] = [];
+  enums: Dictionary<any> = {};
 
   static of(paths: TPaths, basePath: string = "") {
     return new ClientBuilderV2(paths, basePath);
   }
 
   constructor(private paths: TPaths, private basePath: string) {
-    this.resolver = SchemaResolver.of((k, v) => {
+    this.schemaResolver = SchemaResolver.of((k, v) => {
       if (k) {
-        this.extraDefinitions[k] = v;
+        this.enums[k] = v;
       }
     });
   }
 
   toRequest = (): string[] => {
-    const data = sortBy(this.resolvedPaths, (o) => o.operationId);
+    const data = sortBy(this.clientConfig, (o) => o.operationId);
     const requests = data.map((v: IClientConfig) => {
       const TReq = !isEmpty(v.TReq) ? toTypes(v.TReq) : undefined;
       const requestParamList = [...v.pathParams, ...v.queryParams, ...v.bodyParams, ...v.formDataParams];
@@ -67,34 +66,47 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
       }${body ? `headers: {'Content-Type': ${formData ? "'multipart/form-data'" : "'application/json'"}}` : ""}}));`;
     });
 
-    const enums = Object.keys(this.extraDefinitions).map((k) => generateEnums(this.extraDefinitions, k));
+    const enums = keys(this.enums).map((k) => generateEnums(this.enums, k));
     return [...requests, ...enums];
   };
 
   scan = () => {
-    this.resolvedPaths = reduce(
+    this.clientConfig = reduce(
       this.paths,
-      (results: IClientConfig[], p: Path, k: string) => [...results, ...this.resolvePath(p, k)],
+      (config: IClientConfig[], p: Path, k: string) => [...config, ...this.buildConfig(p, k)],
       [],
     );
     return this;
   };
 
-  toRequestParams = (data: any[] = []) =>
-    !isEmpty(data)
-      ? `{
-    ${data.join(",\n")}
-    }`
-      : undefined;
-
-  resolvePath(path: Path, pathName: string) {
+  buildConfig(path: Path, pathName: string) {
     const operations = pick(path, ["get", "post", "put", "delete", "patch", "options", "head"]);
-    return Object.keys(operations).map((method) => {
+
+    return keys(operations).map((method) => {
       const path = this.getRequestURL(pathName);
+      // TODO: handle the case when v.parameters = Reference
+      const operation = (operations as Dictionary<any>)[method];
+      const pickParamsByType = this.pickParams(operation.parameters as Parameter[]);
+      const params = {
+        pathParams: pickParamsByType("path") as PathParameter[],
+        queryParams: pickParamsByType("query") as QueryParameter[],
+        bodyParams: pickParamsByType("body") as BodyParameter[],
+        formDataParams: pickParamsByType("formData") as FormDataParameter[],
+      };
+
+      const getNames = (list: any[]) => (isEmpty(list) ? [] : map(list, (item) => item.name));
+
       return {
         url: `${this.basePath}${path === "/" && !!this.basePath ? "" : path}`,
         method,
-        ...this.resolveOperation((operations as Dictionary<any>)[method]),
+        operationId: operation.operationId,
+        TResp: this.getResponseTypes(operation.responses),
+        TReq: this.getRequestTypes(params),
+        pathParams: getNames(params.pathParams),
+        queryParams: getNames(params.queryParams),
+        bodyParams: getNames(params.bodyParams),
+        formDataParams: getNames(params.formDataParams),
+        deprecated: operation.deprecated,
       };
     });
   }
@@ -107,36 +119,14 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
       .value();
   };
 
+  toRequestParams = (data: any[] = []) =>
+    !isEmpty(data)
+      ? `{
+    ${data.join(",\n")}
+    }`
+      : undefined;
+
   isPathParam = (str: string) => str.startsWith("{");
-
-  // TODO: handle the case when v.parameters = Reference
-  resolveOperation = (v: Operation) => {
-    const pickParamsByType = this.pickParams(v.parameters as Parameter[]);
-    const params = {
-      pathParams: pickParamsByType("path") as PathParameter[],
-      queryParams: pickParamsByType("query") as QueryParameter[],
-      bodyParams: pickParamsByType("body") as BodyParameter[],
-      formDataParams: pickParamsByType("formData") as FormDataParameter[],
-    };
-
-    return {
-      operationId: v.operationId,
-      TResp: this.getResponseTypes(v.responses),
-      TReq: this.getRequestTypes(params),
-      ...this.getParamsNames(params),
-      deprecated: v.deprecated,
-    };
-  };
-
-  getParamsNames = (params: IParams) => {
-    const getNames = (list: any[]) => (isEmpty(list) ? [] : map(list, (item) => item.name));
-    return {
-      pathParams: getNames(params.pathParams),
-      queryParams: getNames(params.queryParams),
-      bodyParams: getNames(params.bodyParams),
-      formDataParams: getNames(params.formDataParams),
-    };
-  };
 
   getRequestTypes = (params: IParams) => ({
     ...this.getPathParamsTypes(params.pathParams),
@@ -149,7 +139,7 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
     pathParams.reduce(
       (results, param) => ({
         ...results,
-        [`${param.name}${param.required ? "" : "?"}`]: this.resolver.toType({
+        [`${param.name}${param.required ? "" : "?"}`]: this.schemaResolver.toType({
           ...(param as Schema),
           _name: param.name,
           _propKey: param.name,
@@ -162,7 +152,7 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
     bodyParams.reduce(
       (o, v) => ({
         ...o,
-        [`${v.name}${v.required ? "" : "?"}`]: this.resolver.toType({
+        [`${v.name}${v.required ? "" : "?"}`]: this.schemaResolver.toType({
           ...v.schema,
           _name: v.name,
           _propKey: v.name,
@@ -175,7 +165,7 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
     queryParams.reduce(
       (o, v) => ({
         ...o,
-        [`${v.name}${v.required ? "" : "?"}`]: this.resolver.toType({
+        [`${v.name}${v.required ? "" : "?"}`]: this.schemaResolver.toType({
           ...(v as Schema),
           _name: v.name,
           _propKey: v.name,
@@ -190,7 +180,7 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
       if (param.schema) {
         return {
           ...results,
-          [`${param.name}${param.required ? "" : "?"}`]: this.resolver.toType({
+          [`${param.name}${param.required ? "" : "?"}`]: this.schemaResolver.toType({
             ...param.schema,
             _name: param.name,
             _propKey: param.name,
@@ -212,7 +202,7 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
   // TODO: responses.201 同上
 
   getResponseTypes = (responses: { [responseName: string]: Response | Reference }) =>
-    this.resolver.toType(get(responses, "200.schema") || get(responses, "201.schema"));
+    this.schemaResolver.toType(get(responses, "200.schema") || get(responses, "201.schema"));
 
   // TODO: when parameters has enum
   pickParams = (parameters: Parameter[]) => (type: "path" | "query" | "body" | "formData") =>
