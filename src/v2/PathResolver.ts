@@ -11,7 +11,7 @@ import {
   Schema,
 } from "swagger-schema-official";
 import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
-import {generateEnums, toTypes} from "src/core/utils";
+import { generateEnums, toTypes } from "src/core/utils";
 import { SchemaResolver } from "src/core/SchemaResolver";
 
 type TPaths = { [pathName: string]: Path };
@@ -55,14 +55,14 @@ export class PathResolver {
     const requests = data.map((v: IResolvedPath) => {
       const TReq = !isEmpty(v.TReq) ? toTypes(v.TReq) : undefined;
       const requestParamList = [...v.pathParams, ...v.queryParams, ...v.bodyParams, ...v.formDataParams];
-      const bodyData = get(v.bodyParams, "[0]");
-      const formData = get(v.formDataParams, "[0]");
-      const body = bodyData || formData;
+      const bodyData = v.bodyParams;
+      const formData = v.formDataParams;
+      const body = !isEmpty(bodyData) ? bodyData : formData;
       const params = this.toRequestParams(get(v, "queryParams"));
 
       return `export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.operationId}', (${
         !isEmpty(requestParamList) ? `${this.toRequestParams(requestParamList)}` : ""
-      }) => ({url: \`${v.url}\`, method: "${v.method}", ${body ? `data: ${body},` : ""}${
+      }) => ({url: \`${v.url}\`, method: "${v.method}", ${body ? `data: {${body.join(",")}},` : ""}${
         params ? `params: ${params},` : ""
       }${body ? `headers: {'Content-Type': ${formData ? "'multipart/form-data'" : "'application/json'"}}` : ""}}));`;
     });
@@ -73,9 +73,9 @@ export class PathResolver {
 
   scan = () => {
     this.resolvedPaths = reduce(
-        this.paths,
-        (results: IResolvedPath[], p: Path, k: string) => [...results, ...this.resolvePath(p, k)],
-        [],
+      this.paths,
+      (results: IResolvedPath[], p: Path, k: string) => [...results, ...this.resolvePath(p, k)],
+      [],
     );
     return this;
   };
@@ -148,7 +148,11 @@ export class PathResolver {
     pathParams.reduce(
       (results, param) => ({
         ...results,
-        [`${param.name}${param.required ? "" : "?"}`]: param.type,
+        [`${param.name}${param.required ? "" : "?"}`]: this.resolver.toType({
+          ...(param as Schema),
+          _name: param.name,
+          _propKey: param.name,
+        }),
       }),
       {},
     );
