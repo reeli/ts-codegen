@@ -11,7 +11,7 @@ import {
   Schema,
 } from "swagger-schema-official";
 import { chain, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
-import { generateEnums, toTypes } from "src/core/utils";
+import { generateEnums, setDeprecated, toTypes } from "src/core/utils";
 import { SchemaResolver } from "src/core/SchemaResolver";
 
 type TPaths = { [pathName: string]: Path };
@@ -31,13 +31,6 @@ interface IClientConfig extends IParams {
   operationId?: string;
   deprecated?: boolean;
 }
-
-const setDeprecated = (operationId: string = "") =>
-  `
-  /**
-  * @deprecated ${operationId}
-  */
-  `;
 
 export class ClientBuilderV2 {
   resolver: SchemaResolver;

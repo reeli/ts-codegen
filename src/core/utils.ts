@@ -99,3 +99,10 @@ export function generateEnums(data: Dictionary<any>, key: string) {
     ? `export type ${enumName} = ${enums.map((item: string | number) => JSON.stringify(item)).join("|")}`
     : `export enum ${enumName} ${JSON.stringify(arrayToObject(enums)).replace(/:/gi, "=")}`;
 }
+
+export const setDeprecated = (operationId: string = "") =>
+    `
+  /**
+  * @deprecated ${operationId}
+  */
+  `;
