@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PathsResolver should generate correct request from swagger data 1`] = `
+exports[`PathsResolverV3 should generate correct request from swagger data 1`] = `
 "export const addPet = createRequestAction<
   {
     requestBody: INewPet;

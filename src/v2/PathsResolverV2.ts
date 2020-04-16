@@ -33,13 +33,13 @@ interface IParams {
   formDataParams: FormDataParameter[];
 }
 
-export class PathResolver {
+export class PathsResolverV2 {
   resolver: SchemaResolver;
   resolvedPaths: IResolvedPath[] = [];
   extraDefinitions: Dictionary<any> = {};
 
   static of(paths: TPaths, basePath: string = "") {
-    return new PathResolver(paths, basePath);
+    return new PathsResolverV2(paths, basePath);
   }
 
   constructor(private paths: TPaths, private basePath: string) {

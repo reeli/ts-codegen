@@ -1,16 +1,16 @@
-import { PathResolver } from "src/v2/PathResolver";
+import { PathsResolverV2 } from "src/v2/PathsResolverV2";
 import swaggerV2 from "examples/swagger.v2.json";
 
 describe("PathResolver", () => {
   it("should get resolved paths by swagger schema", () => {
-    expect(PathResolver.of((swaggerV2 as any).paths, swaggerV2.basePath).scan().resolvedPaths).toEqual(
+    expect(PathsResolverV2.of((swaggerV2 as any).paths, swaggerV2.basePath).scan().resolvedPaths).toEqual(
       expectedPathResolvedData,
     );
   });
 
   it("should get correct action creator by resolved paths", () => {
     expect(
-      PathResolver.of((swaggerV2 as any).paths, swaggerV2.basePath)
+      PathsResolverV2.of((swaggerV2 as any).paths, swaggerV2.basePath)
         .scan()
         .toRequest(),
     ).toEqual(expectedRequest);

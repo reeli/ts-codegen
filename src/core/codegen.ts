@@ -1,4 +1,4 @@
-import { PathsResolver } from "src/v3/PathsResolver";
+import { PathsResolverV3 } from "src/v3/PathsResolverV3";
 import { ReusableTypes } from "src/core/ReusableTypes";
 import { prettifyCode, testJSON } from "src/core/utils";
 import axios from "axios";
@@ -8,7 +8,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { IOpenAPI } from "src/v3/OpenAPI";
 import { Spec } from "swagger-schema-official";
-import { PathResolver } from "src";
+import { PathsResolverV2 } from "src";
 
 export const codegen = (spec: IOpenAPI | Spec): string => {
   if (!spec) {
@@ -17,7 +17,7 @@ export const codegen = (spec: IOpenAPI | Spec): string => {
 
   if ((spec as IOpenAPI).openapi) {
     return [
-      ...PathsResolver.of(spec.paths, spec.basePath)
+      ...PathsResolverV3.of(spec.paths, spec.basePath)
         .scan()
         .toRequest(),
       ...ReusableTypes.of(spec).gen(),
@@ -25,7 +25,7 @@ export const codegen = (spec: IOpenAPI | Spec): string => {
   }
 
   return [
-    ...PathResolver.of(spec.paths, spec.basePath)
+    ...PathsResolverV2.of(spec.paths, spec.basePath)
       .scan()
       .toRequest(),
     ...ReusableTypes.of(spec).gen(),

@@ -24,13 +24,13 @@ interface IResolvedPath {
 // TODO: 1. 将 inline 的 requestParams 和 requestBody 抽成单独的 interface，方便外面使用
 // TODO: 2. query 不要全部 ...，而是以具体的 {[key]: value} 形式，避免外部应用一些不需要的 query
 
-export class PathsResolver {
+export class PathsResolverV3 {
   resolver: SchemaResolver;
   resolvedPaths: IResolvedPath[] = [];
   extraDefinitions: Dictionary<any> = {};
 
   static of(paths: IPaths, basePath: string = "") {
-    return new PathsResolver(paths, basePath);
+    return new PathsResolverV3(paths, basePath);
   }
 
   constructor(private paths: IPaths, private basePath: string) {
