@@ -16,19 +16,19 @@ import { SchemaResolver } from "src/core/SchemaResolver";
 
 type TPaths = { [pathName: string]: Path };
 
-interface IResolvedPath extends IParams {
-  url: string;
-  method: string;
-  TResp: any;
-  TReq: any;
-  operationId?: string;
-}
-
 interface IParams {
   pathParams: PathParameter[];
   queryParams: QueryParameter[];
   bodyParams: BodyParameter[];
   formDataParams: FormDataParameter[];
+}
+
+interface IClientConfig extends IParams {
+  url: string;
+  method: string;
+  TResp: any;
+  TReq: any;
+  operationId?: string;
   deprecated?: boolean;
 }
 
@@ -39,13 +39,13 @@ const setDeprecated = (operationId: string = "") =>
   */
   `;
 
-export class PathsResolverV2 {
+export class ClientBuilderV2 {
   resolver: SchemaResolver;
-  resolvedPaths: IResolvedPath[] = [];
+  resolvedPaths: IClientConfig[] = [];
   extraDefinitions: Dictionary<any> = {};
 
   static of(paths: TPaths, basePath: string = "") {
-    return new PathsResolverV2(paths, basePath);
+    return new ClientBuilderV2(paths, basePath);
   }
 
   constructor(private paths: TPaths, private basePath: string) {
@@ -58,7 +58,7 @@ export class PathsResolverV2 {
 
   toRequest = (): string[] => {
     const data = sortBy(this.resolvedPaths, (o) => o.operationId);
-    const requests = data.map((v: IResolvedPath) => {
+    const requests = data.map((v: IClientConfig) => {
       const TReq = !isEmpty(v.TReq) ? toTypes(v.TReq) : undefined;
       const requestParamList = [...v.pathParams, ...v.queryParams, ...v.bodyParams, ...v.formDataParams];
       const bodyData = v.bodyParams;
@@ -81,7 +81,7 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
   scan = () => {
     this.resolvedPaths = reduce(
       this.paths,
-      (results: IResolvedPath[], p: Path, k: string) => [...results, ...this.resolvePath(p, k)],
+      (results: IClientConfig[], p: Path, k: string) => [...results, ...this.resolvePath(p, k)],
       [],
     );
     return this;

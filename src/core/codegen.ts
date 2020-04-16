@@ -8,7 +8,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { IOpenAPI } from "src/v3/OpenAPI";
 import { Spec } from "swagger-schema-official";
-import { PathsResolverV2 } from "src";
+import { ClientBuilderV2 } from "src";
 
 export const codegen = (spec: IOpenAPI | Spec): string => {
   if (!spec) {
@@ -25,7 +25,7 @@ export const codegen = (spec: IOpenAPI | Spec): string => {
   }
 
   return [
-    ...PathsResolverV2.of(spec.paths, spec.basePath)
+    ...ClientBuilderV2.of(spec.paths, spec.basePath)
       .scan()
       .toRequest(),
     ...ReusableTypes.of(spec).gen(),
