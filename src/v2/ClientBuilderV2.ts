@@ -62,9 +62,11 @@ export class ClientBuilderV2 {
 ${v.deprecated ? setDeprecated(v.operationId) : ""}
 export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.operationId}', (${
         !isEmpty(requestParamList) ? `${this.toRequestParams(requestParamList)}` : ""
-      }) => ({url: \`${v.url}\`, method: "${v.method}", ${body ? `data: {${body.join(",")}},` : ""}${
-        params ? `params: ${params},` : ""
-      }${body ? `headers: {'Content-Type': ${formData ? "'multipart/form-data'" : "'application/json'"}}` : ""}}));`;
+      }) => ({url: \`${v.url}\`, method: "${v.method}", ${
+        !isEmpty(body) ? (body.length > 1 ? `data: {${body.join(",")}},` : `data: ${body},`) : ""
+      }${params ? `params: ${params},` : ""}${
+        body ? `headers: {'Content-Type': ${!isEmpty(formData) ? "'multipart/form-data'" : "'application/json'"}}` : ""
+      }}));`;
     });
 
     const enums = keys(this.enums).map((k) => generateEnums(this.enums, k));
@@ -82,11 +84,15 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
 
   buildConfig(path: Path, pathName: string) {
     const operations = pick(path, ["get", "post", "put", "delete", "patch", "options", "head"]);
+    // TODO: when parameters has enum
+    const pickParams = (parameters: Parameter[]) => (type: "path" | "query" | "body" | "formData") =>
+      filter(parameters, (param) => param.in === type);
+    const getNames = (list: any[]) => (isEmpty(list) ? [] : map(list, (item) => item.name));
 
     return keys(operations).map((method) => {
       // TODO: handle the case when v.parameters = Reference
       const operation = (operations as Dictionary<any>)[method];
-      const pickParamsByType = this.pickParams(operation.parameters as Parameter[]);
+      const pickParamsByType = pickParams(operation.parameters as Parameter[]);
       const params = {
         pathParams: pickParamsByType("path") as PathParameter[],
         queryParams: pickParamsByType("query") as QueryParameter[],
@@ -94,13 +100,11 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
         formDataParams: pickParamsByType("formData") as FormDataParameter[],
       };
 
-      const getNames = (list: any[]) => (isEmpty(list) ? [] : map(list, (item) => item.name));
-
       return {
         url: getRequestURL(pathName, this.basePath),
         method,
         operationId: operation.operationId,
-        TResp: this.getResponseTypes(operation.responses),
+        TResp: this.getResponseType(operation.responses),
         TReq: this.getRequestTypes(params),
         pathParams: getNames(params.pathParams),
         queryParams: getNames(params.queryParams),
@@ -184,14 +188,7 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
     }, {});
   };
 
-  // TODO: handle Response or Reference
-  // TODO: responses.200.schema.type ==="array"
-  // TODO: response.200.schema.type ==="object" (additionalProperties)
-  // TODO: response.200.schema.type==="string" | "number" | "integer" | "boolean"
-  // TODO: responses.200.headers 存在时
-  // TODO: responses.201 同上
-
-  getResponseTypes = (responses: Operation["responses"]) => {
+  getResponseType = (responses: Operation["responses"]) => {
     const response200 = get(responses, "200");
     const response201 = get(responses, "201");
 
@@ -201,8 +198,4 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
 
     return this.schemaResolver.toType((response200 as Response)?.schema || (response201 as Response)?.schema);
   };
-
-  // TODO: when parameters has enum
-  pickParams = (parameters: Parameter[]) => (type: "path" | "query" | "body" | "formData") =>
-    filter(parameters, (param) => param.in === type);
 }

@@ -1,19 +1,19 @@
 import { ClientBuilderV2 } from "src/v2/ClientBuilderV2";
 import swaggerV2 from "examples/swagger.v2.json";
+import { prettifyCode } from "src";
 
 describe("PathResolver", () => {
   it("should get resolved paths by swagger schema", () => {
-    expect(ClientBuilderV2.of((swaggerV2 as any).paths, swaggerV2.basePath).scan().resolvedPaths).toEqual(
+    expect(ClientBuilderV2.of((swaggerV2 as any).paths, swaggerV2.basePath).scan().clientConfig).toEqual(
       expectedPathResolvedData,
     );
   });
 
   it("should get correct action creator by resolved paths", () => {
-    expect(
-      ClientBuilderV2.of((swaggerV2 as any).paths, swaggerV2.basePath)
-        .scan()
-        .toRequest(),
-    ).toEqual(expectedRequest);
+    const result = ClientBuilderV2.of((swaggerV2 as any).paths, swaggerV2.basePath)
+      .scan()
+      .toRequest();
+    expect(prettifyCode(result.join(""))).toMatchSnapshot();
   });
 });
 
@@ -22,6 +22,7 @@ const expectedPathResolvedData = [
     TReq: { attachment: "File" },
     TResp: "IAttachmentBo",
     bodyParams: [],
+    deprecated: false,
     formDataParams: ["attachment"],
     operationId: "uploadAttachmentUsingPOST",
     pathParams: [],
@@ -33,6 +34,7 @@ const expectedPathResolvedData = [
     TReq: { id: "string" },
     TResp: "IResource",
     bodyParams: [],
+    deprecated: false,
     formDataParams: [],
     operationId: "downloadUsingGET",
     pathParams: ["id"],
@@ -44,6 +46,7 @@ const expectedPathResolvedData = [
     TReq: { id: "string" },
     TResp: "",
     bodyParams: [],
+    deprecated: false,
     formDataParams: [],
     operationId: "deleteAttachmentUsingDELETE",
     pathParams: ["id"],
@@ -55,6 +58,7 @@ const expectedPathResolvedData = [
     TReq: { id: "string" },
     TResp: "IBookDetailVo",
     bodyParams: [],
+    deprecated: false,
     formDataParams: [],
     operationId: "findBookByIdUsingGET",
     pathParams: ["id"],
@@ -66,6 +70,7 @@ const expectedPathResolvedData = [
     TReq: { id: "string", updateBookRequest: "IUpdateBookRequest" },
     TResp: "",
     bodyParams: ["updateBookRequest"],
+    deprecated: false,
     formDataParams: [],
     operationId: "updateBookByIdUsingPUT",
     pathParams: ["id"],
@@ -77,6 +82,7 @@ const expectedPathResolvedData = [
     TReq: { scheduleDate: "number", "roleId?": "string" },
     TResp: "IScheduleVo[]",
     bodyParams: [],
+    deprecated: false,
     formDataParams: [],
     operationId: "getScheduleDetailsByDateUsingGET",
     pathParams: [],
@@ -88,6 +94,7 @@ const expectedPathResolvedData = [
     TReq: { "from?": "keyof typeof FromFrom#EnumSuffix", documentId: "string" },
     TResp: "IDocumentVo",
     bodyParams: [],
+    deprecated: false,
     formDataParams: [],
     operationId: "getDocumentByIdUsingGET",
     pathParams: ["documentId"],
@@ -95,40 +102,4 @@ const expectedPathResolvedData = [
     url: "/api/test/documents/${documentId}/doc",
     method: "get",
   },
-];
-
-const expectedRequest = [
-  "export const deleteAttachmentUsingDELETE = createRequestAction<{\n  " +
-    "      'id': string;\n      }, >('deleteAttachmentUsingDELETE', ({\n  " +
-    '  id\n    }) => ({url: `/api/test/${id}`, method: "delete", }));',
-  "export const downloadUsingGET = createRequestAction<{\n        " +
-    "'id': string;\n      }, IResource>('downloadUsingGET', ({\n    " +
-    'id\n    }) => ({url: `/api/test/${id}`, method: "get", }));',
-  "export const findBookByIdUsingGET = createRequestAction<{\n        " +
-    "'id': string;\n      }, IBookDetailVo>('findBookByIdUsingGET', ({\n  " +
-    '  id\n    }) => ({url: `/api/test/book/${id}`, method: "get", }));',
-  "export const getDocumentByIdUsingGET = createRequestAction<{\n" +
-    "        'documentId': string;\n'from'?: keyof typeof " +
-    "FromFrom;\n      }, IDocumentVo>('getDocumentByIdUsingGET', " +
-    "({\n    documentId,\nfrom\n    }) => ({url: " +
-    '`/api/test/documents/${documentId}/doc`, method: "get", ' +
-    "params: {\n    from\n    },}));",
-  "export const getScheduleDetailsByDateUsingGET = " +
-    "createRequestAction<{\n        'roleId'?: string;\n" +
-    "'scheduleDate': number;\n      }, " +
-    "IScheduleVo[]>('getScheduleDetailsByDateUsingGET', ({\n    " +
-    "scheduleDate,\nroleId\n    }) => ({url: `/api/test/schedules`, " +
-    'method: "get", params: {\n    scheduleDate,\nroleId\n    },}));',
-  "export const updateBookByIdUsingPUT = createRequestAction<{\n     " +
-    "   'id': string;\n'updateBookRequest': IUpdateBookRequest;\n      " +
-    "}, >('updateBookByIdUsingPUT', ({\n    id,\nupdateBookRequest\n    " +
-    '}) => ({url: `/api/test/book/${id}`, method: "put", data: ' +
-    "updateBookRequest,headers: {'Content-Type': " +
-    "'application/json'}}));",
-  "export const uploadAttachmentUsingPOST = createRequestAction<{\n        " +
-    "'attachment': File;\n      }, " +
-    "IAttachmentBo>('uploadAttachmentUsingPOST', ({\n    attachment\n    }) " +
-    '=> ({url: `/api/test`, method: "post", data: attachment,headers: ' +
-    "{'Content-Type': 'multipart/form-data'}}));",
-  'export enum FromFrom {"AAA"="AAA","BBB"="BBB"}',
 ];
