@@ -9,7 +9,7 @@ import {
   Reference,
   Response,
 } from "swagger-schema-official";
-import { Dictionary, filter, get, isEmpty, keys, map, pick, reduce, sortBy } from "lodash";
+import { compact, Dictionary, filter, get, isEmpty, keys, map, pick, reduce, sortBy } from "lodash";
 import { generateEnums, getRequestURL, setDeprecated, toTypes } from "src/core/utils";
 import { SchemaResolver } from "src/core/SchemaResolver";
 
@@ -27,13 +27,6 @@ interface IClientConfig {
   formDataParams: string[];
   deprecated?: boolean;
 }
-
-const pickParams = (parameters: Array<Parameter | Reference>) => (type: "path" | "query" | "body" | "formData") =>
-  filter(parameters, (param) => (param as Parameter).in === type);
-
-const getParamsNames = (params: any[]) => (isEmpty(params) ? [] : map(params, (param) => (param as Parameter).name));
-
-const propName = (param: Parameter) => `${param.name}${param.required ? "" : "?"}`;
 
 export class ClientBuilderV2 {
   schemaResolver: SchemaResolver;
@@ -53,23 +46,54 @@ export class ClientBuilderV2 {
   }
 
   toRequest = (): string[] => {
-    const data = sortBy(this.clientConfig, (o) => o.operationId);
-    const requests = data.map((v: IClientConfig) => {
+    const clientConfig = sortBy(this.clientConfig, (o) => o.operationId);
+    const requests = clientConfig.map((v: IClientConfig) => {
       const TReq = !isEmpty(v.TReq) ? toTypes(v.TReq) : undefined;
-      const requestParamList = [...v.pathParams, ...v.queryParams, ...v.bodyParams, ...v.formDataParams];
-      const bodyData = v.bodyParams;
-      const formData = v.formDataParams;
-      const body = !isEmpty(bodyData) ? bodyData : formData;
-      const params = this.toRequestParams(get(v, "queryParams"));
+      const getRequestBody = () => {
+        if (isEmpty(v.bodyParams) && isEmpty(v.formDataParams)) {
+          return null;
+        }
+        if (isEmpty(v.bodyParams)) {
+          return v.formDataParams;
+        }
+        return v.bodyParams;
+      };
+
+      const getData = () => {
+        const requestBody = getRequestBody();
+        if (!requestBody) {
+          return "";
+        }
+        return requestBody.length > 1 ? `data: {${requestBody.join(",")}},` : `data: ${requestBody},`;
+      };
+
+      const requestParamList = compact([...v.pathParams, ...v.queryParams, ...v.bodyParams, ...v.formDataParams]);
+      const requestInputs = isEmpty(requestParamList) ? "" : toRequestParams(requestParamList);
+
+      const getParams = () => {
+        const params = toRequestParams(get(v, "queryParams"));
+        return params ? `params: ${params},` : "";
+      };
+
+      const getHeaders = () => {
+        const requestBody = getRequestBody();
+        if (!requestBody) {
+          return "";
+        }
+        return `headers: { "Content-Type": ${
+          !isEmpty(v.formDataParams) ? "'multipart/form-data'" : "'application/json'"
+        } },`;
+      };
+
       return `
 ${v.deprecated ? setDeprecated(v.operationId) : ""}
-export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.operationId}', (${
-        !isEmpty(requestParamList) ? `${this.toRequestParams(requestParamList)}` : ""
-      }) => ({url: \`${v.url}\`, method: "${v.method}", ${
-        !isEmpty(body) ? (body.length > 1 ? `data: {${body.join(",")}},` : `data: ${body},`) : ""
-      }${params ? `params: ${params},` : ""}${
-        body ? `headers: {'Content-Type': ${!isEmpty(formData) ? "'multipart/form-data'" : "'application/json'"}}` : ""
-      }}));`;
+export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${v.operationId}", (${requestInputs}) => ({
+    url: \`${v.url}\`,
+    method: "${v.method}",
+    ${getData()}${getParams()}${getHeaders()}
+  })
+);
+`;
     });
 
     const enums = keys(this.enums).map((k) => generateEnums(this.enums, k));
@@ -118,19 +142,12 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
     });
   }
 
-  toRequestParams = (data: any[] = []) =>
-    !isEmpty(data)
-      ? `{
-    ${data.join(",\n")}
-    }`
-      : undefined;
-
   getParamTypes = (params: Array<PathParameter | BodyParameter | QueryParameter | FormDataParameter>) =>
     params.reduce(
       (results, param) => ({
         ...results,
         [propName(param)]: this.schemaResolver.toType({
-          ...((param as any).schema ? (param as any).schema : param),
+          ...get(param, "schema", param),
           _name: param.name,
           _propKey: param.name,
         }),
@@ -149,3 +166,12 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
     return this.schemaResolver.toType((response200 as Response)?.schema || (response201 as Response)?.schema);
   };
 }
+
+const pickParams = (parameters: Array<Parameter | Reference>) => (type: "path" | "query" | "body" | "formData") =>
+  filter(parameters, (param) => (param as Parameter).in === type);
+
+const getParamsNames = (params: any[]) => (isEmpty(params) ? [] : map(params, (param) => (param as Parameter).name));
+
+const propName = (param: Parameter) => `${param.name}${param.required ? "" : "?"}`;
+
+const toRequestParams = (data: any[] = []) => (!isEmpty(data) ? `{${data.join(",")}}` : undefined);

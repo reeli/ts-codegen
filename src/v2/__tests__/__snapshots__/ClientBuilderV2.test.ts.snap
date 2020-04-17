@@ -6,7 +6,6 @@ exports[`PathResolver should get correct action creator by resolved paths 1`] = 
 }>(\\"deleteAttachmentUsingDELETE\\", ({ id }) => ({
   url: \`/api/test/\${id}\`,
   method: \\"delete\\",
-  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const downloadUsingGET = createRequestAction<
@@ -17,7 +16,6 @@ export const downloadUsingGET = createRequestAction<
 >(\\"downloadUsingGET\\", ({ id }) => ({
   url: \`/api/test/\${id}\`,
   method: \\"get\\",
-  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const findBookByIdUsingGET = createRequestAction<
@@ -28,7 +26,6 @@ export const findBookByIdUsingGET = createRequestAction<
 >(\\"findBookByIdUsingGET\\", ({ id }) => ({
   url: \`/api/test/book/\${id}\`,
   method: \\"get\\",
-  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const getDocumentByIdUsingGET = createRequestAction<
@@ -40,10 +37,7 @@ export const getDocumentByIdUsingGET = createRequestAction<
 >(\\"getDocumentByIdUsingGET\\", ({ documentId, from }) => ({
   url: \`/api/test/documents/\${documentId}/doc\`,
   method: \\"get\\",
-  params: {
-    from,
-  },
-  headers: { \\"Content-Type\\": \\"application/json\\" },
+  params: { from },
 }));
 
 export const getScheduleDetailsByDateUsingGET = createRequestAction<
@@ -55,11 +49,7 @@ export const getScheduleDetailsByDateUsingGET = createRequestAction<
 >(\\"getScheduleDetailsByDateUsingGET\\", ({ scheduleDate, roleId }) => ({
   url: \`/api/test/schedules\`,
   method: \\"get\\",
-  params: {
-    scheduleDate,
-    roleId,
-  },
-  headers: { \\"Content-Type\\": \\"application/json\\" },
+  params: { scheduleDate, roleId },
 }));
 
 export const updateBookByIdUsingPUT = createRequestAction<{
@@ -132,7 +122,6 @@ export const deleteOrder = createRequestAction<{
 }>(\\"deleteOrder\\", ({ orderId }) => ({
   url: \`/api/test/store/order/\${orderId}\`,
   method: \\"delete\\",
-  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const deletePet = createRequestAction<{
@@ -140,7 +129,6 @@ export const deletePet = createRequestAction<{
 }>(\\"deletePet\\", ({ petId }) => ({
   url: \`/api/test/pet/\${petId}\`,
   method: \\"delete\\",
-  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const deleteUser = createRequestAction<{
@@ -148,7 +136,6 @@ export const deleteUser = createRequestAction<{
 }>(\\"deleteUser\\", ({ username }) => ({
   url: \`/api/test/user/\${username}\`,
   method: \\"delete\\",
-  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const findPetsByStatus = createRequestAction<
@@ -159,10 +146,7 @@ export const findPetsByStatus = createRequestAction<
 >(\\"findPetsByStatus\\", ({ status }) => ({
   url: \`/api/test/pet/findByStatus\`,
   method: \\"get\\",
-  params: {
-    status,
-  },
-  headers: { \\"Content-Type\\": \\"application/json\\" },
+  params: { status },
 }));
 
 /**
@@ -177,16 +161,12 @@ export const findPetsByTags = createRequestAction<
 >(\\"findPetsByTags\\", ({ tags }) => ({
   url: \`/api/test/pet/findByTags\`,
   method: \\"get\\",
-  params: {
-    tags,
-  },
-  headers: { \\"Content-Type\\": \\"application/json\\" },
+  params: { tags },
 }));
 
 export const getInventory = createRequestAction<undefined, object>(\\"getInventory\\", () => ({
   url: \`/api/test/store/inventory\`,
   method: \\"get\\",
-  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const getOrderById = createRequestAction<
@@ -197,7 +177,6 @@ export const getOrderById = createRequestAction<
 >(\\"getOrderById\\", ({ orderId }) => ({
   url: \`/api/test/store/order/\${orderId}\`,
   method: \\"get\\",
-  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const getPetById = createRequestAction<
@@ -208,7 +187,6 @@ export const getPetById = createRequestAction<
 >(\\"getPetById\\", ({ petId }) => ({
   url: \`/api/test/pet/\${petId}\`,
   method: \\"get\\",
-  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const getUserByName = createRequestAction<
@@ -219,7 +197,6 @@ export const getUserByName = createRequestAction<
 >(\\"getUserByName\\", ({ username }) => ({
   url: \`/api/test/user/\${username}\`,
   method: \\"get\\",
-  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const loginUser = createRequestAction<
@@ -231,17 +208,12 @@ export const loginUser = createRequestAction<
 >(\\"loginUser\\", ({ username, password }) => ({
   url: \`/api/test/user/login\`,
   method: \\"get\\",
-  params: {
-    username,
-    password,
-  },
-  headers: { \\"Content-Type\\": \\"application/json\\" },
+  params: { username, password },
 }));
 
 export const logoutUser = createRequestAction<undefined>(\\"logoutUser\\", () => ({
   url: \`/api/test/user/logout\`,
   method: \\"get\\",
-  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const placeOrder = createRequestAction<
