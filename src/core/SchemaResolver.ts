@@ -54,6 +54,10 @@ export class SchemaResolver {
       return "number";
     }
 
+    if (schema.type === "file") {
+      return "File";
+    }
+
     return schema.type || "";
   };
 
