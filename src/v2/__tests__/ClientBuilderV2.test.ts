@@ -1,5 +1,6 @@
 import { ClientBuilderV2 } from "src/v2/ClientBuilderV2";
 import swaggerV2 from "examples/swagger.v2.json";
+import swaggerV2Expanded from "examples/swagger.json";
 import { prettifyCode } from "src";
 
 describe("PathResolver", () => {
@@ -11,6 +12,13 @@ describe("PathResolver", () => {
 
   it("should get correct action creator by resolved paths", () => {
     const result = ClientBuilderV2.of((swaggerV2 as any).paths, swaggerV2.basePath)
+      .scan()
+      .toRequest();
+    expect(prettifyCode(result.join(""))).toMatchSnapshot();
+  });
+
+  it("should handle multiple form data in response", () => {
+    const result = ClientBuilderV2.of((swaggerV2Expanded as any).paths, swaggerV2.basePath)
       .scan()
       .toRequest();
     expect(prettifyCode(result.join(""))).toMatchSnapshot();

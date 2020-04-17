@@ -89,3 +89,220 @@ export enum FromFrom {
 }
 "
 `;
+
+exports[`PathResolver should handle multiple form data in response 1`] = `
+"export const addPet = createRequestAction<{
+  body: IPet;
+}>(\\"addPet\\", ({ body }) => ({
+  url: \`/api/test/pet\`,
+  method: \\"post\\",
+  data: body,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createUser = createRequestAction<{
+  body: IUser;
+}>(\\"createUser\\", ({ body }) => ({
+  url: \`/api/test/user\`,
+  method: \\"post\\",
+  data: body,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createUsersWithArrayInput = createRequestAction<{
+  body: IUser[];
+}>(\\"createUsersWithArrayInput\\", ({ body }) => ({
+  url: \`/api/test/user/createWithArray\`,
+  method: \\"post\\",
+  data: body,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createUsersWithListInput = createRequestAction<{
+  body: IUser[];
+}>(\\"createUsersWithListInput\\", ({ body }) => ({
+  url: \`/api/test/user/createWithList\`,
+  method: \\"post\\",
+  data: body,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const deleteOrder = createRequestAction<{
+  orderId: number;
+}>(\\"deleteOrder\\", ({ orderId }) => ({
+  url: \`/api/test/store/order/\${orderId}\`,
+  method: \\"delete\\",
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const deletePet = createRequestAction<{
+  petId: number;
+}>(\\"deletePet\\", ({ petId }) => ({
+  url: \`/api/test/pet/\${petId}\`,
+  method: \\"delete\\",
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const deleteUser = createRequestAction<{
+  username: string;
+}>(\\"deleteUser\\", ({ username }) => ({
+  url: \`/api/test/user/\${username}\`,
+  method: \\"delete\\",
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const findPetsByStatus = createRequestAction<
+  {
+    status: keyof typeof StatusStatus[];
+  },
+  IPet[]
+>(\\"findPetsByStatus\\", ({ status }) => ({
+  url: \`/api/test/pet/findByStatus\`,
+  method: \\"get\\",
+  params: {
+    status,
+  },
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+/**
+ * @deprecated findPetsByTags
+ */
+
+export const findPetsByTags = createRequestAction<
+  {
+    tags: string[];
+  },
+  IPet[]
+>(\\"findPetsByTags\\", ({ tags }) => ({
+  url: \`/api/test/pet/findByTags\`,
+  method: \\"get\\",
+  params: {
+    tags,
+  },
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const getInventory = createRequestAction<undefined, object>(\\"getInventory\\", () => ({
+  url: \`/api/test/store/inventory\`,
+  method: \\"get\\",
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const getOrderById = createRequestAction<
+  {
+    orderId: number;
+  },
+  IOrder
+>(\\"getOrderById\\", ({ orderId }) => ({
+  url: \`/api/test/store/order/\${orderId}\`,
+  method: \\"get\\",
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const getPetById = createRequestAction<
+  {
+    petId: number;
+  },
+  IPet
+>(\\"getPetById\\", ({ petId }) => ({
+  url: \`/api/test/pet/\${petId}\`,
+  method: \\"get\\",
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const getUserByName = createRequestAction<
+  {
+    username: string;
+  },
+  IUser
+>(\\"getUserByName\\", ({ username }) => ({
+  url: \`/api/test/user/\${username}\`,
+  method: \\"get\\",
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const loginUser = createRequestAction<
+  {
+    password: string;
+    username: string;
+  },
+  string
+>(\\"loginUser\\", ({ username, password }) => ({
+  url: \`/api/test/user/login\`,
+  method: \\"get\\",
+  params: {
+    username,
+    password,
+  },
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const logoutUser = createRequestAction<undefined>(\\"logoutUser\\", () => ({
+  url: \`/api/test/user/logout\`,
+  method: \\"get\\",
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const placeOrder = createRequestAction<
+  {
+    body: IOrder;
+  },
+  IOrder
+>(\\"placeOrder\\", ({ body }) => ({
+  url: \`/api/test/store/order\`,
+  method: \\"post\\",
+  data: body,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const updatePet = createRequestAction<{
+  body: IPet;
+}>(\\"updatePet\\", ({ body }) => ({
+  url: \`/api/test/pet\`,
+  method: \\"put\\",
+  data: body,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const updatePetWithForm = createRequestAction<{
+  name?: string;
+  petId: number;
+  status?: string;
+}>(\\"updatePetWithForm\\", ({ petId, name, status }) => ({
+  url: \`/api/test/pet/\${petId}\`,
+  method: \\"post\\",
+  data: { name, status },
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const updateUser = createRequestAction<{
+  body: IUser;
+  username: string;
+}>(\\"updateUser\\", ({ username, body }) => ({
+  url: \`/api/test/user/\${username}\`,
+  method: \\"put\\",
+  data: body,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const uploadFile = createRequestAction<
+  {
+    additionalMetadata?: string;
+    file?: File;
+    petId: number;
+  },
+  IApiResponse
+>(\\"uploadFile\\", ({ petId, additionalMetadata, file }) => ({
+  url: \`/api/test/pet/\${petId}/uploadImage\`,
+  method: \\"post\\",
+  data: { additionalMetadata, file },
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+export enum StatusStatus {
+  \\"available\\" = \\"available\\",
+  \\"pending\\" = \\"pending\\",
+  \\"sold\\" = \\"sold\\",
+}
+"
+`;
