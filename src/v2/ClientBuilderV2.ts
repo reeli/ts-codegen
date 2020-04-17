@@ -8,7 +8,6 @@ import {
   QueryParameter,
   Reference,
   Response,
-  Schema,
 } from "swagger-schema-official";
 import { Dictionary, filter, get, isEmpty, keys, map, pick, reduce, sortBy } from "lodash";
 import { generateEnums, getRequestURL, setDeprecated, toTypes } from "src/core/utils";
@@ -16,21 +15,25 @@ import { SchemaResolver } from "src/core/SchemaResolver";
 
 type TPaths = { [pathName: string]: Path };
 
-interface IParams {
-  pathParams: PathParameter[];
-  queryParams: QueryParameter[];
-  bodyParams: BodyParameter[];
-  formDataParams: FormDataParameter[];
-}
-
-interface IClientConfig extends IParams {
+interface IClientConfig {
   url: string;
   method: string;
   TResp: any;
   TReq: any;
   operationId?: string;
+  pathParams: string[];
+  queryParams: string[];
+  bodyParams: string[];
+  formDataParams: string[];
   deprecated?: boolean;
 }
+
+const pickParams = (parameters: Array<Parameter | Reference>) => (type: "path" | "query" | "body" | "formData") =>
+  filter(parameters, (param) => (param as Parameter).in === type);
+
+const getParamsNames = (params: any[]) => (isEmpty(params) ? [] : map(params, (param) => (param as Parameter).name));
+
+const propName = (param: Parameter) => `${param.name}${param.required ? "" : "?"}`;
 
 export class ClientBuilderV2 {
   schemaResolver: SchemaResolver;
@@ -83,14 +86,9 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
   };
 
   buildConfig(path: Path, pathName: string) {
-    const operations = pick(path, ["get", "post", "put", "delete", "patch", "options", "head"]);
-    // TODO: when parameters has enum
-    const pickParams = (parameters: Parameter[]) => (type: "path" | "query" | "body" | "formData") =>
-      filter(parameters, (param) => param.in === type);
-    const getNames = (list: any[]) => (isEmpty(list) ? [] : map(list, (item) => item.name));
+    const operations = pick(path, ["get", "post", "put", "delete", "patch", "head"]);
 
     return keys(operations).map((method) => {
-      // TODO: handle the case when v.parameters = Reference
       const operation = (operations as Dictionary<any>)[method];
       const pickParamsByType = pickParams(operation.parameters as Parameter[]);
       const params = {
@@ -105,11 +103,16 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
         method,
         operationId: operation.operationId,
         TResp: this.getResponseType(operation.responses),
-        TReq: this.getRequestTypes(params),
-        pathParams: getNames(params.pathParams),
-        queryParams: getNames(params.queryParams),
-        bodyParams: getNames(params.bodyParams),
-        formDataParams: getNames(params.formDataParams),
+        TReq: {
+          ...this.getParamTypes(params.pathParams),
+          ...this.getParamTypes(params.queryParams),
+          ...this.getParamTypes(params.bodyParams),
+          ...this.getParamTypes(params.formDataParams),
+        },
+        pathParams: getParamsNames(params.pathParams),
+        queryParams: getParamsNames(params.queryParams),
+        bodyParams: getParamsNames(params.bodyParams),
+        formDataParams: getParamsNames(params.formDataParams),
         deprecated: operation.deprecated,
       };
     });
@@ -122,71 +125,18 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.op
     }`
       : undefined;
 
-  getRequestTypes = (params: IParams) => ({
-    ...this.getPathParamsTypes(params.pathParams),
-    ...this.getQueryParamsTypes(params.queryParams),
-    ...this.getBodyParamsTypes(params.bodyParams),
-    ...this.getFormDataParamsTypes(params.formDataParams),
-  });
-
-  getPathParamsTypes = (pathParams: PathParameter[]) =>
-    pathParams.reduce(
+  getParamTypes = (params: Array<PathParameter | BodyParameter | QueryParameter | FormDataParameter>) =>
+    params.reduce(
       (results, param) => ({
         ...results,
-        [`${param.name}${param.required ? "" : "?"}`]: this.schemaResolver.toType({
-          ...(param as Schema),
+        [propName(param)]: this.schemaResolver.toType({
+          ...((param as any).schema ? (param as any).schema : param),
           _name: param.name,
           _propKey: param.name,
         }),
       }),
       {},
     );
-
-  getBodyParamsTypes = (bodyParams: BodyParameter[]) =>
-    bodyParams.reduce(
-      (o, v) => ({
-        ...o,
-        [`${v.name}${v.required ? "" : "?"}`]: this.schemaResolver.toType({
-          ...v.schema,
-          _name: v.name,
-          _propKey: v.name,
-        }),
-      }),
-      {},
-    );
-
-  getQueryParamsTypes = (queryParams: QueryParameter[]) =>
-    queryParams.reduce(
-      (o, v) => ({
-        ...o,
-        [`${v.name}${v.required ? "" : "?"}`]: this.schemaResolver.toType({
-          ...(v as Schema),
-          _name: v.name,
-          _propKey: v.name,
-        }),
-      }),
-      {},
-    );
-
-  // TODO: handle other params here?
-  getFormDataParamsTypes = (formDataParams: any[]) => {
-    return formDataParams.reduce((results, param) => {
-      if (param.schema) {
-        return {
-          ...results,
-          [`${param.name}${param.required ? "" : "?"}`]: this.schemaResolver.toType({
-            ...param.schema,
-            _name: param.name,
-            _propKey: param.name,
-          }),
-        };
-      }
-      return {
-        ...results,
-        [`${param.name}${param.required ? "" : "?"}`]: param.type === "file" ? "File" : param.type,
-      };
-    }, {});
-  };
 
   getResponseType = (responses: Operation["responses"]) => {
     const response200 = get(responses, "200");
