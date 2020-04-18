@@ -1,5 +1,5 @@
 import { Schema } from "swagger-schema-official";
-import { addPrefixForInterface, generateEnumType, isArray, isNumber, toCapitalCase } from "src/core/utils";
+import { generateEnumType, isArray, isNumber, toCapitalCase } from "src/core/utils";
 import { forEach, indexOf, map, reduce, some } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 
@@ -69,7 +69,7 @@ export class SchemaResolver {
       const list = str.split("/");
       return list[list.length - 1];
     };
-    return addPrefixForInterface(toCapitalCase(getTypeByRef(schema.$ref)));
+    return toCapitalCase(getTypeByRef(schema.$ref));
   };
 
   toArrayType = (schema: TCustomSchema) => {

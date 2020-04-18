@@ -39,12 +39,12 @@ describe("SchemaResolver", () => {
       },
       "OrderStatus#EnumSuffix": ["placed", "approved", "delivered"],
       Pet: {
-        "category?": "ICategory",
+        "category?": "Category",
         "id?": "number",
         name: "string",
         photoUrls: "string[]",
         "status?": "keyof typeof PetStatus#EnumSuffix",
-        "tags?": "ITag[]",
+        "tags?": "Tag[]",
       },
       "PetStatus#EnumSuffix": ["available", "pending", "sold"],
       Tag: {
@@ -87,7 +87,7 @@ describe("SchemaResolver", () => {
         name: "string",
         "tag?": "string",
       },
-      Pets: "IPet[]",
+      Pets: "Pet[]",
     });
   });
 
@@ -114,7 +114,7 @@ describe("SchemaResolver", () => {
         "tag?": "string",
       },
       Pet: {
-        _extends: ["INewPet"],
+        _extends: ["NewPet"],
         _others: {
           id: "number",
         },
@@ -124,7 +124,7 @@ describe("SchemaResolver", () => {
 
   it("should scan single schema correctly", () => {
     SchemaResolver.of((_, results) => {
-      expect(results).toEqual("IPet[]");
+      expect(results).toEqual("Pet[]");
     }).resolve({
       type: "array",
       items: {
@@ -202,7 +202,7 @@ describe("SchemaResolver", () => {
 
     expect(results).toEqual({
       Pet: {
-        _extends: ["INewPet"],
+        _extends: ["NewPet"],
         _others: {
           id: "number",
         },
@@ -239,7 +239,7 @@ describe("SchemaResolver", () => {
     expect(results).toEqual({
       "Breed#EnumSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
       Dog: {
-        _extends: ["IPet"],
+        _extends: ["Pet"],
         _others: {
           "bark?": "boolean",
           "breed?": "keyof typeof Breed#EnumSuffix",
@@ -266,7 +266,7 @@ describe("SchemaResolver", () => {
     });
 
     expect(results).toEqual({
-      Pet: "ICat|IDog",
+      Pet: "Cat|Dog",
     });
   });
 });
