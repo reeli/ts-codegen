@@ -87,11 +87,7 @@ export class ClientBuilderV2 {
 
       return `
 ${v.deprecated ? setDeprecated(v.operationId) : ""}
-export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${v.operationId}", (${requestInputs}) => ({
-    url: \`${v.url}\`,
-    method: "${v.method}",
-    ${getData()}${getParams()}${getHeaders()}
-  })
+export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${v.operationId}", (${requestInputs}) => ({ url: \`${v.url}\`,method: "${v.method}",${getData()}${getParams()}${getHeaders()} })
 );
 `;
     });
@@ -174,4 +170,6 @@ const getParamsNames = (params: any[]) => (isEmpty(params) ? [] : map(params, (p
 
 const propName = (param: Parameter) => `${param.name}${param.required ? "" : "?"}`;
 
-const toRequestParams = (data: any[] = []) => (!isEmpty(data) ? `{${data.join(",")}}` : undefined);
+const toRequestParams = (data: any[] = []) => (!isEmpty(data) ? `{
+${data.join(",\n")}
+}` : undefined);
