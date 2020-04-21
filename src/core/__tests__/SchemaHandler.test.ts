@@ -105,6 +105,10 @@ describe("SchemaHandler", () => {
     );
 
     expect(results).toEqual({
+      Category: {
+        "id?": "number",
+        "name?": "string",
+      },
       Error: {
         code: "number",
         message: "string",
@@ -116,9 +120,11 @@ describe("SchemaHandler", () => {
       Pet: {
         _extends: ["NewPet"],
         _others: {
+          "categories?": "Category[]",
           id: "number",
         },
       },
+      Pets: "Pet[]",
     });
   });
 
