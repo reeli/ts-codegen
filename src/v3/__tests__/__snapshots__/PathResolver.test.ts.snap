@@ -3,9 +3,9 @@
 exports[`PathsResolver should generate correct request from swagger data 1`] = `
 "export const addPet = createRequestAction<
   {
-    requestBody: INewPet;
+    requestBody: NewPet;
   },
-  IPet
+  Pet
 >(\\"addPet\\", ({ requestBody }) => ({ url: \`/api/test/pets\`, method: \\"post\\", data: requestBody }));
 
 export const deletePet = createRequestAction<{
@@ -16,7 +16,7 @@ export const findPetById = createRequestAction<
   {
     id: number;
   },
-  IPet
+  Pet
 >(\\"findPetById\\", ({ id }) => ({ url: \`/api/test/pets/\${id}\`, method: \\"get\\" }));
 
 export const findPets = createRequestAction<
@@ -24,7 +24,7 @@ export const findPets = createRequestAction<
     limit?: number;
     tags?: string[];
   },
-  IPet[]
+  Pet[]
 >(\\"findPets\\", ({ tags, limit }) => ({
   url: \`/api/test/pets\`,
   method: \\"get\\",

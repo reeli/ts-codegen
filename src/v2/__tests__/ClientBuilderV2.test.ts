@@ -28,7 +28,7 @@ describe("PathResolver", () => {
 const expectedPathResolvedData = [
   {
     TReq: { attachment: "File" },
-    TResp: "IAttachmentBo",
+    TResp: "AttachmentBo",
     bodyParams: [],
     deprecated: false,
     formDataParams: ["attachment"],
@@ -40,7 +40,7 @@ const expectedPathResolvedData = [
   },
   {
     TReq: { id: "string" },
-    TResp: "IResource",
+    TResp: "Resource",
     bodyParams: [],
     deprecated: false,
     formDataParams: [],
@@ -64,7 +64,7 @@ const expectedPathResolvedData = [
   },
   {
     TReq: { id: "string" },
-    TResp: "IBookDetailVo",
+    TResp: "BookDetailVo",
     bodyParams: [],
     deprecated: false,
     formDataParams: [],
@@ -75,7 +75,7 @@ const expectedPathResolvedData = [
     method: "get",
   },
   {
-    TReq: { id: "string", updateBookRequest: "IUpdateBookRequest" },
+    TReq: { id: "string", updateBookRequest: "UpdateBookRequest" },
     TResp: "",
     bodyParams: ["updateBookRequest"],
     deprecated: false,
@@ -88,7 +88,7 @@ const expectedPathResolvedData = [
   },
   {
     TReq: { scheduleDate: "number", "roleId?": "string" },
-    TResp: "IScheduleVo[]",
+    TResp: "ScheduleVo[]",
     bodyParams: [],
     deprecated: false,
     formDataParams: [],
@@ -100,7 +100,7 @@ const expectedPathResolvedData = [
   },
   {
     TReq: { "from?": "keyof typeof FromFrom#EnumSuffix", documentId: "string" },
-    TResp: "IDocumentVo",
+    TResp: "DocumentVo",
     bodyParams: [],
     deprecated: false,
     formDataParams: [],

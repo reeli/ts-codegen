@@ -23,7 +23,7 @@ const expectedPathResolvedData = [
       "limit?": "number",
       "tags?": "string[]",
     },
-    TResp: "IPet[]",
+    TResp: "Pet[]",
     method: "get",
     operationId: "findPets",
     cookieParams: [],
@@ -34,9 +34,9 @@ const expectedPathResolvedData = [
   },
   {
     TReq: {
-      requestBody: "INewPet",
+      requestBody: "NewPet",
     },
-    TResp: "IPet",
+    TResp: "Pet",
     method: "post",
     operationId: "addPet",
     cookieParams: [],
@@ -51,7 +51,7 @@ const expectedPathResolvedData = [
     TReq: {
       id: "number",
     },
-    TResp: "IPet",
+    TResp: "Pet",
     method: "get",
     operationId: "findPetById",
     cookieParams: [],

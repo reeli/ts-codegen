@@ -1,24 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ReusableTypes should handle swagger v3 component schemas 1`] = `
-"export interface IError {
+"export interface Category {
+  id?: number;
+  name?: string;
+}
+
+export interface Error {
   code: number;
   message: string;
 }
 
-export interface INewPet {
+export interface NewPet {
   name: string;
   tag?: string;
 }
 
-export interface IPet extends INewPet {
+export interface Pet extends NewPet {
+  categories?: Category[];
   id: number;
 }
+
+export type Pets = Pet[];
 "
 `;
 
 exports[`ReusableTypes should scan swagger v2 definitions and transform it to correct types 1`] = `
-"export interface IAttachmentBo {
+"export interface AttachmentBo {
   authorName?: string;
   createdDate?: number;
   fileName?: string;
@@ -27,8 +35,8 @@ exports[`ReusableTypes should scan swagger v2 definitions and transform it to co
   path?: string;
 }
 
-export interface IBookDetailVo {
-  attachment?: IScheduleVo;
+export interface BookDetailVo {
+  attachment?: ScheduleVo;
   authorName?: string;
   createdDate?: number;
   fileName?: string;
@@ -37,18 +45,18 @@ export interface IBookDetailVo {
   path?: string;
 }
 
-export interface IBookVo {
+export interface BookVo {
   address?: string;
   price?: string;
 }
 
-export interface IBookingResponse {
-  data: IDocumentVo;
-  errors?: IErrorInfo[];
+export interface BookingResponse {
+  data: DocumentVo;
+  errors?: ErrorInfo[];
 }
 
-export interface IDocumentVo {
-  attachment?: IBookDetailVo;
+export interface DocumentVo {
+  attachment?: BookDetailVo;
   authorName?: string;
   createdDate?: number;
   id?: string;
@@ -56,15 +64,15 @@ export interface IDocumentVo {
   title?: string;
 }
 
-export interface IErrorInfo {
+export interface ErrorInfo {
   errorMessage?: string;
 }
 
-export interface IFile {
+export interface File {
   absolute?: boolean;
-  absoluteFile?: IFile;
+  absoluteFile?: File;
   absolutePath?: string;
-  canonicalFile?: IFile;
+  canonicalFile?: File;
   canonicalPath?: string;
   directory?: boolean;
   executable?: boolean;
@@ -74,7 +82,7 @@ export interface IFile {
   lastModified?: number;
   name?: string;
   parent?: string;
-  parentFile?: IFile;
+  parentFile?: File;
   path?: string;
   readable?: boolean;
   totalSpace?: number;
@@ -82,28 +90,28 @@ export interface IFile {
   writable?: boolean;
 }
 
-export interface IInputStream {
+export interface InputStream {
   [key: string]: any;
 }
 
-export interface IResource {
+export interface Resource {
   description?: string;
-  file?: IFile;
+  file?: File;
   filename?: string;
-  inputStream?: IInputStream;
+  inputStream?: InputStream;
   open?: boolean;
   readable?: boolean;
-  uri?: IUri;
-  url?: IUrl;
+  uri?: Uri;
+  url?: Url;
 }
 
-export interface IScheduleVo {
-  schedules?: IBookVo[][];
+export interface ScheduleVo {
+  schedules?: BookVo[][];
   shiftId?: string;
   team?: string;
 }
 
-export interface IUri {
+export interface Uri {
   absolute?: boolean;
   authority?: string;
   fragment?: string;
@@ -123,11 +131,11 @@ export interface IUri {
   userInfo?: string;
 }
 
-export interface IUrl {
+export interface Url {
   authority?: string;
   content?: object;
   defaultPort?: number;
-  deserializedFields?: IUrlStreamHandler;
+  deserializedFields?: UrlStreamHandler;
   file?: string;
   host?: string;
   path?: string;
@@ -139,11 +147,11 @@ export interface IUrl {
   userInfo?: string;
 }
 
-export interface IUrlStreamHandler {
+export interface UrlStreamHandler {
   [key: string]: any;
 }
 
-export interface IUpdateBookRequest {
+export interface UpdateBookRequest {
   birthCountry?: string;
   citizenship?: string;
   dateOfBirth?: number;
