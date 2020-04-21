@@ -7,9 +7,9 @@ type TDictionary<T> = { [key: string]: T };
 type TCustomSchema = (Schema | ISchema) & { _propKey?: string; _name?: string };
 type TWriteTo = (k: string, v: any) => void;
 
-export class SchemaResolver {
+export class SchemaHandler {
   static of(writeTo: TWriteTo) {
-    return new SchemaResolver(writeTo);
+    return new SchemaHandler(writeTo);
   }
 
   constructor(public writeTo: TWriteTo) {}

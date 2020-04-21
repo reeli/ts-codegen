@@ -1,5 +1,5 @@
 import { IOpenAPI } from "src/v3/OpenAPI";
-import { generateEnums, SchemaResolver, toCapitalCase, toTypes } from "src";
+import { generateEnums, SchemaHandler, toCapitalCase, toTypes } from "src";
 import { compact, Dictionary, forEach, includes, isEmpty } from "lodash";
 import { ENUM_SUFFIX } from "src/core/constants";
 import { Spec } from "swagger-schema-official";
@@ -14,14 +14,14 @@ export class ReusableTypes {
   constructor(private spec: Spec | IOpenAPI) {}
 
   gen = (): string[] => {
-    const r = SchemaResolver.of((k, v) => {
+    const schemaHandler = SchemaHandler.of((k, v) => {
       this.resolvedSchemas[k] = v;
     });
 
     const schemas = this.spec.definitions || (this.spec as IOpenAPI).components?.schemas;
 
     forEach(schemas, (v, k) => {
-      r.resolve({
+        schemaHandler.resolve({
         ...v,
         _name: k,
         _propKey: k,

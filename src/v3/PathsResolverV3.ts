@@ -1,6 +1,6 @@
 import { chain, compact, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
-import { SchemaResolver } from "src/core/SchemaResolver";
+import { SchemaHandler } from "src/core/SchemaHandler";
 import { generateEnums, toTypes } from "src/core/utils";
 
 interface IParams {
@@ -25,7 +25,7 @@ interface IResolvedPath {
 // TODO: 2. query 不要全部 ...，而是以具体的 {[key]: value} 形式，避免外部应用一些不需要的 query
 
 export class PathsResolverV3 {
-  resolver: SchemaResolver;
+  schemaHandler: SchemaHandler;
   resolvedPaths: IResolvedPath[] = [];
   extraDefinitions: Dictionary<any> = {};
 
@@ -34,7 +34,7 @@ export class PathsResolverV3 {
   }
 
   constructor(private paths: IPaths, private basePath: string) {
-    this.resolver = SchemaResolver.of((k, v) => {
+    this.schemaHandler = SchemaHandler.of((k, v) => {
       if (k) {
         this.extraDefinitions[k] = v;
       }
@@ -155,7 +155,7 @@ export class PathsResolverV3 {
     return pathParams.reduce(
       (results, param) => ({
         ...results,
-        [`${(param as TParameter).name}${(param as TParameter).required ? "" : "?"}`]: this.resolver.toType({
+        [`${(param as TParameter).name}${(param as TParameter).required ? "" : "?"}`]: this.schemaHandler.toType({
           ...(param as TParameter).schema,
           _name: (param as TParameter).name,
           _propKey: (param as TParameter).name,
@@ -169,7 +169,7 @@ export class PathsResolverV3 {
     queryParams.reduce(
       (o, v) => ({
         ...o,
-        [`${(v as TParameter).name}${(v as TParameter).required ? "" : "?"}`]: this.resolver.toType({
+        [`${(v as TParameter).name}${(v as TParameter).required ? "" : "?"}`]: this.schemaHandler.toType({
           ...(v as TParameter).schema,
           _name: (v as TParameter).name,
           _propKey: (v as TParameter).name,
@@ -186,7 +186,7 @@ export class PathsResolverV3 {
     }
 
     return {
-      requestBody: this.resolver.toType((requestBody as IRequestBody).content["application/json"].schema),
+      requestBody: this.schemaHandler.toType((requestBody as IRequestBody).content["application/json"].schema),
     };
   };
 
@@ -198,7 +198,7 @@ export class PathsResolverV3 {
   // TODO: responses.201 同上
 
   getResponseTypes = (responses: { [responseName: string]: IResponse | IReference }) => {
-    return this.resolver.toType(
+    return this.schemaHandler.toType(
       get(responses, [200, "content", "application/json", "schema"]) ||
         get(responses, [201, "content", "application/json", "schema"]),
     );

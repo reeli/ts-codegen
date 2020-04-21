@@ -11,7 +11,7 @@ import {
 } from "swagger-schema-official";
 import { compact, Dictionary, filter, get, isEmpty, keys, map, pick, reduce, sortBy } from "lodash";
 import { generateEnums, getRequestURL, setDeprecated, toTypes } from "src/core/utils";
-import { SchemaResolver } from "src/core/SchemaResolver";
+import { SchemaHandler } from "src/core/SchemaHandler";
 
 type TPaths = { [pathName: string]: Path };
 
@@ -29,7 +29,7 @@ interface IClientConfig {
 }
 
 export class ClientBuilderV2 {
-  schemaResolver: SchemaResolver;
+  schemaHandler: SchemaHandler;
   clientConfig: IClientConfig[] = [];
   enums: Dictionary<any> = {};
 
@@ -38,7 +38,7 @@ export class ClientBuilderV2 {
   }
 
   constructor(private paths: TPaths, private basePath: string) {
-    this.schemaResolver = SchemaResolver.of((k, v) => {
+    this.schemaHandler = SchemaHandler.of((k, v) => {
       if (k) {
         this.enums[k] = v;
       }
@@ -142,7 +142,7 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${v.op
     params.reduce(
       (results, param) => ({
         ...results,
-        [propName(param)]: this.schemaResolver.toType({
+        [propName(param)]: this.schemaHandler.toType({
           ...get(param, "schema", param),
           _name: param.name,
           _propKey: param.name,
@@ -156,10 +156,10 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${v.op
     const response201 = get(responses, "201");
 
     if ((response200 as Reference)?.$ref || (response201 as Reference)?.$ref) {
-      return this.schemaResolver.toType(response200 || response201);
+      return this.schemaHandler.toType(response200 || response201);
     }
 
-    return this.schemaResolver.toType((response200 as Response)?.schema || (response201 as Response)?.schema);
+    return this.schemaHandler.toType((response200 as Response)?.schema || (response201 as Response)?.schema);
   };
 }
 

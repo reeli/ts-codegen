@@ -2,13 +2,13 @@ import { Dictionary, forEach } from "lodash";
 import swaggerV3 from "examples/swagger.v3.petstore.json";
 import swaggerV3Expanded from "examples/swagger.v3.petstore.expanded.json";
 import swaggerV2 from "examples/swagger.json";
-import { SchemaResolver } from "src/core/SchemaResolver";
+import { SchemaHandler } from "src/core/SchemaHandler";
 
-describe("SchemaResolver", () => {
+describe("SchemaHandler", () => {
   it("should scan swagger definitions schema correctly", () => {
     const results: Dictionary<any> = {};
 
-    const r = SchemaResolver.of((k, ret) => {
+    const r = SchemaHandler.of((k, ret) => {
       results[k] = ret;
     });
 
@@ -66,7 +66,7 @@ describe("SchemaResolver", () => {
 
   it("should scan swagger components schema correctly", () => {
     const results: Dictionary<any> = {};
-    const r = SchemaResolver.of((k, ret) => {
+    const r = SchemaHandler.of((k, ret) => {
       results[k] = ret;
     });
 
@@ -93,7 +93,7 @@ describe("SchemaResolver", () => {
 
   it("should scan swagger components expanded schema correctly", () => {
     const results: Dictionary<any> = {};
-    const r = SchemaResolver.of((k, ret) => {
+    const r = SchemaHandler.of((k, ret) => {
       results[k] = ret;
     });
 
@@ -123,7 +123,7 @@ describe("SchemaResolver", () => {
   });
 
   it("should scan single schema correctly", () => {
-    SchemaResolver.of((_, results) => {
+    SchemaHandler.of((_, results) => {
       expect(results).toEqual("Pet[]");
     }).resolve({
       type: "array",
@@ -133,7 +133,7 @@ describe("SchemaResolver", () => {
     });
 
     const results1: any = {};
-    SchemaResolver.of((k, v) => {
+    SchemaHandler.of((k, v) => {
       results1[k] = v;
     }).resolve({
       type: "string",
@@ -150,7 +150,7 @@ describe("SchemaResolver", () => {
 
   it("should scan properties with enum", () => {
     const mockWriteTo = jest.fn();
-    SchemaResolver.of(mockWriteTo).resolve({
+    SchemaHandler.of(mockWriteTo).resolve({
       type: "object",
       properties: {
         visitsCount: {
@@ -179,7 +179,7 @@ describe("SchemaResolver", () => {
   it("should handle schema with `allOf` property", () => {
     const results: any = {};
 
-    SchemaResolver.of((k, v) => {
+    SchemaHandler.of((k, v) => {
       results[k] = v;
     }).resolve({
       _name: "Pet",
@@ -213,7 +213,7 @@ describe("SchemaResolver", () => {
   it("should handle `allOf` property with extra enum property", () => {
     const results: any = {};
 
-    SchemaResolver.of((k, v) => {
+    SchemaHandler.of((k, v) => {
       results[k] = v;
     }).resolve({
       _name: "Dog",
@@ -251,7 +251,7 @@ describe("SchemaResolver", () => {
   it("should handle schema with `oneOf` property", () => {
     const results: any = {};
 
-    SchemaResolver.of((k, v) => {
+    SchemaHandler.of((k, v) => {
       results[k] = v;
     }).resolve({
       _name: "Pet",
