@@ -1,5 +1,5 @@
 import { IOpenAPI } from "src/v3/OpenAPI";
-import {addPrefixForInterface, generateEnums, SchemaResolver, toCapitalCase, toTypes} from "src";
+import { generateEnums, SchemaResolver, toCapitalCase, toTypes } from "src";
 import { compact, Dictionary, forEach, includes, isEmpty } from "lodash";
 import { ENUM_SUFFIX } from "src/core/constants";
 import { Spec } from "swagger-schema-official";
@@ -38,7 +38,7 @@ export class ReusableTypes {
         }
 
         if (resolvedSchemas[key] === "object") {
-          return `export interface ${addPrefixForInterface(toCapitalCase(key))} {[key:string]:any}`;
+          return `export interface ${toCapitalCase(key)} {[key:string]:any}`;
         }
 
         if (typeof resolvedSchemas[key] === "string") {
@@ -46,17 +46,17 @@ export class ReusableTypes {
         }
 
         if (!isEmpty(resolvedSchemas[key]?._extends)) {
-          return `export interface ${addPrefixForInterface(toCapitalCase(key))} extends ${resolvedSchemas[
-            key
-          ]?._extends.join(",")} ${toTypes(resolvedSchemas[key]?._others)} `;
+          return `export interface ${toCapitalCase(key)} extends ${resolvedSchemas[key]?._extends.join(",")} ${toTypes(
+            resolvedSchemas[key]?._others,
+          )} `;
         }
 
         const val = toTypes(resolvedSchemas[key]);
         if (val) {
-          return `export interface ${addPrefixForInterface(toCapitalCase(key))} ${val}`;
+          return `export interface ${toCapitalCase(key)} ${val}`;
         }
       });
 
-    return compact(arr)
+    return compact(arr);
   };
 }
