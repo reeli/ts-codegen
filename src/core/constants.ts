@@ -4,3 +4,4 @@ export const ERROR_MESSAGES = {
 };
 
 export const ENUM_SUFFIX = `#EnumSuffix`;
+export const REF_PREFIX = `RefPrefix#`;

@@ -39,12 +39,12 @@ describe("SchemaHandler", () => {
       },
       "OrderStatus#EnumSuffix": ["placed", "approved", "delivered"],
       Pet: {
-        "category?": "Category",
+        "category?": "RefPrefix#Category",
         "id?": "number",
         name: "string",
         photoUrls: "string[]",
         "status?": "keyof typeof PetStatus#EnumSuffix",
-        "tags?": "Tag[]",
+        "tags?": "RefPrefix#Tag[]",
       },
       "PetStatus#EnumSuffix": ["available", "pending", "sold"],
       Tag: {
@@ -87,7 +87,7 @@ describe("SchemaHandler", () => {
         name: "string",
         "tag?": "string",
       },
-      Pets: "Pet[]",
+      Pets: "RefPrefix#Pet[]",
     });
   });
 
@@ -118,19 +118,19 @@ describe("SchemaHandler", () => {
         "tag?": "string",
       },
       Pet: {
-        _extends: ["NewPet"],
+        _extends: ["RefPrefix#NewPet"],
         _others: {
-          "categories?": "Category[]",
+          "categories?": "RefPrefix#Category[]",
           id: "number",
         },
       },
-      Pets: "Pet[]",
+      Pets: "RefPrefix#Pet[]",
     });
   });
 
   it("should scan single schema correctly", () => {
     SchemaHandler.of((_, results) => {
-      expect(results).toEqual("Pet[]");
+      expect(results).toEqual("RefPrefix#Pet[]");
     }).resolve({
       type: "array",
       items: {
@@ -208,7 +208,7 @@ describe("SchemaHandler", () => {
 
     expect(results).toEqual({
       Pet: {
-        _extends: ["NewPet"],
+        _extends: ["RefPrefix#NewPet"],
         _others: {
           id: "number",
         },
@@ -245,7 +245,7 @@ describe("SchemaHandler", () => {
     expect(results).toEqual({
       "Breed#EnumSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
       Dog: {
-        _extends: ["Pet"],
+        _extends: ["RefPrefix#Pet"],
         _others: {
           "bark?": "boolean",
           "breed?": "keyof typeof Breed#EnumSuffix",
@@ -272,7 +272,7 @@ describe("SchemaHandler", () => {
     });
 
     expect(results).toEqual({
-      Pet: "Cat|Dog",
+      Pet: "RefPrefix#Cat|RefPrefix#Dog",
     });
   });
 });
