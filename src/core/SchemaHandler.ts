@@ -2,7 +2,7 @@ import { Schema } from "swagger-schema-official";
 import { generateEnumType, isArray, isNumber, toCapitalCase } from "src/core/utils";
 import { forEach, indexOf, map, reduce, some } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
-import { REF_PREFIX } from "src/core/constants";
+import qs from "querystring";
 
 type TDictionary<T> = { [key: string]: T };
 type TCustomSchema = (Schema | ISchema) & { _propKey?: string; _name?: string };
@@ -70,7 +70,10 @@ export class SchemaHandler {
       const list = str.split("/");
       return list[list.length - 1];
     };
-    return `${REF_PREFIX}${toCapitalCase(getTypeByRef(schema.$ref))}`;
+
+    return `${toCapitalCase(getTypeByRef(schema.$ref))}?${qs.stringify({
+      type: "ref",
+    })}`;
   };
 
   toArrayType = (schema: TCustomSchema) => {
@@ -123,7 +126,9 @@ export class SchemaHandler {
     return schema.properties ? handleProperties() : schema.type;
   };
 
-  toOneOfType = (schemas: TCustomSchema) => map(schemas, (schema) => this.toType(schema)).join("|");
+  toOneOfType = (schemas: TCustomSchema) => ({
+    _oneOf: map(schemas, (schema) => this.toType(schema)),
+  });
 
   toAllOfType = (schemas: TCustomSchema) => {
     const _extends: any[] = [];

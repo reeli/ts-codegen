@@ -39,12 +39,12 @@ describe("SchemaHandler", () => {
       },
       "OrderStatus#EnumSuffix": ["placed", "approved", "delivered"],
       Pet: {
-        "category?": "RefPrefix#Category",
+        "category?": "Category?type=ref",
         "id?": "number",
         name: "string",
         photoUrls: "string[]",
         "status?": "keyof typeof PetStatus#EnumSuffix",
-        "tags?": "RefPrefix#Tag[]",
+        "tags?": "Tag?type=ref[]",
       },
       "PetStatus#EnumSuffix": ["available", "pending", "sold"],
       Tag: {
@@ -87,7 +87,7 @@ describe("SchemaHandler", () => {
         name: "string",
         "tag?": "string",
       },
-      Pets: "RefPrefix#Pet[]",
+      Pets: "Pet?type=ref[]",
     });
   });
 
@@ -118,19 +118,19 @@ describe("SchemaHandler", () => {
         "tag?": "string",
       },
       Pet: {
-        _extends: ["RefPrefix#NewPet"],
+        _extends: ["NewPet?type=ref"],
         _others: {
-          "categories?": "RefPrefix#Category[]",
+          "categories?": "Category?type=ref[]",
           id: "number",
         },
       },
-      Pets: "RefPrefix#Pet[]",
+      Pets: "Pet?type=ref[]",
     });
   });
 
   it("should scan single schema correctly", () => {
     SchemaHandler.of((_, results) => {
-      expect(results).toEqual("RefPrefix#Pet[]");
+      expect(results).toEqual("Pet?type=ref[]");
     }).resolve({
       type: "array",
       items: {
@@ -208,7 +208,7 @@ describe("SchemaHandler", () => {
 
     expect(results).toEqual({
       Pet: {
-        _extends: ["RefPrefix#NewPet"],
+        _extends: ["NewPet?type=ref"],
         _others: {
           id: "number",
         },
@@ -245,7 +245,7 @@ describe("SchemaHandler", () => {
     expect(results).toEqual({
       "Breed#EnumSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
       Dog: {
-        _extends: ["RefPrefix#Pet"],
+        _extends: ["Pet?type=ref"],
         _others: {
           "bark?": "boolean",
           "breed?": "keyof typeof Breed#EnumSuffix",
@@ -272,7 +272,9 @@ describe("SchemaHandler", () => {
     });
 
     expect(results).toEqual({
-      Pet: "RefPrefix#Cat|RefPrefix#Dog",
+      Pet: {
+        _oneOf: ["Cat?type=ref", "Dog?type=ref"],
+      },
     });
   });
 });
