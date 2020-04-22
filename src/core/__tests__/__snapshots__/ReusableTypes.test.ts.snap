@@ -25,6 +25,31 @@ export type Pets = Pet[];
 "
 `;
 
+exports[`ReusableTypes should handle swagger v3 component schemas with prefix on interface or type 1`] = `
+"export interface ICategory {
+  id?: number;
+  name?: string;
+}
+
+export interface IError {
+  code: number;
+  message: string;
+}
+
+export interface INewPet {
+  name: string;
+  tag?: string;
+}
+
+export interface IPet extends INewPet {
+  categories?: ICategory[];
+  id: number;
+}
+
+export type TPets = IPet[];
+"
+`;
+
 exports[`ReusableTypes should scan swagger v2 definitions and transform it to correct types 1`] = `
 "export interface AttachmentBo {
   authorName?: string;
