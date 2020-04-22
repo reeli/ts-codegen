@@ -1,5 +1,14 @@
 import { IOpenAPI } from "src/v3/OpenAPI";
-import { addPrefixForInterface, addPrefixForType, generateEnums, isArray, isObject, SchemaHandler, toTypes } from "src";
+import {
+  addPrefixForInterface,
+  addPrefixForType,
+  generateEnums,
+  isArray,
+  isObject,
+  SchemaHandler,
+  toCapitalCase,
+  toTypes,
+} from "src";
 import { compact, Dictionary, forEach, includes, isEmpty, map, mapValues } from "lodash";
 import { ENUM_SUFFIX } from "src/core/constants";
 import { Spec } from "swagger-schema-official";
@@ -35,7 +44,7 @@ const handleStr = (str: string, allData: IAllData) => {
   return str;
 };
 
-const resolve = (input: string | Dictionary<any>, allData: IAllData): any => {
+export const resolve = (input: string | Dictionary<any>, allData: IAllData): any => {
   if (typeof input == "string") {
     return handleStr(input, allData);
   }
@@ -57,18 +66,20 @@ export class ReusableTypes {
 
   constructor(private spec: Spec | IOpenAPI) {}
 
-  gen = (withPrefix: boolean = true): string[] => {
+  gen = (withPrefix: boolean = true) => {
     const schemaHandler = SchemaHandler.of((k, v) => {
       if (typeof v === "string") {
-        this.resolvedSchemas[k] = {
+        const name = toCapitalCase(k);
+        this.resolvedSchemas[name] = {
           _kind: "type",
-          _name: withPrefix ? addPrefixForType(k) : k,
+          _name: withPrefix ? addPrefixForType(name) : name,
           _value: v,
         };
       } else {
-        this.resolvedSchemas[k] = {
+        const name = toCapitalCase(k);
+        this.resolvedSchemas[name] = {
           _kind: "interface",
-          _name: withPrefix ? addPrefixForInterface(k) : k,
+          _name: withPrefix ? addPrefixForInterface(name) : name,
           _value: v,
         };
       }
@@ -115,6 +126,9 @@ export class ReusableTypes {
         }
       });
 
-    return compact(arr);
+    return {
+      output: compact(arr),
+      resolvedSchemas,
+    };
   };
 }

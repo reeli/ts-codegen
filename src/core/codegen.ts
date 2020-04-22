@@ -14,31 +14,17 @@ export const codegen = (spec: IOpenAPI | Spec): string => {
   if (!spec) {
     return "";
   }
-
+  const { resolvedSchemas, output } = ReusableTypes.of(spec).gen();
   if ((spec as IOpenAPI).openapi) {
-    return [
-      ...PathsResolverV3.of(spec.paths, spec.basePath)
-        .scan()
-        .toRequest(),
-      ...ReusableTypes.of(spec).gen(),
-    ].join("\n\n");
+    return [...PathsResolverV3.of(spec.paths, spec.basePath, resolvedSchemas).scan().toRequest(), ...output].join(
+      "\n\n",
+    );
   }
 
-  return [
-    ...ClientBuilderV2.of(spec.paths, spec.basePath)
-      .scan()
-      .toRequest(),
-    ...ReusableTypes.of(spec).gen(),
-  ].join("\n\n");
+  return [...ClientBuilderV2.of(spec.paths, spec.basePath, resolvedSchemas).scan().toRequest(), ...output].join("\n\n");
 };
 
-const getFilename = (basePath?: string) =>
-  basePath
-    ? `./${basePath
-        .split("/")
-        .join(".")
-        .slice(1)}`
-    : "./api.client";
+const getFilename = (basePath?: string) => (basePath ? `./${basePath.split("/").join(".").slice(1)}` : "./api.client");
 
 const write = (output: string, filename: string, str: string) => {
   if (!fs.existsSync(output)) {
