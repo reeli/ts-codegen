@@ -39,12 +39,12 @@ describe("SchemaHandler", () => {
       },
       "OrderStatus#EnumSuffix": ["placed", "approved", "delivered"],
       Pet: {
-        "category?": "Category?type=ref",
+        "category?": "?name=Category&type=ref",
         "id?": "number",
         name: "string",
         photoUrls: "string[]",
         "status?": "keyof typeof PetStatus#EnumSuffix",
-        "tags?": "Tag?type=ref[]",
+        "tags?": "?name=Tag&type=ref[]",
       },
       "PetStatus#EnumSuffix": ["available", "pending", "sold"],
       Tag: {
@@ -87,7 +87,7 @@ describe("SchemaHandler", () => {
         name: "string",
         "tag?": "string",
       },
-      Pets: "Pet?type=ref[]",
+      Pets: "?name=Pet&type=ref[]",
     });
   });
 
@@ -118,19 +118,19 @@ describe("SchemaHandler", () => {
         "tag?": "string",
       },
       Pet: {
-        _extends: ["NewPet?type=ref"],
+        _extends: ["?name=NewPet&type=ref"],
         _others: {
-          "categories?": "Category?type=ref[]",
+          "categories?": "?name=Category&type=ref[]",
           id: "number",
         },
       },
-      Pets: "Pet?type=ref[]",
+      Pets: "?name=Pet&type=ref[]",
     });
   });
 
   it("should scan single schema correctly", () => {
     SchemaHandler.of((_, results) => {
-      expect(results).toEqual("Pet?type=ref[]");
+      expect(results).toEqual("?name=Pet&type=ref[]");
     }).resolve({
       type: "array",
       items: {
@@ -208,7 +208,7 @@ describe("SchemaHandler", () => {
 
     expect(results).toEqual({
       Pet: {
-        _extends: ["NewPet?type=ref"],
+        _extends: ["?name=NewPet&type=ref"],
         _others: {
           id: "number",
         },
@@ -245,7 +245,7 @@ describe("SchemaHandler", () => {
     expect(results).toEqual({
       "Breed#EnumSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
       Dog: {
-        _extends: ["Pet?type=ref"],
+        _extends: ["?name=Pet&type=ref"],
         _others: {
           "bark?": "boolean",
           "breed?": "keyof typeof Breed#EnumSuffix",
@@ -273,7 +273,7 @@ describe("SchemaHandler", () => {
 
     expect(results).toEqual({
       Pet: {
-        _oneOf: ["Cat?type=ref", "Dog?type=ref"],
+        _oneOf: ["?name=Cat&type=ref", "?name=Dog&type=ref"],
       },
     });
   });

@@ -9,14 +9,14 @@ export const downloadUsingGET = createRequestAction<
   {
     id: string;
   },
-  Resource
+  IResource
 >(\\"downloadUsingGET\\", ({ id }) => ({ url: \`/api/test/\${id}\`, method: \\"get\\" }));
 
 export const findBookByIdUsingGET = createRequestAction<
   {
     id: string;
   },
-  BookDetailVo
+  IBookDetailVo
 >(\\"findBookByIdUsingGET\\", ({ id }) => ({ url: \`/api/test/book/\${id}\`, method: \\"get\\" }));
 
 export const getDocumentByIdUsingGET = createRequestAction<
@@ -24,7 +24,7 @@ export const getDocumentByIdUsingGET = createRequestAction<
     documentId: string;
     from?: keyof typeof FromFrom;
   },
-  DocumentVo
+  IDocumentVo
 >(\\"getDocumentByIdUsingGET\\", ({ documentId, from }) => ({
   url: \`/api/test/documents/\${documentId}/doc\`,
   method: \\"get\\",
@@ -38,7 +38,7 @@ export const getScheduleDetailsByDateUsingGET = createRequestAction<
     roleId?: string;
     scheduleDate: number;
   },
-  ScheduleVo[]
+  IScheduleVo[]
 >(\\"getScheduleDetailsByDateUsingGET\\", ({ scheduleDate, roleId }) => ({
   url: \`/api/test/schedules\`,
   method: \\"get\\",
@@ -50,7 +50,7 @@ export const getScheduleDetailsByDateUsingGET = createRequestAction<
 
 export const updateBookByIdUsingPUT = createRequestAction<{
   id: string;
-  updateBookRequest: UpdateBookRequest;
+  updateBookRequest: IUpdateBookRequest;
 }>(\\"updateBookByIdUsingPUT\\", ({ id, updateBookRequest }) => ({
   url: \`/api/test/book/\${id}\`,
   method: \\"put\\",
@@ -62,7 +62,7 @@ export const uploadAttachmentUsingPOST = createRequestAction<
   {
     attachment: File;
   },
-  AttachmentBo
+  IAttachmentBo
 >(\\"uploadAttachmentUsingPOST\\", ({ attachment }) => ({
   url: \`/api/test\`,
   method: \\"post\\",
@@ -78,7 +78,7 @@ export enum FromFrom {
 
 exports[`PathResolver should handle multiple form data in response 1`] = `
 "export const addPet = createRequestAction<{
-  body: Pet;
+  body: IPet;
 }>(\\"addPet\\", ({ body }) => ({
   url: \`/api/test/pet\`,
   method: \\"post\\",
@@ -87,7 +87,7 @@ exports[`PathResolver should handle multiple form data in response 1`] = `
 }));
 
 export const createUser = createRequestAction<{
-  body: User;
+  body: IUser;
 }>(\\"createUser\\", ({ body }) => ({
   url: \`/api/test/user\`,
   method: \\"post\\",
@@ -96,7 +96,7 @@ export const createUser = createRequestAction<{
 }));
 
 export const createUsersWithArrayInput = createRequestAction<{
-  body: User[];
+  body: IUser[];
 }>(\\"createUsersWithArrayInput\\", ({ body }) => ({
   url: \`/api/test/user/createWithArray\`,
   method: \\"post\\",
@@ -105,7 +105,7 @@ export const createUsersWithArrayInput = createRequestAction<{
 }));
 
 export const createUsersWithListInput = createRequestAction<{
-  body: User[];
+  body: IUser[];
 }>(\\"createUsersWithListInput\\", ({ body }) => ({
   url: \`/api/test/user/createWithList\`,
   method: \\"post\\",
@@ -129,7 +129,7 @@ export const findPetsByStatus = createRequestAction<
   {
     status: keyof typeof StatusStatus[];
   },
-  Pet[]
+  IPet[]
 >(\\"findPetsByStatus\\", ({ status }) => ({
   url: \`/api/test/pet/findByStatus\`,
   method: \\"get\\",
@@ -146,7 +146,7 @@ export const findPetsByTags = createRequestAction<
   {
     tags: string[];
   },
-  Pet[]
+  IPet[]
 >(\\"findPetsByTags\\", ({ tags }) => ({
   url: \`/api/test/pet/findByTags\`,
   method: \\"get\\",
@@ -164,21 +164,21 @@ export const getOrderById = createRequestAction<
   {
     orderId: number;
   },
-  Order
+  IOrder
 >(\\"getOrderById\\", ({ orderId }) => ({ url: \`/api/test/store/order/\${orderId}\`, method: \\"get\\" }));
 
 export const getPetById = createRequestAction<
   {
     petId: number;
   },
-  Pet
+  IPet
 >(\\"getPetById\\", ({ petId }) => ({ url: \`/api/test/pet/\${petId}\`, method: \\"get\\" }));
 
 export const getUserByName = createRequestAction<
   {
     username: string;
   },
-  User
+  IUser
 >(\\"getUserByName\\", ({ username }) => ({ url: \`/api/test/user/\${username}\`, method: \\"get\\" }));
 
 export const loginUser = createRequestAction<
@@ -203,9 +203,9 @@ export const logoutUser = createRequestAction<undefined>(\\"logoutUser\\", () =>
 
 export const placeOrder = createRequestAction<
   {
-    body: Order;
+    body: IOrder;
   },
-  Order
+  IOrder
 >(\\"placeOrder\\", ({ body }) => ({
   url: \`/api/test/store/order\`,
   method: \\"post\\",
@@ -214,7 +214,7 @@ export const placeOrder = createRequestAction<
 }));
 
 export const updatePet = createRequestAction<{
-  body: Pet;
+  body: IPet;
 }>(\\"updatePet\\", ({ body }) => ({
   url: \`/api/test/pet\`,
   method: \\"put\\",
@@ -234,7 +234,7 @@ export const updatePetWithForm = createRequestAction<{
 }));
 
 export const updateUser = createRequestAction<{
-  body: User;
+  body: IUser;
   username: string;
 }>(\\"updateUser\\", ({ username, body }) => ({
   url: \`/api/test/user/\${username}\`,
@@ -249,7 +249,7 @@ export const uploadFile = createRequestAction<
     file?: File;
     petId: number;
   },
-  ApiResponse
+  IApiResponse
 >(\\"uploadFile\\", ({ petId, additionalMetadata, file }) => ({
   url: \`/api/test/pet/\${petId}/uploadImage\`,
   method: \\"post\\",

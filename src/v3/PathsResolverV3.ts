@@ -2,6 +2,7 @@ import { chain, compact, Dictionary, filter, get, isEmpty, map, pick, reduce, so
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
 import { SchemaHandler } from "src/core/SchemaHandler";
 import { generateEnums, toTypes } from "src/core/utils";
+import { resolve } from "src/core/ReusableTypes";
 
 interface IParams {
   pathParams: Array<TParameter | IReference>;
@@ -29,11 +30,11 @@ export class PathsResolverV3 {
   resolvedPaths: IResolvedPath[] = [];
   extraDefinitions: Dictionary<any> = {};
 
-  static of(paths: IPaths, basePath: string = "") {
-    return new PathsResolverV3(paths, basePath);
+  static of(paths: IPaths, basePath: string = "", reusableSchemas: Dictionary<any>) {
+    return new PathsResolverV3(paths, basePath, reusableSchemas);
   }
 
-  constructor(private paths: IPaths, private basePath: string) {
+  constructor(private paths: IPaths, private basePath: string, private reusableSchemas: Dictionary<any>) {
     this.schemaHandler = SchemaHandler.of((k, v) => {
       if (k) {
         this.extraDefinitions[k] = v;
@@ -155,11 +156,14 @@ export class PathsResolverV3 {
     return pathParams.reduce(
       (results, param) => ({
         ...results,
-        [`${(param as TParameter).name}${(param as TParameter).required ? "" : "?"}`]: this.schemaHandler.toType({
-          ...(param as TParameter).schema,
-          _name: (param as TParameter).name,
-          _propKey: (param as TParameter).name,
-        }),
+        [`${(param as TParameter).name}${(param as TParameter).required ? "" : "?"}`]: resolve(
+          this.schemaHandler.toType({
+            ...(param as TParameter).schema,
+            _name: (param as TParameter).name,
+            _propKey: (param as TParameter).name,
+          }),
+          this.reusableSchemas,
+        ),
       }),
       {},
     );
@@ -169,11 +173,14 @@ export class PathsResolverV3 {
     queryParams.reduce(
       (o, v) => ({
         ...o,
-        [`${(v as TParameter).name}${(v as TParameter).required ? "" : "?"}`]: this.schemaHandler.toType({
-          ...(v as TParameter).schema,
-          _name: (v as TParameter).name,
-          _propKey: (v as TParameter).name,
-        }),
+        [`${(v as TParameter).name}${(v as TParameter).required ? "" : "?"}`]: resolve(
+          this.schemaHandler.toType({
+            ...(v as TParameter).schema,
+            _name: (v as TParameter).name,
+            _propKey: (v as TParameter).name,
+          }),
+          this.reusableSchemas,
+        ),
       }),
       {},
     );
@@ -186,7 +193,10 @@ export class PathsResolverV3 {
     }
 
     return {
-      requestBody: this.schemaHandler.toType((requestBody as IRequestBody).content["application/json"].schema),
+      requestBody: resolve(
+        this.schemaHandler.toType((requestBody as IRequestBody).content["application/json"].schema),
+        this.reusableSchemas,
+      ),
     };
   };
 
@@ -198,9 +208,12 @@ export class PathsResolverV3 {
   // TODO: responses.201 同上
 
   getResponseTypes = (responses: { [responseName: string]: IResponse | IReference }) => {
-    return this.schemaHandler.toType(
-      get(responses, [200, "content", "application/json", "schema"]) ||
-        get(responses, [201, "content", "application/json", "schema"]),
+    return resolve(
+      this.schemaHandler.toType(
+        get(responses, [200, "content", "application/json", "schema"]) ||
+          get(responses, [201, "content", "application/json", "schema"]),
+      ),
+      this.reusableSchemas,
     );
   };
 

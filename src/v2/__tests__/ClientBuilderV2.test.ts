@@ -2,23 +2,27 @@ import { ClientBuilderV2 } from "src/v2/ClientBuilderV2";
 import swaggerV2 from "examples/swagger.v2.json";
 import swaggerV2Expanded from "examples/swagger.json";
 import { prettifyCode } from "src";
+import { ReusableTypes } from "src/core/ReusableTypes";
 
 describe("PathResolver", () => {
   it("should get resolved paths by swagger schema", () => {
-    expect(ClientBuilderV2.of((swaggerV2 as any).paths, swaggerV2.basePath).scan().clientConfig).toEqual(
-      expectedPathResolvedData,
-    );
+    const resolvedSchemas = ReusableTypes.of(swaggerV2 as any).gen().resolvedSchemas;
+    expect(
+      ClientBuilderV2.of((swaggerV2 as any).paths, swaggerV2.basePath, resolvedSchemas).scan().clientConfig,
+    ).toEqual(expectedPathResolvedData);
   });
 
   it("should get correct action creator by resolved paths", () => {
-    const result = ClientBuilderV2.of((swaggerV2 as any).paths, swaggerV2.basePath)
+    const resolvedSchemas = ReusableTypes.of(swaggerV2 as any).gen().resolvedSchemas;
+    const result = ClientBuilderV2.of((swaggerV2 as any).paths, swaggerV2.basePath, resolvedSchemas)
       .scan()
       .toRequest();
     expect(prettifyCode(result.join(""))).toMatchSnapshot();
   });
 
   it("should handle multiple form data in response", () => {
-    const result = ClientBuilderV2.of((swaggerV2Expanded as any).paths, swaggerV2.basePath)
+    const resolvedSchemas = ReusableTypes.of(swaggerV2Expanded as any).gen().resolvedSchemas;
+    const result = ClientBuilderV2.of((swaggerV2Expanded as any).paths, swaggerV2.basePath, resolvedSchemas)
       .scan()
       .toRequest();
     expect(prettifyCode(result.join(""))).toMatchSnapshot();
@@ -28,7 +32,7 @@ describe("PathResolver", () => {
 const expectedPathResolvedData = [
   {
     TReq: { attachment: "File" },
-    TResp: "AttachmentBo",
+    TResp: "IAttachmentBo",
     bodyParams: [],
     deprecated: false,
     formDataParams: ["attachment"],
@@ -40,7 +44,7 @@ const expectedPathResolvedData = [
   },
   {
     TReq: { id: "string" },
-    TResp: "Resource",
+    TResp: "IResource",
     bodyParams: [],
     deprecated: false,
     formDataParams: [],
@@ -64,7 +68,7 @@ const expectedPathResolvedData = [
   },
   {
     TReq: { id: "string" },
-    TResp: "BookDetailVo",
+    TResp: "IBookDetailVo",
     bodyParams: [],
     deprecated: false,
     formDataParams: [],
@@ -75,7 +79,7 @@ const expectedPathResolvedData = [
     method: "get",
   },
   {
-    TReq: { id: "string", updateBookRequest: "UpdateBookRequest" },
+    TReq: { id: "string", updateBookRequest: "IUpdateBookRequest" },
     TResp: "",
     bodyParams: ["updateBookRequest"],
     deprecated: false,
@@ -88,7 +92,7 @@ const expectedPathResolvedData = [
   },
   {
     TReq: { scheduleDate: "number", "roleId?": "string" },
-    TResp: "ScheduleVo[]",
+    TResp: "IScheduleVo[]",
     bodyParams: [],
     deprecated: false,
     formDataParams: [],
@@ -100,7 +104,7 @@ const expectedPathResolvedData = [
   },
   {
     TReq: { "from?": "keyof typeof FromFrom#EnumSuffix", documentId: "string" },
-    TResp: "DocumentVo",
+    TResp: "IDocumentVo",
     bodyParams: [],
     deprecated: false,
     formDataParams: [],

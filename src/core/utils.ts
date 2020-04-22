@@ -87,17 +87,21 @@ export const toType = (builtInType: string = ""): string => {
 
 export const generateEnumType = (p = "", k = "") => `${toCapitalCase(p)}${toCapitalCase(k)}${ENUM_SUFFIX}`;
 
+export const handleEnums = (enums: string[], enumName: string) => {
+  const hasNumber = some(enums, (v) => isNumber(v));
+  return hasNumber
+    ? `export type ${enumName} = ${enums.map((item: string | number) => JSON.stringify(item)).join("|")}`
+    : `export enum ${enumName} ${JSON.stringify(arrayToObject(enums)).replace(/:/gi, "=")}`;
+};
+
 export function generateEnums(data: Dictionary<any>, key: string) {
   if (!data) {
     return "";
   }
 
   const enums = data[key];
-  const hasNumber = some(enums, (v) => isNumber(v));
   const enumName = replace(key, ENUM_SUFFIX, "");
-  return hasNumber
-    ? `export type ${enumName} = ${enums.map((item: string | number) => JSON.stringify(item)).join("|")}`
-    : `export enum ${enumName} ${JSON.stringify(arrayToObject(enums)).replace(/:/gi, "=")}`;
+  return handleEnums(enums, enumName);
 }
 
 export const setDeprecated = (operationId: string = "") =>

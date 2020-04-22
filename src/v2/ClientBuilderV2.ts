@@ -12,6 +12,7 @@ import {
 import { compact, Dictionary, filter, get, isEmpty, keys, map, pick, reduce, sortBy } from "lodash";
 import { generateEnums, getRequestURL, setDeprecated, toTypes } from "src/core/utils";
 import { SchemaHandler } from "src/core/SchemaHandler";
+import { resolve } from "src/core/ReusableTypes";
 
 type TPaths = { [pathName: string]: Path };
 
@@ -33,11 +34,11 @@ export class ClientBuilderV2 {
   clientConfig: IClientConfig[] = [];
   enums: Dictionary<any> = {};
 
-  static of(paths: TPaths, basePath: string = "") {
-    return new ClientBuilderV2(paths, basePath);
+  static of(paths: TPaths, basePath: string = "", reusableSchemas: Dictionary<any>) {
+    return new ClientBuilderV2(paths, basePath, reusableSchemas);
   }
 
-  constructor(private paths: TPaths, private basePath: string) {
+  constructor(private paths: TPaths, private basePath: string, private reusableSchemas: Dictionary<any>) {
     this.schemaHandler = SchemaHandler.of((k, v) => {
       if (k) {
         this.enums[k] = v;
@@ -87,7 +88,9 @@ export class ClientBuilderV2 {
 
       return `
 ${v.deprecated ? setDeprecated(v.operationId) : ""}
-export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${v.operationId}", (${requestInputs}) => ({ url: \`${v.url}\`,method: "${v.method}",${getData()}${getParams()}${getHeaders()} })
+export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${
+        v.operationId
+      }", (${requestInputs}) => ({ url: \`${v.url}\`,method: "${v.method}",${getData()}${getParams()}${getHeaders()} })
 );
 `;
     });
@@ -142,11 +145,14 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${v.op
     params.reduce(
       (results, param) => ({
         ...results,
-        [propName(param)]: this.schemaHandler.toType({
-          ...get(param, "schema", param),
-          _name: param.name,
-          _propKey: param.name,
-        }),
+        [propName(param)]: resolve(
+          this.schemaHandler.toType({
+            ...get(param, "schema", param),
+            _name: param.name,
+            _propKey: param.name,
+          }),
+          this.reusableSchemas,
+        ),
       }),
       {},
     );
@@ -156,10 +162,13 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${v.op
     const response201 = get(responses, "201");
 
     if ((response200 as Reference)?.$ref || (response201 as Reference)?.$ref) {
-      return this.schemaHandler.toType(response200 || response201);
+      return resolve(this.schemaHandler.toType(response200 || response201), this.reusableSchemas);
     }
 
-    return this.schemaHandler.toType((response200 as Response)?.schema || (response201 as Response)?.schema);
+    return resolve(
+      this.schemaHandler.toType((response200 as Response)?.schema || (response201 as Response)?.schema),
+      this.reusableSchemas,
+    );
   };
 }
 
@@ -170,6 +179,9 @@ const getParamsNames = (params: any[]) => (isEmpty(params) ? [] : map(params, (p
 
 const propName = (param: Parameter) => `${param.name}${param.required ? "" : "?"}`;
 
-const toRequestParams = (data: any[] = []) => (!isEmpty(data) ? `{
+const toRequestParams = (data: any[] = []) =>
+  !isEmpty(data)
+    ? `{
 ${data.join(",\n")}
-}` : undefined);
+}`
+    : undefined;

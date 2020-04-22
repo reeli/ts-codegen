@@ -2,14 +2,14 @@ import { IOpenAPI } from "src/v3/OpenAPI";
 import {
   addPrefixForInterface,
   addPrefixForType,
-  generateEnums,
+  handleEnums,
   isArray,
   isObject,
   SchemaHandler,
   toCapitalCase,
   toTypes,
 } from "src";
-import { compact, Dictionary, forEach, includes, isEmpty, map, mapValues } from "lodash";
+import { compact, Dictionary, forEach, includes, isEmpty, map, mapValues, replace } from "lodash";
 import { ENUM_SUFFIX } from "src/core/constants";
 import { Spec } from "swagger-schema-official";
 import qs from "querystring";
@@ -20,7 +20,7 @@ const getQueryObjFromStr = (str: string) => {
   if (input) {
     return {
       ...qs.parse(input),
-      isArray: str.includes("[]"),
+      others: str.replace(`?${input}`, ""),
     };
   }
   return {} as any;
@@ -37,9 +37,9 @@ interface IAllData {
 }
 
 const handleStr = (str: string, allData: IAllData) => {
-  const { type, name, isArray } = getQueryObjFromStr(str);
+  const { type, name, others } = getQueryObjFromStr(str);
   if (type === "ref") {
-    return isArray ? `${allData[name]._name}[]` : allData[name]._name;
+    return others ? `${allData[name]._name}${others}` : allData[name]._name;
   }
   return str;
 };
@@ -68,21 +68,32 @@ export class ReusableTypes {
 
   gen = (withPrefix: boolean = true) => {
     const schemaHandler = SchemaHandler.of((k, v) => {
-      if (typeof v === "string") {
+      if (includes(k, ENUM_SUFFIX)) {
+        const enumName = replace(k, ENUM_SUFFIX, "");
+        this.resolvedSchemas[enumName] = {
+          _kind: "enum",
+          _name: enumName,
+          _value: v,
+        };
+        return;
+      }
+
+      if (typeof v === "string" && v !== "object") {
         const name = toCapitalCase(k);
         this.resolvedSchemas[name] = {
           _kind: "type",
           _name: withPrefix ? addPrefixForType(name) : name,
           _value: v,
         };
-      } else {
-        const name = toCapitalCase(k);
-        this.resolvedSchemas[name] = {
-          _kind: "interface",
-          _name: withPrefix ? addPrefixForInterface(name) : name,
-          _value: v,
-        };
+        return;
       }
+
+      const name = toCapitalCase(k);
+      this.resolvedSchemas[name] = {
+        _kind: "interface",
+        _name: withPrefix ? addPrefixForInterface(name) : name,
+        _value: v,
+      };
     });
 
     const schemas = this.spec.definitions || (this.spec as IOpenAPI).components?.schemas;
@@ -106,11 +117,15 @@ export class ReusableTypes {
     const arr = Object.keys(resolvedSchemas)
       .sort()
       .map((key) => {
-        if (includes(key, ENUM_SUFFIX)) {
-          return generateEnums(resolvedSchemas, key);
+        const { _name, _kind, _types } = resolvedSchemas[key];
+
+        if (_types === "object") {
+          return `export interface ${_name} {[key:string]:any}`;
         }
 
-        const { _name, _kind, _types } = resolvedSchemas[key];
+        if (_kind === "enum") {
+          return handleEnums(_types, _name);
+        }
 
         if (!isEmpty(_types?._extends)) {
           return `export interface ${_name} extends ${_types?._extends.join(",")} ${toTypes(_types?._others)} `;

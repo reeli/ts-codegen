@@ -1,30 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ReusableTypes should handle swagger v3 component schemas 1`] = `
-"export interface Category {
-  id?: number;
-  name?: string;
-}
-
-export interface Error {
-  code: number;
-  message: string;
-}
-
-export interface NewPet {
-  name: string;
-  tag?: string;
-}
-
-export interface Pet extends NewPet {
-  categories?: Category[];
-  id: number;
-}
-
-export type Pets = Pet[];
-"
-`;
-
 exports[`ReusableTypes should handle swagger v3 component schemas with prefix on interface or type 1`] = `
 "export interface ICategory {
   id?: number;
@@ -47,6 +22,31 @@ export interface IPet extends INewPet {
 }
 
 export type TPets = IPet[];
+"
+`;
+
+exports[`ReusableTypes should handle swagger v3 component schemas without prefix on interface or type 1`] = `
+"export interface Category {
+  id?: number;
+  name?: string;
+}
+
+export interface Error {
+  code: number;
+  message: string;
+}
+
+export interface NewPet {
+  name: string;
+  tag?: string;
+}
+
+export interface Pet extends NewPet {
+  categories?: Category[];
+  id: number;
+}
+
+export type Pets = Pet[];
 "
 `;
 
@@ -136,6 +136,19 @@ export interface ScheduleVo {
   team?: string;
 }
 
+export interface UpdateBookRequest {
+  birthCountry?: string;
+  citizenship?: string;
+  dateOfBirth?: number;
+  employmentStatus?: string;
+  ethnicity?: string;
+  gender?: string;
+  idNumber?: string;
+  idType?: string;
+  roleId?: string;
+  spokenLanguage?: string[];
+}
+
 export interface Uri {
   absolute?: boolean;
   authority?: string;
@@ -174,19 +187,6 @@ export interface Url {
 
 export interface UrlStreamHandler {
   [key: string]: any;
-}
-
-export interface UpdateBookRequest {
-  birthCountry?: string;
-  citizenship?: string;
-  dateOfBirth?: number;
-  employmentStatus?: string;
-  ethnicity?: string;
-  gender?: string;
-  idNumber?: string;
-  idType?: string;
-  roleId?: string;
-  spokenLanguage?: string[];
 }
 "
 `;

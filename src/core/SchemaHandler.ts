@@ -48,6 +48,7 @@ export class SchemaHandler {
     }
 
     if (schema.type === "object") {
+      // return schema.properties ? this.toObjectType(schema) : "{[key:string]:any}";
       return this.toObjectType(schema);
     }
 
@@ -71,7 +72,7 @@ export class SchemaHandler {
       return list[list.length - 1];
     };
 
-    return `${toCapitalCase(getTypeByRef(schema.$ref))}?${qs.stringify({
+    return `?name=${toCapitalCase(getTypeByRef(schema.$ref))}&${qs.stringify({
       type: "ref",
     })}`;
   };
