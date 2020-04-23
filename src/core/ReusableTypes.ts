@@ -48,6 +48,9 @@ export const resolve = (input: string | Dictionary<any>, allData: IAllData): any
   if (typeof input == "string") {
     return handleStr(input, allData);
   }
+  if (!isEmpty(input?._oneOf)) {
+    return map(input?._oneOf, (v) => resolve(v, allData)).join("|");
+  }
   if (isArray(input)) {
     return map(input, (v) => resolve(v, allData));
   }
@@ -129,6 +132,10 @@ export class ReusableTypes {
 
         if (!isEmpty(_types?._extends)) {
           return `export interface ${_name} extends ${_types?._extends.join(",")} ${toTypes(_types?._others)} `;
+        }
+
+        if (!isEmpty(_types?._oneOf)) {
+          return `export type ${_name} = ${map(_types?._oneOf, (item) => toTypes(item)).join("|")}`;
         }
 
         if (_kind === "type") {
