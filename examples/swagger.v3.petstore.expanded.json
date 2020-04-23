@@ -48,6 +48,24 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Status values that need to be considered for filter",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "available",
+                  "pending",
+                  "sold"
+                ],
+                "default": "available"
+              }
+            }
           }
         ],
         "responses": {

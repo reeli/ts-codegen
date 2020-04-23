@@ -105,9 +105,24 @@ describe("SchemaHandler", () => {
     );
 
     expect(results).toEqual({
+      "DogBreed#EnumSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
+      Cat: {
+        _extends: ["?name=Pet&type=ref"],
+        _others: {
+          "age?": "number",
+          "hunts?": "boolean",
+        },
+      },
       Category: {
         "id?": "number",
         "name?": "string",
+      },
+      Dog: {
+        _extends: ["?name=Pet&type=ref"],
+        _others: {
+          "bark?": "boolean",
+          "breed?": "keyof typeof DogBreed#EnumSuffix",
+        },
       },
       Error: {
         code: "number",
@@ -243,12 +258,12 @@ describe("SchemaHandler", () => {
     });
 
     expect(results).toEqual({
-      "Breed#EnumSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
+      "DogBreed#EnumSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
       Dog: {
         _extends: ["?name=Pet&type=ref"],
         _others: {
           "bark?": "boolean",
-          "breed?": "keyof typeof Breed#EnumSuffix",
+          "breed?": "keyof typeof DogBreed#EnumSuffix",
         },
       },
     });

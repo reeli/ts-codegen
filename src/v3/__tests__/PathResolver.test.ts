@@ -28,6 +28,7 @@ const expectedPathResolvedData = [
   {
     TReq: {
       "limit?": "number",
+      status: "keyof typeof FindPetsStatus#EnumSuffix[]",
       "tags?": "string[]",
     },
     TResp: "IPet[]",
@@ -35,7 +36,7 @@ const expectedPathResolvedData = [
     operationId: "findPets",
     cookieParams: [],
     pathParams: [],
-    queryParams: ["tags", "limit"],
+    queryParams: ["tags", "limit", "status"],
     url: "/api/test/pets",
     requestBody: null,
   },
@@ -52,6 +53,21 @@ const expectedPathResolvedData = [
     url: "/api/test/pets",
     requestBody: {
       required: true,
+    },
+  },
+  {
+    TReq: {
+      requestBody: "ICat|IDog",
+    },
+    TResp: "",
+    method: "patch",
+    operationId: "updatePet",
+    cookieParams: [],
+    pathParams: [],
+    queryParams: [],
+    url: "/api/test/pets",
+    requestBody: {
+      required: undefined,
     },
   },
   {

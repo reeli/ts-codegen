@@ -22,7 +22,7 @@ export const findBookByIdUsingGET = createRequestAction<
 export const getDocumentByIdUsingGET = createRequestAction<
   {
     documentId: string;
-    from?: keyof typeof FromFrom;
+    from?: keyof typeof GetDocumentByIdUsingGetFrom;
   },
   IDocumentVo
 >(\\"getDocumentByIdUsingGET\\", ({ documentId, from }) => ({
@@ -69,7 +69,7 @@ export const uploadAttachmentUsingPOST = createRequestAction<
   data: attachment,
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
 }));
-export enum FromFrom {
+export enum GetDocumentByIdUsingGetFrom {
   \\"AAA\\" = \\"AAA\\",
   \\"BBB\\" = \\"BBB\\",
 }
@@ -127,7 +127,7 @@ export const deleteUser = createRequestAction<{
 
 export const findPetsByStatus = createRequestAction<
   {
-    status: keyof typeof StatusStatus[];
+    status: keyof typeof FindPetsByStatusStatus[];
   },
   IPet[]
 >(\\"findPetsByStatus\\", ({ status }) => ({
@@ -256,7 +256,7 @@ export const uploadFile = createRequestAction<
   data: { additionalMetadata, file },
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
 }));
-export enum StatusStatus {
+export enum FindPetsByStatusStatus {
   \\"available\\" = \\"available\\",
   \\"pending\\" = \\"pending\\",
   \\"sold\\" = \\"sold\\",

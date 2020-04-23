@@ -1,9 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ReusableTypes should handle swagger v3 component schemas with prefix on interface or type 1`] = `
-"export interface ICategory {
+"export interface ICat extends IPet {
+  age?: number;
+  hunts?: boolean;
+}
+
+export interface ICategory {
   id?: number;
   name?: string;
+}
+
+export interface IDog extends IPet {
+  bark?: boolean;
+  breed?: keyof typeof DogBreed;
+}
+
+export enum DogBreed {
+  \\"Dingo\\" = \\"Dingo\\",
+  \\"Husky\\" = \\"Husky\\",
+  \\"Retriever\\" = \\"Retriever\\",
+  \\"Shepherd\\" = \\"Shepherd\\",
 }
 
 export interface IError {
@@ -26,9 +43,26 @@ export type TPets = IPet[];
 `;
 
 exports[`ReusableTypes should handle swagger v3 component schemas without prefix on interface or type 1`] = `
-"export interface Category {
+"export interface Cat extends Pet {
+  age?: number;
+  hunts?: boolean;
+}
+
+export interface Category {
   id?: number;
   name?: string;
+}
+
+export interface Dog extends Pet {
+  bark?: boolean;
+  breed?: keyof typeof DogBreed;
+}
+
+export enum DogBreed {
+  \\"Dingo\\" = \\"Dingo\\",
+  \\"Husky\\" = \\"Husky\\",
+  \\"Retriever\\" = \\"Retriever\\",
+  \\"Shepherd\\" = \\"Shepherd\\",
 }
 
 export interface Error {

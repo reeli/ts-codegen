@@ -127,10 +127,10 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${
         operationId: operation.operationId,
         TResp: this.getResponseType(operation.responses),
         TReq: {
-          ...this.getParamTypes(params.pathParams),
-          ...this.getParamTypes(params.queryParams),
-          ...this.getParamTypes(params.bodyParams),
-          ...this.getParamTypes(params.formDataParams),
+          ...this.getParamTypes(params.pathParams, operation.operationId),
+          ...this.getParamTypes(params.queryParams, operation.operationId),
+          ...this.getParamTypes(params.bodyParams, operation.operationId),
+          ...this.getParamTypes(params.formDataParams, operation.operationId),
         },
         pathParams: getParamsNames(params.pathParams),
         queryParams: getParamsNames(params.queryParams),
@@ -141,14 +141,14 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${
     });
   }
 
-  getParamTypes = (params: Array<PathParameter | BodyParameter | QueryParameter | FormDataParameter>) =>
+  getParamTypes = (params: Array<PathParameter | BodyParameter | QueryParameter | FormDataParameter>, _name: string) =>
     params.reduce(
       (results, param) => ({
         ...results,
         [propName(param)]: resolve(
           this.schemaHandler.toType({
             ...get(param, "schema", param),
-            _name: param.name,
+            _name,
             _propKey: param.name,
           }),
           this.reusableSchemas,

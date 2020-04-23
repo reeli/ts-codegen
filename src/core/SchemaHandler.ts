@@ -27,12 +27,18 @@ export class SchemaHandler {
 
     const anyOf = (schema as ISchema).anyOf;
     if (anyOf) {
-      return this.toOneOfType(anyOf);
+      return this.toOneOfType({
+        ...anyOf,
+        _name: schema._name,
+      });
     }
 
     const allOf = (schema as ISchema).allOf;
     if (allOf) {
-      return this.toAllOfType(allOf);
+      return this.toAllOfType({
+        ...allOf,
+        _name: schema._name,
+      });
     }
 
     if (schema.$ref) {
@@ -114,21 +120,28 @@ export class SchemaHandler {
     const handleProperties = () =>
       reduce(
         schema.properties,
-        (o, v, k) => ({
-          ...o,
-          [`${k}${indexOf(schema.required, k) > -1 ? "" : "?"}`]: this.toType({
-            ...v,
-            _propKey: k,
-            _name: schema._name,
-          }),
-        }),
+        (o, v, k) => {
+          return {
+            ...o,
+            [`${k}${indexOf(schema.required, k) > -1 ? "" : "?"}`]: this.toType({
+              ...v,
+              _propKey: k,
+              _name: schema._name,
+            }),
+          };
+        },
         {} as any,
       );
     return schema.properties ? handleProperties() : schema.type;
   };
 
   toOneOfType = (schemas: TCustomSchema) => ({
-    _oneOf: map(schemas, (schema) => this.toType(schema)),
+    _oneOf: map(schemas, (schema) =>
+      this.toType({
+        ...schema,
+        _name: schemas._name,
+      }),
+    ),
   });
 
   toAllOfType = (schemas: TCustomSchema) => {
@@ -137,9 +150,17 @@ export class SchemaHandler {
 
     forEach(schemas, (schema) => {
       if (schema.$ref) {
-        _extends.push(this.toType(schema));
-      } else {
-        _others = this.toType(schema);
+        _extends.push(
+          this.toType({
+            ...schema,
+            _name: schemas._name,
+          }),
+        );
+      } else if (schema.type === "object") {
+        _others = this.toType({
+          ...schema,
+          _name: schemas._name,
+        });
       }
     });
 

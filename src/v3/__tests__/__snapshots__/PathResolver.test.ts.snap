@@ -22,16 +22,28 @@ export const findPetById = createRequestAction<
 export const findPets = createRequestAction<
   {
     limit?: number;
+    status: keyof typeof FindPetsStatus[];
     tags?: string[];
   },
   IPet[]
->(\\"findPets\\", ({ tags, limit }) => ({
+>(\\"findPets\\", ({ tags, limit, status }) => ({
   url: \`/api/test/pets\`,
   method: \\"get\\",
   params: {
     tags,
     limit,
+    status,
   },
 }));
+
+export const updatePet = createRequestAction<{
+  requestBody: ICat | IDog;
+}>(\\"updatePet\\", ({ requestBody }) => ({ url: \`/api/test/pets\`, method: \\"patch\\", data: requestBody }));
+
+export enum FindPetsStatus {
+  \\"available\\" = \\"available\\",
+  \\"pending\\" = \\"pending\\",
+  \\"sold\\" = \\"sold\\",
+}
 "
 `;

@@ -103,7 +103,7 @@ const expectedPathResolvedData = [
     method: "get",
   },
   {
-    TReq: { "from?": "keyof typeof FromFrom#EnumSuffix", documentId: "string" },
+    TReq: { "from?": "keyof typeof GetDocumentByIdUsingGetFrom#EnumSuffix", documentId: "string" },
     TResp: "IDocumentVo",
     bodyParams: [],
     deprecated: false,

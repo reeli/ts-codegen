@@ -88,7 +88,7 @@ export class PathsResolverV3 {
         url: this.getUrl(this.basePath, pathName),
         method,
         operationId: operation.operationId,
-        TReq: this.getRequestTypes(params, operation.requestBody),
+        TReq: this.getRequestTypes(params, operation.requestBody, operation.operationId),
         TResp: this.getResponseTypes(operation.responses),
         ...this.getParamsNames(params),
         requestBody: this.getRequestBody(operation.requestBody),
@@ -146,20 +146,20 @@ export class PathsResolverV3 {
     };
   };
 
-  getRequestTypes = (params: IParams, requestBody?: IReference | IRequestBody) => ({
-    ...this.getPathParamsTypes(params.pathParams),
-    ...this.getQueryParamsTypes(params.queryParams),
-    ...this.getRequestBodyTypes(requestBody),
+  getRequestTypes = (params: IParams, requestBody?: IReference | IRequestBody, _name?: string) => ({
+    ...this.getPathParamsTypes(params.pathParams, _name),
+    ...this.getQueryParamsTypes(params.queryParams, _name),
+    ...this.getRequestBodyTypes(requestBody, _name),
   });
 
-  getPathParamsTypes = (pathParams: Array<TParameter | IReference>) => {
+  getPathParamsTypes = (pathParams: Array<TParameter | IReference>, _name?: string) => {
     return pathParams.reduce(
       (results, param) => ({
         ...results,
         [`${(param as TParameter).name}${(param as TParameter).required ? "" : "?"}`]: resolve(
           this.schemaHandler.toType({
             ...(param as TParameter).schema,
-            _name: (param as TParameter).name,
+            _name,
             _propKey: (param as TParameter).name,
           }),
           this.reusableSchemas,
@@ -169,14 +169,14 @@ export class PathsResolverV3 {
     );
   };
 
-  getQueryParamsTypes = (queryParams: Array<TParameter | IReference>) =>
+  getQueryParamsTypes = (queryParams: Array<TParameter | IReference>, _name?: string) =>
     queryParams.reduce(
       (o, v) => ({
         ...o,
         [`${(v as TParameter).name}${(v as TParameter).required ? "" : "?"}`]: resolve(
           this.schemaHandler.toType({
             ...(v as TParameter).schema,
-            _name: (v as TParameter).name,
+            _name,
             _propKey: (v as TParameter).name,
           }),
           this.reusableSchemas,
@@ -187,14 +187,17 @@ export class PathsResolverV3 {
 
   getCookieParamsTypes = (_: Array<TParameter | IReference>) => {};
 
-  getRequestBodyTypes = (requestBody?: IReference | IRequestBody) => {
+  getRequestBodyTypes = (requestBody?: IReference | IRequestBody, _name?: string) => {
     if (!requestBody) {
       return "";
     }
 
     return {
       requestBody: resolve(
-        this.schemaHandler.toType((requestBody as IRequestBody).content["application/json"].schema),
+        this.schemaHandler.toType({
+          ...(requestBody as IRequestBody).content["application/json"].schema,
+          _name,
+        }),
         this.reusableSchemas,
       ),
     };
