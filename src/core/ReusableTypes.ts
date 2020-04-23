@@ -109,41 +109,42 @@ export class ReusableTypes {
       });
     });
 
+    // console.log(this.resolvedSchemas, "this.resolvedSchemas");
     const resolvedSchemas = mapValues(this.resolvedSchemas, (item) => {
       return {
         _kind: item._kind,
         _name: item._name,
-        _types: resolve(item._value, this.resolvedSchemas),
+        _values: resolve(item._value, this.resolvedSchemas),
       };
     });
 
     const arr = Object.keys(resolvedSchemas)
       .sort()
       .map((key) => {
-        const { _name, _kind, _types } = resolvedSchemas[key];
+        const { _name, _kind, _values } = resolvedSchemas[key];
 
-        if (_types === "object") {
+        if (_values === "object") {
           return `export interface ${_name} {[key:string]:any}`;
         }
 
         if (_kind === "enum") {
-          return handleEnums(_types, _name);
+          return handleEnums(_values, _name);
         }
 
-        if (!isEmpty(_types?._extends)) {
-          return `export interface ${_name} extends ${_types?._extends.join(",")} ${toTypes(_types?._others)} `;
+        if (!isEmpty(_values?._extends)) {
+          return `export interface ${_name} extends ${_values?._extends.join(",")} ${toTypes(_values?._others)} `;
         }
 
-        if (!isEmpty(_types?._oneOf)) {
-          return `export type ${_name} = ${map(_types?._oneOf, (item) => toTypes(item)).join("|")}`;
+        if (!isEmpty(_values?._oneOf)) {
+          return `export type ${_name} = ${map(_values?._oneOf, (item) => toTypes(item)).join("|")}`;
         }
 
         if (_kind === "type") {
-          return `export type ${_name} = ${_types}`;
+          return `export type ${_name} = ${_values}`;
         }
 
         if (_kind === "interface") {
-          const types = toTypes(resolvedSchemas[key]._types);
+          const types = toTypes(resolvedSchemas[key]._values);
           return `export interface ${_name} ${types}`;
         }
       });

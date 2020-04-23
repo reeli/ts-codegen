@@ -1,6 +1,6 @@
 import { Schema } from "swagger-schema-official";
 import { generateEnumType, isArray, isNumber, toCapitalCase } from "src/core/utils";
-import { forEach, indexOf, map, reduce, some } from "lodash";
+import { forEach, indexOf, map, reduce, some, last, isEmpty } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import qs from "querystring";
 
@@ -35,10 +35,7 @@ export class SchemaHandler {
 
     const allOf = (schema as ISchema).allOf;
     if (allOf) {
-      return this.toAllOfType({
-        ...allOf,
-        _name: schema._name,
-      });
+      return this.toAllOfType(allOf, schema._name);
     }
 
     if (schema.$ref) {
@@ -54,7 +51,10 @@ export class SchemaHandler {
     }
 
     if (schema.type === "object") {
-      // return schema.properties ? this.toObjectType(schema) : "{[key:string]:any}";
+      return this.toObjectType(schema);
+    }
+
+    if (schema?.properties) {
       return this.toObjectType(schema);
     }
 
@@ -144,22 +144,30 @@ export class SchemaHandler {
     ),
   });
 
-  toAllOfType = (schemas: TCustomSchema) => {
+  toAllOfType = (schemas: Array<TCustomSchema>, _name?: string) => {
     const _extends: any[] = [];
     let _others = {};
+
+    const lastSchema = last(schemas);
+    if (schemas.length == 1 || isEmpty(lastSchema)) {
+      return this.toType({
+        ...schemas[0],
+        _name,
+      });
+    }
 
     forEach(schemas, (schema) => {
       if (schema.$ref) {
         _extends.push(
           this.toType({
             ...schema,
-            _name: schemas._name,
+            _name,
           }),
         );
       } else if (schema.type === "object") {
         _others = this.toType({
           ...schema,
-          _name: schemas._name,
+          _name,
         });
       }
     });

@@ -1,4 +1,4 @@
-import { chain, compact, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy } from "lodash";
+import { chain, compact, Dictionary, filter, get, isEmpty, map, pick, reduce, sortBy, isString } from "lodash";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
 import { SchemaHandler } from "src/core/SchemaHandler";
 import { generateEnums, toTypes } from "src/core/utils";
@@ -65,8 +65,8 @@ export class PathsResolverV3 {
         v.requestBody ? "requestBody" : undefined,
       ];
       const params = this.toRequestParams(get(v, "queryParams"));
-
-      return `export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>('${v.operationId}', (${
+      const operationId = v.operationId?.replace(/\s/gi, "");
+      return `export const ${operationId} = createRequestAction<${TReq}, ${v.TResp}>('${operationId}', (${
         !isEmpty(requestParamList) ? `${this.toRequestParams(requestParamList)}` : ""
       }) => ({url: \`${v.url}\`, method: "${v.method}", ${v.requestBody ? `data: requestBody,` : ""}${
         params ? `params: ${params},` : ""
@@ -191,15 +191,18 @@ export class PathsResolverV3 {
     if (!requestBody) {
       return "";
     }
+    const rb = resolve(
+      this.schemaHandler.toType({
+        ...((requestBody as IRequestBody).content["application/json"]?.schema ||
+          (requestBody as IRequestBody).content["application/x-www-form-urlencoded"]?.schema ||
+          (requestBody as IRequestBody).content["multipart/form-data"]?.schema),
+        _name,
+      }),
+      this.reusableSchemas,
+    );
 
     return {
-      requestBody: resolve(
-        this.schemaHandler.toType({
-          ...(requestBody as IRequestBody).content["application/json"].schema,
-          _name,
-        }),
-        this.reusableSchemas,
-      ),
+      requestBody: isString(rb) ? rb : toTypes(rb),
     };
   };
 
