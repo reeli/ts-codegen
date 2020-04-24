@@ -17,7 +17,7 @@ interface OneOfType {
   _oneOf: Type[];
 }
 
-type Type = AllOfType | OneOfType | Type[] | { [key: string]: Type } | string;
+type Type = AllOfType | OneOfType | Type[] | { [key: string]: Type } | string | boolean | null;
 
 export class SchemaHandler {
   static of(writeTo: WriteTo) {
@@ -53,7 +53,7 @@ export class SchemaHandler {
       return this.toRefType(schema);
     }
 
-    if (schema.items) {
+    if (schema.type === "array" || schema.items) {
       return this.toArrayType(schema);
     }
 
@@ -69,7 +69,7 @@ export class SchemaHandler {
       return this.toObjectType(schema);
     }
 
-    if (schema.type === "integer") {
+    if (schema.type === "integer" || schema.type === "number") {
       return "number";
     }
 
@@ -77,7 +77,15 @@ export class SchemaHandler {
       return "File";
     }
 
-    return schema.type || "";
+    if (schema.type === "string") {
+      return "string";
+    }
+
+    if (schema.type === "boolean") {
+      return "boolean";
+    }
+
+    return null;
   };
 
   toRefType = (schema: Schema | ISchema): string => {
@@ -157,7 +165,7 @@ export class SchemaHandler {
 
   toAllOfType = (schemas: Array<CustomSchema>, _name?: string) => {
     const _extends: any[] = [];
-    let _others = {};
+    let _others: any = {};
 
     const lastSchema = last(schemas);
     if (schemas.length == 1 || isEmpty(lastSchema)) {

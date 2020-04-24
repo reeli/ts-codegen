@@ -13,7 +13,7 @@ describe("SchemaHandler", () => {
     });
 
     forEach(swaggerV2.definitions as any, (v, k) => {
-      return r.resolve({
+      r.resolve({
         ...v,
         _name: k,
       });
