@@ -62,6 +62,9 @@ export const resolve = (input: Type, allData: IAllData): any => {
   return "";
 };
 
+const isEnum = (k: string) => includes(k, ENUM_SUFFIX);
+const getEnumName = (k: string) => replace(k, ENUM_SUFFIX, "");
+
 export class ReusableTypes {
   public resolvedSchemas: Dictionary<any> = {};
 
@@ -73,13 +76,9 @@ export class ReusableTypes {
 
   gen = (withPrefix: boolean = true) => {
     const schemaHandler = SchemaHandler.of((k, v) => {
-      if (includes(k, ENUM_SUFFIX)) {
-        const enumName = replace(k, ENUM_SUFFIX, "");
-        this.resolvedSchemas[enumName] = {
-          _kind: "enum",
-          _name: enumName,
-          _value: v,
-        };
+      if (isEnum(k)) {
+        const name = getEnumName(k);
+        this.resolvedSchemas[name] = { _kind: "enum", _name: name, _value: v };
         return;
       }
 
