@@ -116,8 +116,8 @@ describe("SchemaHandler", () => {
 
     expect(results).toEqual({
       Pet: {
-        _extends: ["?name=NewPet&type=ref"],
-        _others: {
+        extends: ["?name=NewPet&type=ref"],
+        props: {
           id: "number",
         },
       },
@@ -153,8 +153,8 @@ describe("SchemaHandler", () => {
     expect(results).toEqual({
       "DogBreed#EnumSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
       Dog: {
-        _extends: ["?name=Pet&type=ref"],
-        _others: {
+        extends: ["?name=Pet&type=ref"],
+        props: {
           "bark?": "boolean",
           "breed?": "keyof typeof DogBreed#EnumSuffix",
         },
@@ -181,7 +181,7 @@ describe("SchemaHandler", () => {
 
     expect(results).toEqual({
       Pet: {
-        _oneOf: ["?name=Cat&type=ref", "?name=Dog&type=ref"],
+        oneOf: ["?name=Cat&type=ref", "?name=Dog&type=ref"],
       },
     });
   });
@@ -232,8 +232,8 @@ const expectedModelV2 = {
 };
 const expectedModelV3 = {
   Cat: {
-    _extends: ["?name=Pet&type=ref"],
-    _others: {
+    extends: ["?name=Pet&type=ref"],
+    props: {
       "age?": "number",
       "hunts?": "boolean",
     },
@@ -243,8 +243,8 @@ const expectedModelV3 = {
     "name?": "string",
   },
   Dog: {
-    _extends: ["?name=Pet&type=ref"],
-    _others: {
+    extends: ["?name=Pet&type=ref"],
+    props: {
       "bark?": "boolean",
       "breed?": "keyof typeof DogBreed#EnumSuffix",
     },
@@ -259,8 +259,8 @@ const expectedModelV3 = {
     "tag?": "string",
   },
   Pet: {
-    _extends: ["?name=NewPet&type=ref"],
-    _others: {
+    extends: ["?name=NewPet&type=ref"],
+    props: {
       "categories?": "?name=Category&type=ref[]",
       id: "number",
     },

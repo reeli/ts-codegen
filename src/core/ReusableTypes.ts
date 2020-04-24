@@ -50,8 +50,8 @@ export const resolve = (input: Type, allData: IAllData): any => {
   if (typeof input == "string") {
     return handleStr(input, allData);
   }
-  if (!isEmpty((input as OneOfType)?._oneOf)) {
-    return map((input as OneOfType)?._oneOf, (v) => resolve(v, allData)).join("|");
+  if (!isEmpty((input as OneOfType)?.oneOf)) {
+    return map((input as OneOfType)?.oneOf, (v) => resolve(v, allData)).join("|");
   }
   if (isArray(input)) {
     return map(input as Type[], (v) => resolve(v, allData));
@@ -133,12 +133,12 @@ export class ReusableTypes {
           return handleEnums(_values, _name);
         }
 
-        if (!isEmpty(_values?._extends)) {
-          return `export interface ${_name} extends ${_values?._extends.join(",")} ${toTypes(_values?._others)} `;
+        if (!isEmpty(_values?.extends)) {
+          return `export interface ${_name} extends ${_values?.extends.join(",")} ${toTypes(_values?.props)} `;
         }
 
-        if (!isEmpty(_values?._oneOf)) {
-          return `export type ${_name} = ${map(_values?._oneOf, (item) => toTypes(item)).join("|")}`;
+        if (!isEmpty(_values?.oneOf)) {
+          return `export type ${_name} = ${map(_values?.oneOf, (item) => toTypes(item)).join("|")}`;
         }
 
         if (_kind === "type") {

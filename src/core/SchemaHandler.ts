@@ -9,12 +9,12 @@ type CustomSchema = (Schema | ISchema) & { _name?: string; _propKey?: string };
 type WriteTo = (k: string, v: any) => void;
 
 export interface AllOfType {
-  _extends: Type[];
-  _others: { [key: string]: Type };
+  extends: Type[];
+  props: { [key: string]: Type };
 }
 
 export interface OneOfType {
-  _oneOf: Type[];
+  oneOf: Type[];
 }
 
 export type Type = AllOfType | OneOfType | Type[] | { [key: string]: Type } | string | boolean | null;
@@ -155,7 +155,7 @@ export class SchemaHandler {
   };
 
   toOneOfType = (schemas: CustomSchema) => ({
-    _oneOf: map(schemas, (schema) =>
+    oneOf: map(schemas, (schema) =>
       this.toType({
         ...schema,
         _name: schemas._name,
@@ -192,8 +192,8 @@ export class SchemaHandler {
     });
 
     return {
-      _extends,
-      _others,
+      extends: _extends,
+      props: _others,
     };
   };
 }
