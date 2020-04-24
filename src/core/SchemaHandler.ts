@@ -4,22 +4,33 @@ import { forEach, indexOf, map, reduce, some, last, isEmpty } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import qs from "querystring";
 
-type TDictionary<T> = { [key: string]: T };
-type TCustomSchema = (Schema | ISchema) & { _propKey?: string; _name?: string };
-type TWriteTo = (k: string, v: any) => void;
+type Dictionary<T> = { [key: string]: T };
+type CustomSchema = (Schema | ISchema) & { _name?: string; _propKey?: string };
+type WriteTo = (k: string, v: any) => void;
+
+interface AllOfType {
+  _extends: Type[];
+  _others: { [key: string]: Type };
+}
+
+interface OneOfType {
+  _oneOf: Type[];
+}
+
+type Type = AllOfType | OneOfType | Type[] | { [key: string]: Type } | string;
 
 export class SchemaHandler {
-  static of(writeTo: TWriteTo) {
+  static of(writeTo: WriteTo) {
     return new SchemaHandler(writeTo);
   }
 
-  constructor(public writeTo: TWriteTo) {}
+  constructor(public writeTo: WriteTo) {}
 
-  resolve = (schema: TCustomSchema = {}) => {
+  resolve = (schema: CustomSchema = {}) => {
     this.writeTo(schema._name!, this.toType(schema));
   };
 
-  toType = (schema: TCustomSchema = {}): TDictionary<any> | string => {
+  toType = (schema: CustomSchema = {}): Type => {
     const oneOf = (schema as ISchema).oneOf;
     if (oneOf) {
       return this.toOneOfType(oneOf);
@@ -83,7 +94,7 @@ export class SchemaHandler {
     })}`;
   };
 
-  toArrayType = (schema: TCustomSchema) => {
+  toArrayType = (schema: CustomSchema) => {
     if (isArray(schema.items)) {
       return map(schema.items, (item: Schema | ISchema) =>
         this.toType({
@@ -95,7 +106,7 @@ export class SchemaHandler {
     }
 
     const itemType = this.toType({
-      ...(schema.items as TCustomSchema),
+      ...(schema.items as CustomSchema),
       _name: schema._name,
       _propKey: schema._propKey,
     });
@@ -103,7 +114,7 @@ export class SchemaHandler {
     return schema.type === "array" ? `${itemType}[]` : itemType;
   };
 
-  toEnumType = (schema: TCustomSchema) => {
+  toEnumType = (schema: CustomSchema) => {
     const enumType = generateEnumType(schema._name, schema._propKey);
     const hasNumber = some(schema.enum, (v) => isNumber(v));
 
@@ -116,7 +127,7 @@ export class SchemaHandler {
     return `keyof typeof ${enumType}`;
   };
 
-  toObjectType = (schema: TCustomSchema): TDictionary<any> | string => {
+  toObjectType = (schema: CustomSchema): Dictionary<Type> | string => {
     const handleProperties = () =>
       reduce(
         schema.properties,
@@ -135,7 +146,7 @@ export class SchemaHandler {
     return schema.properties ? handleProperties() : schema.type;
   };
 
-  toOneOfType = (schemas: TCustomSchema) => ({
+  toOneOfType = (schemas: CustomSchema) => ({
     _oneOf: map(schemas, (schema) =>
       this.toType({
         ...schema,
@@ -144,7 +155,7 @@ export class SchemaHandler {
     ),
   });
 
-  toAllOfType = (schemas: Array<TCustomSchema>, _name?: string) => {
+  toAllOfType = (schemas: Array<CustomSchema>, _name?: string) => {
     const _extends: any[] = [];
     let _others = {};
 
@@ -175,6 +186,6 @@ export class SchemaHandler {
     return {
       _extends,
       _others,
-    } as TDictionary<any>;
+    };
   };
 }
