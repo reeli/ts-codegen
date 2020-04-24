@@ -5,9 +5,11 @@ import {
   handleEnums,
   isArray,
   isObject,
+  OneOfType,
   SchemaHandler,
   toCapitalCase,
   toTypes,
+  Type,
 } from "src";
 import { compact, Dictionary, forEach, includes, isEmpty, map, mapValues, replace } from "lodash";
 import { ENUM_SUFFIX } from "src/core/constants";
@@ -44,18 +46,18 @@ const handleStr = (str: string, allData: IAllData) => {
   return str;
 };
 
-export const resolve = (input: string | Dictionary<any>, allData: IAllData): any => {
+export const resolve = (input: Type, allData: IAllData): any => {
   if (typeof input == "string") {
     return handleStr(input, allData);
   }
-  if (!isEmpty(input?._oneOf)) {
-    return map(input?._oneOf, (v) => resolve(v, allData)).join("|");
+  if (!isEmpty((input as OneOfType)?._oneOf)) {
+    return map((input as OneOfType)?._oneOf, (v) => resolve(v, allData)).join("|");
   }
   if (isArray(input)) {
-    return map(input, (v) => resolve(v, allData));
+    return map(input as Type[], (v) => resolve(v, allData));
   }
   if (isObject(input)) {
-    return mapValues(input, (item) => resolve(item, allData));
+    return mapValues(input as { [key: string]: Type }, (item) => resolve(item, allData));
   }
   return "";
 };

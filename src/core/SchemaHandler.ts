@@ -8,16 +8,16 @@ type Dictionary<T> = { [key: string]: T };
 type CustomSchema = (Schema | ISchema) & { _name?: string; _propKey?: string };
 type WriteTo = (k: string, v: any) => void;
 
-interface AllOfType {
+export interface AllOfType {
   _extends: Type[];
   _others: { [key: string]: Type };
 }
 
-interface OneOfType {
+export interface OneOfType {
   _oneOf: Type[];
 }
 
-type Type = AllOfType | OneOfType | Type[] | { [key: string]: Type } | string | boolean | null;
+export type Type = AllOfType | OneOfType | Type[] | { [key: string]: Type } | string | boolean | null;
 
 export class SchemaHandler {
   static of(writeTo: WriteTo) {

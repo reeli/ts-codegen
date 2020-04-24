@@ -1,149 +1,42 @@
 import { Dictionary, forEach } from "lodash";
-import swaggerV3 from "examples/swagger.v3.petstore.json";
-import swaggerV3Expanded from "examples/swagger.v3.petstore.expanded.json";
-import swaggerV2 from "examples/swagger.json";
 import { SchemaHandler } from "src/core/SchemaHandler";
+import v2 from "examples/v2.json";
+import v3 from "examples/v3.json";
 
 describe("SchemaHandler", () => {
-  it("should scan swagger definitions schema correctly", () => {
+  it("should handle swagger definitions correctly", () => {
     const results: Dictionary<any> = {};
-
     const r = SchemaHandler.of((k, ret) => {
       results[k] = ret;
     });
 
-    forEach(swaggerV2.definitions as any, (v, k) => {
+    forEach((v2 as any).definitions, (v, k) => {
       r.resolve({
         ...v,
         _name: k,
       });
     });
 
-    expect(results).toEqual({
-      ApiResponse: {
-        "code?": "number",
-        "message?": "string",
-        "type?": "string",
-      },
-      Category: {
-        "id?": "number",
-        "name?": "string",
-      },
-      Order: {
-        "complete?": "boolean",
-        "id?": "number",
-        "petId?": "number",
-        "quantity?": "number",
-        "shipDate?": "string",
-        "status?": "keyof typeof OrderStatus#EnumSuffix",
-      },
-      "OrderStatus#EnumSuffix": ["placed", "approved", "delivered"],
-      Pet: {
-        "category?": "?name=Category&type=ref",
-        "id?": "number",
-        name: "string",
-        photoUrls: "string[]",
-        "status?": "keyof typeof PetStatus#EnumSuffix",
-        "tags?": "?name=Tag&type=ref[]",
-      },
-      "PetStatus#EnumSuffix": ["available", "pending", "sold"],
-      Tag: {
-        "id?": "number",
-        "name?": "string",
-      },
-      User: {
-        "email?": "string",
-        "firstName?": "string",
-        "id?": "number",
-        "lastName?": "string",
-        "password?": "string",
-        "phone?": "string",
-        "userStatus?": "number",
-        "username?": "string",
-      },
-    });
+    expect(results).toEqual(expectedModelV2);
   });
 
-  it("should scan swagger components schema correctly", () => {
+  it("should handle swagger components schemas correctly", () => {
     const results: Dictionary<any> = {};
     const r = SchemaHandler.of((k, ret) => {
       results[k] = ret;
     });
 
-    forEach(swaggerV3.components.schemas as any, (v, k) =>
+    forEach((v3 as any).components.schemas, (v, k) =>
       r.resolve({
         ...v,
         _name: k,
       }),
     );
 
-    expect(results).toEqual({
-      Error: {
-        code: "number",
-        message: "string",
-      },
-      Pet: {
-        id: "number",
-        name: "string",
-        "tag?": "string",
-      },
-      Pets: "?name=Pet&type=ref[]",
-    });
+    expect(results).toEqual(expectedModelV3);
   });
 
-  it("should scan swagger components expanded schema correctly", () => {
-    const results: Dictionary<any> = {};
-    const r = SchemaHandler.of((k, ret) => {
-      results[k] = ret;
-    });
-
-    forEach(swaggerV3Expanded.components.schemas as any, (v, k) =>
-      r.resolve({
-        ...v,
-        _name: k,
-      }),
-    );
-
-    expect(results).toEqual({
-      "DogBreed#EnumSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
-      Cat: {
-        _extends: ["?name=Pet&type=ref"],
-        _others: {
-          "age?": "number",
-          "hunts?": "boolean",
-        },
-      },
-      Category: {
-        "id?": "number",
-        "name?": "string",
-      },
-      Dog: {
-        _extends: ["?name=Pet&type=ref"],
-        _others: {
-          "bark?": "boolean",
-          "breed?": "keyof typeof DogBreed#EnumSuffix",
-        },
-      },
-      Error: {
-        code: "number",
-        message: "string",
-      },
-      NewPet: {
-        name: "string",
-        "tag?": "string",
-      },
-      Pet: {
-        _extends: ["?name=NewPet&type=ref"],
-        _others: {
-          "categories?": "?name=Category&type=ref[]",
-          id: "number",
-        },
-      },
-      Pets: "?name=Pet&type=ref[]",
-    });
-  });
-
-  it("should scan single schema correctly", () => {
+  it("should handle single schema correctly", () => {
     SchemaHandler.of((_, results) => {
       expect(results).toEqual("?name=Pet&type=ref[]");
     }).resolve({
@@ -169,7 +62,7 @@ describe("SchemaHandler", () => {
     });
   });
 
-  it("should scan properties with enum", () => {
+  it("should handle properties with enum", () => {
     const mockWriteTo = jest.fn();
     SchemaHandler.of(mockWriteTo).resolve({
       type: "object",
@@ -293,3 +186,84 @@ describe("SchemaHandler", () => {
     });
   });
 });
+
+const expectedModelV2 = {
+  ApiResponse: {
+    "code?": "number",
+    "message?": "string",
+    "type?": "string",
+  },
+  Category: {
+    "id?": "number",
+    "name?": "string",
+  },
+  Order: {
+    "complete?": "boolean",
+    "id?": "number",
+    "petId?": "number",
+    "quantity?": "number",
+    "shipDate?": "string",
+    "status?": "keyof typeof OrderStatus#EnumSuffix",
+  },
+  "OrderStatus#EnumSuffix": ["placed", "approved", "delivered"],
+  Pet: {
+    "category?": "?name=Category&type=ref",
+    "id?": "number",
+    name: "string",
+    photoUrls: "string[]",
+    "status?": "keyof typeof PetStatus#EnumSuffix",
+    "tags?": "?name=Tag&type=ref[]",
+  },
+  "PetStatus#EnumSuffix": ["available", "pending", "sold"],
+  Tag: {
+    "id?": "number",
+    "name?": "string",
+  },
+  User: {
+    "email?": "string",
+    "firstName?": "string",
+    "id?": "number",
+    "lastName?": "string",
+    "password?": "string",
+    "phone?": "string",
+    "userStatus?": "number",
+    "username?": "string",
+  },
+};
+const expectedModelV3 = {
+  Cat: {
+    _extends: ["?name=Pet&type=ref"],
+    _others: {
+      "age?": "number",
+      "hunts?": "boolean",
+    },
+  },
+  Category: {
+    "id?": "number",
+    "name?": "string",
+  },
+  Dog: {
+    _extends: ["?name=Pet&type=ref"],
+    _others: {
+      "bark?": "boolean",
+      "breed?": "keyof typeof DogBreed#EnumSuffix",
+    },
+  },
+  "DogBreed#EnumSuffix": ["Dingo", "Husky", "Retriever", "Shepherd"],
+  Error: {
+    code: "number",
+    message: "string",
+  },
+  NewPet: {
+    name: "string",
+    "tag?": "string",
+  },
+  Pet: {
+    _extends: ["?name=NewPet&type=ref"],
+    _others: {
+      "categories?": "?name=Category&type=ref[]",
+      id: "number",
+    },
+  },
+  Pets: "?name=Pet&type=ref[]",
+};
