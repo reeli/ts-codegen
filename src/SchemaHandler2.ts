@@ -1,8 +1,6 @@
-import { Schema } from "swagger-schema-official";
-import { generateEnumType, isArray, isNumber, toCapitalCase } from "src/core/utils";
+import { generateEnumType, isArray, isNumber } from "src/core/utils";
 import { forEach, indexOf, map, reduce, some, last, isEmpty } from "lodash";
-import { ISchema } from "src/v3/OpenAPI";
-import qs from "querystring";
+import { IReference, ISchema } from "src/v3/OpenAPI";
 import { CustomSchema, Type } from "src/core/Type";
 
 type Dictionary<T> = { [key: string]: T };
@@ -42,8 +40,9 @@ export class SchemaHandler2 {
       return this.type.ref(schema.$ref);
     }
 
-    if (schema.type === "array" || schema.items) {
-      return this.type.array();
+    // TODO: if schema.type === "array" string[] Pet[]... [Pet, Cat, Dog] enum[]
+    if (schema.items) {
+      return this.type.array(this.handleItems(schema.items));
     }
 
     if (schema.enum) {
@@ -77,39 +76,35 @@ export class SchemaHandler2 {
     return this.type.null();
   };
 
-  toRefType = (schema: Schema | ISchema): string => {
-    const getTypeByRef = (str?: string) => {
-      if (!str) {
-        return;
-      }
-      const list = str.split("/");
-      return list[list.length - 1];
-    };
-
-    return `?name=${toCapitalCase(getTypeByRef(schema.$ref))}&${qs.stringify({
-      type: "ref",
-    })}`;
-  };
-
-  toArrayType = (schema: CustomSchema) => {
-    if (isArray(schema.items)) {
-      return map(schema.items, (item: Schema | ISchema) =>
-        this.convert({
-          ...item,
-          _name: schema._name,
-          _propKey: schema._propKey,
-        }),
-      );
+  // TODO: remove any later
+  handleItems(items: CustomSchema | IReference | CustomSchema[]): any {
+    if (isArray(items)) {
+      return map(items, (v) => this.handleItems(v));
     }
 
-    const itemType = this.convert({
-      ...(schema.items as CustomSchema),
-      _name: schema._name,
-      _propKey: schema._propKey,
-    });
+    return this.handleSchema(items);
+  }
 
-    return schema.type === "array" ? `${itemType}[]` : itemType;
-  };
+  handleSchema(schema: CustomSchema) {
+    if (schema.type === "string") {
+      return this.type.string();
+    }
+    if (schema.type === "boolean") {
+      return this.type.boolean();
+    }
+    if (schema.type === "number") {
+      return this.type.number();
+    }
+    if (schema.$ref) {
+      return this.type.ref((schema as IReference).$ref);
+    }
+
+    if (schema.items) {
+      return this.handleItems(schema.items);
+    }
+
+    return this.type.null();
+  }
 
   toEnumType = (schema: CustomSchema) => {
     const enumType = generateEnumType(schema._name, schema._propKey);

@@ -1,6 +1,7 @@
-import { indexOf, reduce } from "lodash";
+import { indexOf, reduce, map } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import { Schema } from "swagger-schema-official";
+import { isArray } from "src/core/utils";
 
 abstract class TypeFactory {
   abstract toType(): string;
@@ -37,8 +38,16 @@ export class Null extends TypeFactory {
 }
 
 export class Arr extends TypeFactory {
+  // TODO: remove any later
+  constructor(private data: any) {
+    super();
+  }
+
   toType(): string {
-    return "";
+    if (isArray(this.data)) {
+      return `[${map(this.data, (v) => v.toType())}]`;
+    }
+    return `${this.data.toType()}[]`;
   }
 }
 
@@ -96,36 +105,10 @@ export class Obj extends TypeFactory {
 
 export type CustomSchema = (Schema | ISchema) & { _name?: string; _propKey?: string };
 
-class Refs {
+export class Type {
   public refs: { [id: string]: Ref } = {};
 
   constructor() {}
-
-  static of() {
-    return new Refs();
-  }
-
-  register(id: string) {
-    if (this.refs[id]) {
-      return this.refs[id];
-    }
-
-    const ref = new Ref(id);
-    this.refs = {
-      ...this.refs,
-      [id]: ref,
-    };
-
-    return ref;
-  }
-}
-
-export class Type {
-  public refRegister: Refs;
-
-  constructor() {
-    this.refRegister = Refs.of();
-  }
 
   boolean() {
     return new Bool();
@@ -145,11 +128,11 @@ export class Type {
 
   ref($ref: string) {
     const id = getRefId($ref);
-    return this.refRegister.register(id);
+    return this.register(id);
   }
 
-  array() {
-    return new Arr();
+  array(types: Type[]) {
+    return new Arr(types);
   }
 
   oneOf() {
@@ -166,5 +149,19 @@ export class Type {
 
   file() {
     return new File();
+  }
+
+  private register(id: string) {
+    if (this.refs[id]) {
+      return this.refs[id];
+    }
+
+    const ref = new Ref(id);
+    this.refs = {
+      ...this.refs,
+      [id]: ref,
+    };
+
+    return ref;
   }
 }
