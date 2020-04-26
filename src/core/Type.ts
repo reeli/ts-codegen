@@ -95,15 +95,24 @@ interface IObjInputs {
 }
 
 export class Obj extends TypeFactory {
-  constructor(private props: IObjInputs["props"], _extend?: IObjInputs["extend"]) {
+  constructor(private props: IObjInputs["props"], private extend?: IObjInputs["extend"]) {
     super();
   }
 
   toType(): string {
     const handler = (props: { [key: string]: IObjType }): string => {
-      const data = map(props, (v, k) => `${quoteKey(k)}${v.required ? "" : "?"}: ${v.value.toType()};`);
+      //TODO: refactor next line later
+      if (props?.props) {
+        return handler(props.props as any);
+      }
+      const data = map(props, (v, k) => {
+        return `${quoteKey(k)}${v.required ? "" : "?"}: ${v.value.toType()};`;
+      });
       return `{${data.join("\n")}}`;
     };
+    if (this.extend) {
+      return `extends ${map(this.extend, (v) => v.toType()).join(",")} ${handler(this.props)}`;
+    }
     return handler(this.props);
   }
 }

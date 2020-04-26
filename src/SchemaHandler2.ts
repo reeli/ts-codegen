@@ -1,5 +1,5 @@
 import { isArray, toCapitalCase } from "src/core/utils";
-import { map, reduce } from "lodash";
+import { forEach, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/v3/OpenAPI";
 import { CustomSchema, IObjType, TType, Type } from "src/core/Type";
 
@@ -34,7 +34,8 @@ export class SchemaHandler2 {
 
     const allOf = (schema as ISchema).allOf;
     if (allOf) {
-      return this.type.null();
+      const { extend, props } = this.handleAllOf(allOf);
+      return this.type.object(props, extend);
     }
 
     if (schema.items) {
@@ -104,5 +105,23 @@ export class SchemaHandler2 {
       },
       {},
     );
+  }
+
+  handleAllOf(schemas: Array<CustomSchema>, _name?: string) {
+    const extend: any[] = [];
+    let props: any = {};
+
+    forEach(schemas, (schema) => {
+      if (schema.$ref) {
+        extend.push(this.convert(schema));
+      } else if (schema.type === "object") {
+        props = this.convert(schema);
+      }
+    });
+
+    return {
+      extend,
+      props,
+    };
   }
 }
