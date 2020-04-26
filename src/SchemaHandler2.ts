@@ -1,7 +1,7 @@
-import { isArray } from "src/core/utils";
-import { map } from "lodash";
+import { isArray, toCapitalCase } from "src/core/utils";
+import { map, reduce } from "lodash";
 import { IReference, ISchema } from "src/v3/OpenAPI";
-import { CustomSchema, Type } from "src/core/Type";
+import { CustomSchema, IObjType, TType, Type } from "src/core/Type";
 
 type WriteTo = (k: string, v: any) => void;
 
@@ -20,20 +20,21 @@ export class SchemaHandler2 {
     this.writeTo(schema._name!, this.convert(schema));
   };
 
-  convert(schema: CustomSchema) {
+  //TODO: remove any later
+  convert(schema: CustomSchema): TType {
     const oneOf = (schema as ISchema).oneOf;
     if (oneOf) {
-      return this.type.oneOf();
+      return this.type.oneOf(map(oneOf, (v) => this.convert(v)));
     }
 
     const anyOf = (schema as ISchema).anyOf;
     if (anyOf) {
-      return this.type.object(anyOf, []);
+      return this.type.oneOf(map(anyOf, (v) => this.convert(v)));
     }
 
     const allOf = (schema as ISchema).allOf;
     if (allOf) {
-      return this.type.oneOf();
+      return this.type.null();
     }
 
     if (schema.items) {
@@ -55,11 +56,7 @@ export class SchemaHandler2 {
     }
 
     if (schema.type === "object") {
-      return this.type.object(schema);
-    }
-
-    if (schema?.properties) {
-      return this.type.object(schema);
+      return this.type.object(this.handleProperties(schema.properties!, schema._name)); // TODO: handle when schema.properties not exists
     }
 
     if (schema.type === "string") {
@@ -88,5 +85,24 @@ export class SchemaHandler2 {
     }
 
     return this.convert(items);
+  }
+
+  handleProperties(properties: { [key: string]: CustomSchema }, _name: string = ""): { [key: string]: IObjType } {
+    return reduce(
+      properties,
+      (res, v, k) => {
+        return {
+          ...res,
+          [k]: {
+            value: this.convert({
+              ...v,
+              _name: `${toCapitalCase(_name)}${toCapitalCase(k)}`,
+            }),
+            required: v.required,
+          },
+        };
+      },
+      {},
+    );
   }
 }

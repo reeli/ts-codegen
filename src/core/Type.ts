@@ -1,7 +1,7 @@
-import { indexOf, reduce, map, uniqueId } from "lodash";
+import { map, uniqueId } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import { Schema } from "swagger-schema-official";
-import { isArray, toCapitalCase } from "src/core/utils";
+import { isArray, quoteKey, toCapitalCase } from "src/core/utils";
 
 abstract class TypeFactory {
   abstract toType(): string;
@@ -30,8 +30,12 @@ export class Enum extends TypeFactory {
 }
 
 export class OneOf extends TypeFactory {
+  constructor(private types: TType[]) {
+    super();
+  }
+
   toType(): string {
-    return "";
+    return `${map(this.types, (type) => type.toType()).join("|")}`;
   }
 }
 
@@ -43,15 +47,15 @@ export class Null extends TypeFactory {
 
 export class Arr extends TypeFactory {
   // TODO: remove any later
-  constructor(private data: any) {
+  constructor(private data: TType[] | TType) {
     super();
   }
 
   toType(): string {
     if (isArray(this.data)) {
-      return `[${map(this.data, (v) => v.toType())}]`;
+      return `[${map(this.data as TType[], (v) => v.toType())}]`;
     }
-    return `${this.data.toType()}[]`;
+    return `${(this.data as TType).toType()}[]`;
   }
 }
 
@@ -86,7 +90,7 @@ export class File extends TypeFactory {
 }
 
 interface IObjInputs {
-  props: { [key: string]: any }; // TODO: remove any later
+  props: { [key: string]: IObjType };
   extend: Ref[];
 }
 
@@ -96,18 +100,22 @@ export class Obj extends TypeFactory {
   }
 
   toType(): string {
-    return reduce(
-      this.props,
-      (res, v, k) => ({
-        ...res,
-        [`${k}${indexOf(v.required, k) > -1 ? "" : "?"}`]: v.toType(),
-      }),
-      {} as any,
-    );
+    const handler = (props: { [key: string]: IObjType }): string => {
+      const data = map(props, (v, k) => `${quoteKey(k)}${v.required ? "" : "?"}: ${v.value.toType()};`);
+      return `{${data.join("\n")}}`;
+    };
+    return handler(this.props);
   }
 }
 
 export type CustomSchema = (Schema | ISchema) & { _name?: string; _propKey?: string };
+
+export type TType = Ref | Obj | File | Num | Arr | Null | Enum | Str | Bool | OneOf;
+
+export interface IObjType {
+  value: TType;
+  required?: boolean;
+}
 
 export class Type {
   public refs: { [id: string]: Ref } = {};
@@ -139,15 +147,15 @@ export class Type {
     return this.register(id);
   }
 
-  array(types: Type[]) {
+  array(types: TType[]) {
     return new Arr(types);
   }
 
-  oneOf() {
-    return new OneOf();
+  oneOf(types: TType[]) {
+    return new OneOf(types);
   }
 
-  object(props: CustomSchema, extend?: IObjInputs["extend"]) {
+  object(props: IObjInputs["props"], extend?: IObjInputs["extend"]) {
     return new Obj(props, extend);
   }
 
