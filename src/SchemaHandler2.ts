@@ -36,28 +36,22 @@ export class SchemaHandler2 {
       return this.type.oneOf();
     }
 
-    if (schema.type === "string") {
-      return this.type.string();
-    }
-    if (schema.type === "boolean") {
-      return this.type.boolean();
-    }
-
     if (schema.items) {
       // TODO: if schema.type === "array" string[] Pet[]... [Pet, Cat, Dog] enum[]
-      return this.type.array(this.handleItems(schema.items));
+      return this.type.array(
+        this.handleItems({
+          ...schema.items,
+          _name: schema._name,
+        }),
+      );
     }
 
     if (schema.$ref) {
       return this.type.ref((schema as IReference).$ref);
     }
 
-    if (schema.items) {
-      return this.handleItems(schema.items);
-    }
-
     if (schema.enum) {
-      return this.type.enum();
+      return this.type.enum(schema.enum, schema._name);
     }
 
     if (schema.type === "object") {
@@ -66,6 +60,14 @@ export class SchemaHandler2 {
 
     if (schema?.properties) {
       return this.type.object(schema);
+    }
+
+    if (schema.type === "string") {
+      return this.type.string();
+    }
+
+    if (schema.type === "boolean") {
+      return this.type.boolean();
     }
 
     if (schema.type === "integer" || schema.type === "number") {

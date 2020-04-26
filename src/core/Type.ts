@@ -1,7 +1,7 @@
-import { indexOf, reduce, map } from "lodash";
+import { indexOf, reduce, map, uniqueId } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import { Schema } from "swagger-schema-official";
-import { isArray } from "src/core/utils";
+import { isArray, toCapitalCase } from "src/core/utils";
 
 abstract class TypeFactory {
   abstract toType(): string;
@@ -20,8 +20,12 @@ export class Str extends TypeFactory {
 }
 
 export class Enum extends TypeFactory {
+  constructor(private id: string) {
+    super();
+  }
+
   toType(): string {
-    return "";
+    return `keyof typeof ${this.id}`;
   }
 }
 
@@ -107,6 +111,7 @@ export type CustomSchema = (Schema | ISchema) & { _name?: string; _propKey?: str
 
 export class Type {
   public refs: { [id: string]: Ref } = {};
+  public enums: { [id: string]: any[] } = {};
 
   constructor() {}
 
@@ -122,8 +127,11 @@ export class Type {
     return new Null();
   }
 
-  enum() {
-    return new Enum();
+  //TODO: 解决 id 重名的问题
+  enum(value: any[], id: string = uniqueId("Enum")) {
+    const name = toCapitalCase(id);
+    this.enums[name] = value;
+    return new Enum(name);
   }
 
   ref($ref: string) {
