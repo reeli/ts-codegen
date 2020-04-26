@@ -3,76 +3,78 @@ import { generateEnumType, isArray, isNumber, toCapitalCase } from "src/core/uti
 import { forEach, indexOf, map, reduce, some, last, isEmpty } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import qs from "querystring";
-import { Type } from "src/core/Type";
+import { CustomSchema, Type } from "src/core/Type";
 
 type Dictionary<T> = { [key: string]: T };
-type CustomSchema = (Schema | ISchema) & { _name?: string; _propKey?: string };
 type WriteTo = (k: string, v: any) => void;
 
 export class SchemaHandler2 {
+  type: Type;
   static of(writeTo: WriteTo) {
     return new SchemaHandler2(writeTo);
   }
 
-  constructor(public writeTo: WriteTo) {}
+  constructor(public writeTo: WriteTo) {
+    this.type = new Type();
+  }
 
   resolve = (schema: CustomSchema = {}) => {
-    this.writeTo(schema._name!, this.toType(schema));
+    this.writeTo(schema._name!, this.convert(schema));
   };
 
-  toType = (schema: CustomSchema = {}): Type => {
+  convert = (schema: CustomSchema = {}) => {
     const oneOf = (schema as ISchema).oneOf;
     if (oneOf) {
-      return Type.oneOf();
+      return this.type.oneOf();
     }
 
     const anyOf = (schema as ISchema).anyOf;
     if (anyOf) {
-      return Type.object(anyOf, []);
+      return this.type.object(anyOf, []);
     }
 
     const allOf = (schema as ISchema).allOf;
     if (allOf) {
-      return Type.oneOf();
+      return this.type.oneOf();
     }
 
     if (schema.$ref) {
-      return Type.ref();
+      return this.type.ref(schema.$ref);
     }
 
     if (schema.type === "array" || schema.items) {
-      return Type.array();
+      return this.type.array();
     }
 
     if (schema.enum) {
-      return Type.enum();
+      return this.type.enum();
     }
 
     if (schema.type === "object") {
-      return Type.object(schema);
+      return this.type.object(schema);
     }
 
     if (schema?.properties) {
-      return Type.object(schema);
+      return this.type.object(schema);
     }
 
     if (schema.type === "integer" || schema.type === "number") {
-      return Type.number();
+      return this.type.number();
     }
 
     if (schema.type === "file") {
-      return Type.file();
+      return this.type.file();
     }
 
     if (schema.type === "string") {
-      return Type.string();
+      return this.type.string();
     }
 
     if (schema.type === "boolean") {
-      return Type.boolean();
+      return this.type.boolean();
     }
 
-    return Type.null();
+    return this.type.null();
   };
 
   toRefType = (schema: Schema | ISchema): string => {
@@ -92,7 +94,7 @@ export class SchemaHandler2 {
   toArrayType = (schema: CustomSchema) => {
     if (isArray(schema.items)) {
       return map(schema.items, (item: Schema | ISchema) =>
-        this.toType({
+        this.convert({
           ...item,
           _name: schema._name,
           _propKey: schema._propKey,
@@ -100,7 +102,7 @@ export class SchemaHandler2 {
       );
     }
 
-    const itemType = this.toType({
+    const itemType = this.convert({
       ...(schema.items as CustomSchema),
       _name: schema._name,
       _propKey: schema._propKey,
@@ -129,7 +131,7 @@ export class SchemaHandler2 {
         (o, v, k) => {
           return {
             ...o,
-            [`${k}${indexOf(schema.required, k) > -1 ? "" : "?"}`]: this.toType({
+            [`${k}${indexOf(schema.required, k) > -1 ? "" : "?"}`]: this.convert({
               ...v,
               _propKey: k,
               _name: schema._name,
@@ -143,7 +145,7 @@ export class SchemaHandler2 {
 
   toOneOfType = (schemas: CustomSchema) => ({
     oneOf: map(schemas, (schema) =>
-      this.toType({
+      this.convert({
         ...schema,
         _name: schemas._name,
       }),
@@ -156,7 +158,7 @@ export class SchemaHandler2 {
 
     const lastSchema = last(schemas);
     if (schemas.length == 1 || isEmpty(lastSchema)) {
-      return this.toType({
+      return this.convert({
         ...schemas[0],
         _name,
       });
@@ -165,13 +167,13 @@ export class SchemaHandler2 {
     forEach(schemas, (schema) => {
       if (schema.$ref) {
         _extends.push(
-          this.toType({
+          this.convert({
             ...schema,
             _name,
           }),
         );
       } else if (schema.type === "object") {
-        _others = this.toType({
+        _others = this.convert({
           ...schema,
           _name,
         });

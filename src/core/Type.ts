@@ -42,9 +42,21 @@ export class Arr extends TypeFactory {
   }
 }
 
-export class Ref extends TypeFactory {
-  toType(): string {
+const getRefId = (str?: string): string => {
+  if (!str) {
     return "";
+  }
+  const list = str.split("/");
+  return list[list.length - 1];
+};
+
+export class Ref extends TypeFactory {
+  constructor(private id: string) {
+    super();
+  }
+
+  toType(): string {
+    return this.id;
   }
 }
 
@@ -82,46 +94,77 @@ export class Obj extends TypeFactory {
   }
 }
 
-type CustomSchema = (Schema | ISchema) & { _name?: string; _propKey?: string };
+export type CustomSchema = (Schema | ISchema) & { _name?: string; _propKey?: string };
+
+class Refs {
+  public refs: { [id: string]: Ref } = {};
+
+  constructor() {}
+
+  static of() {
+    return new Refs();
+  }
+
+  register(id: string) {
+    if (this.refs[id]) {
+      return this.refs[id];
+    }
+
+    const ref = new Ref(id);
+    this.refs = {
+      ...this.refs,
+      [id]: ref,
+    };
+
+    return ref;
+  }
+}
 
 export class Type {
-  static boolean() {
+  public refRegister: Refs;
+
+  constructor() {
+    this.refRegister = Refs.of();
+  }
+
+  boolean() {
     return new Bool();
   }
 
-  static string() {
+  string() {
     return new Str();
   }
 
-  static null() {
+  null() {
     return new Null();
   }
 
-  static enum() {
+  enum() {
     return new Enum();
   }
 
-  static ref() {
-    return new Ref();
+  ref($ref: string) {
+    const id = getRefId($ref);
+    return this.refRegister.register(id);
   }
 
-  static array() {
+  array() {
     return new Arr();
   }
 
-  static oneOf() {
+  oneOf() {
     return new OneOf();
   }
 
-  static object(props: CustomSchema, extend?: IObjInputs["extend"]) {
+  object(props: CustomSchema, extend?: IObjInputs["extend"]) {
     return new Obj(props, extend);
   }
 
-  static number() {
+  number() {
     return new Num();
   }
 
-  static file() {
+  file() {
     return new File();
   }
 }
