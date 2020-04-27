@@ -2,6 +2,8 @@ import { Dictionary, forEach } from "lodash";
 import { SchemaHandler } from "src/core/SchemaHandler";
 import v2 from "examples/v2.json";
 import v3 from "examples/v3.json";
+import { SchemaHandler2 } from "src/SchemaHandler2";
+import { scanner } from "src/core/Type";
 
 describe("SchemaHandler", () => {
   it("should handle swagger definitions correctly", () => {
@@ -66,6 +68,7 @@ describe("SchemaHandler", () => {
     const mockWriteTo = jest.fn();
     SchemaHandler.of(mockWriteTo).resolve({
       type: "object",
+      _name: "Test",
       properties: {
         visitsCount: {
           type: "array",
@@ -184,6 +187,32 @@ describe("SchemaHandler", () => {
         oneOf: ["?name=Cat&type=ref", "?name=Dog&type=ref"],
       },
     });
+  });
+
+  it("test", () => {
+    const s = new SchemaHandler2(() => {});
+    const da = s.convert({
+      _name: "Pet",
+      allOf: [
+        {
+          $ref: "#/components/schemas/NewPet",
+        },
+        {
+          type: "object",
+          required: ["id"],
+          properties: {
+            id: {
+              type: "integer",
+              format: "int64",
+            },
+          },
+        },
+      ],
+    });
+    scanner.register("Pet", da);
+    console.log(scanner.refs, "=====refs======");
+    console.log(scanner.decls, "======decls=====");
+    expect(da.toType()).toEqual({});
   });
 });
 

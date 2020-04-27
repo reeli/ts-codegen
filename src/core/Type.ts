@@ -126,10 +126,39 @@ export interface IObjType {
   required?: boolean;
 }
 
-export class Type {
-  public refs: { [id: string]: Ref } = {};
-  public enums: { [id: string]: any[] } = {};
+// 利用闭包持有状态（私有变量）
+const getScanner = () => {
+  const decls: { [id: string]: TType } = {};
+  const refs: { [id: string]: TType } = {};
+  const enums: { [id: string]: any } = {};
 
+  return {
+    register: (id: string, type: TType) => {
+      decls[id] = type;
+    },
+
+    setRef: (id: string) => {
+      if (refs[id]) {
+        return refs[id];
+      }
+
+      const type = new Ref(id);
+      refs[id] = type;
+
+      return type;
+    },
+    setEnum: (id: string, value: any) => {
+      enums[id] = value;
+    },
+    refs,
+    decls,
+    enums,
+  };
+};
+
+export const scanner = getScanner();
+
+export class Type {
   constructor() {}
 
   boolean() {
@@ -147,13 +176,13 @@ export class Type {
   //TODO: 解决 id 重名的问题
   enum(value: any[], id: string = uniqueId("Enum")) {
     const name = toCapitalCase(id);
-    this.enums[name] = value;
+    scanner.setEnum(name, value);
     return new Enum(name);
   }
 
   ref($ref: string) {
     const id = getRefId($ref);
-    return this.register(id);
+    return scanner.setRef(id);
   }
 
   array(types: TType[]) {
@@ -174,19 +203,5 @@ export class Type {
 
   file() {
     return new File();
-  }
-
-  private register(id: string) {
-    if (this.refs[id]) {
-      return this.refs[id];
-    }
-
-    const ref = new Ref(id);
-    this.refs = {
-      ...this.refs,
-      [id]: ref,
-    };
-
-    return ref;
   }
 }
