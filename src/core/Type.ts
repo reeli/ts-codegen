@@ -7,19 +7,21 @@ abstract class TypeFactory {
   abstract toType(): string;
 }
 
-export class Bool extends TypeFactory {
-  toType(): string {
-    return "boolean";
+class BasicType extends TypeFactory {
+  static type(name: string) {
+    return new BasicType(name);
+  }
+
+  constructor(private name: string) {
+    super();
+  }
+
+  toType() {
+    return this.name;
   }
 }
 
-export class Str extends TypeFactory {
-  toType(): string {
-    return "string";
-  }
-}
-
-export class Enum extends TypeFactory {
+class Enum extends TypeFactory {
   constructor(private id: string) {
     super();
   }
@@ -29,19 +31,13 @@ export class Enum extends TypeFactory {
   }
 }
 
-export class OneOf extends TypeFactory {
+class OneOf extends TypeFactory {
   constructor(private types: TType[]) {
     super();
   }
 
   toType(): string {
     return `${map(this.types, (type) => type.toType()).join("|")}`;
-  }
-}
-
-export class Null extends TypeFactory {
-  toType(): string {
-    return "null";
   }
 }
 
@@ -77,18 +73,6 @@ export class Ref extends TypeFactory {
   }
 }
 
-export class Num extends TypeFactory {
-  toType(): string {
-    return "number";
-  }
-}
-
-export class File extends TypeFactory {
-  toType(): string {
-    return "file";
-  }
-}
-
 export class Obj extends TypeFactory {
   constructor(private props: { [key: string]: TType }, private extend?: Ref[]) {
     super();
@@ -114,12 +98,7 @@ export class Obj extends TypeFactory {
 
 export type CustomSchema = (Schema | ISchema) & { _name?: string; _propKey?: string };
 
-export type TType = Ref | Obj | File | Num | Arr | Null | Enum | Str | Bool | OneOf;
-
-export interface IObjType {
-  value: TType;
-  required?: boolean;
-}
+export type TType = Ref | Obj | Arr | Enum | OneOf | BasicType;
 
 // 利用闭包持有状态（私有变量）
 const getScanner = () => {
@@ -156,18 +135,6 @@ export const scanner = getScanner();
 export class Type {
   constructor() {}
 
-  boolean() {
-    return new Bool();
-  }
-
-  string() {
-    return new Str();
-  }
-
-  null() {
-    return new Null();
-  }
-
   //TODO: 解决 id 重名的问题
   enum(value: any[], id: string = uniqueId("Enum")) {
     const name = toCapitalCase(id);
@@ -192,11 +159,23 @@ export class Type {
     return new Obj(props, extend);
   }
 
+  boolean() {
+    return BasicType.type("boolean");
+  }
+
+  string() {
+    return BasicType.type("string");
+  }
+
+  null() {
+    return BasicType.type("null");
+  }
+
   number() {
-    return new Num();
+    return BasicType.type("number");
   }
 
   file() {
-    return new File();
+    return BasicType.type("File");
   }
 }
