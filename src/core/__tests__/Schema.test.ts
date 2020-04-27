@@ -251,76 +251,23 @@ describe("Schema Converter", () => {
     });
   });
 
-  describe("string", () => {
-    it("should handle string", () => {
-      const res = new Schema()
-        .convert(
-          {
-            type: "string",
-          },
-          "status",
-        )
-        .toType();
+  describe.each([
+    ["string", "string"],
+    ["integer", "number"],
+    ["number", "number"],
+    ["boolean", "boolean"],
+    ["null", "null"],
+    ["file", "File"],
+  ])("should handle type %s in schema", (input, expected) => {
+    const res = new Schema()
+      .convert(
+        {
+          type: input as any,
+        },
+        "status",
+      )
+      .toType();
 
-      expect(res).toEqual("string");
-    });
-  });
-
-  describe("boolean", () => {
-    it("should handle boolean", () => {
-      const res = new Schema()
-        .convert(
-          {
-            type: "boolean",
-          },
-          "status",
-        )
-        .toType();
-
-      expect(res).toEqual("boolean");
-    });
-  });
-
-  describe("number", () => {
-    it("should handle integer", () => {
-      const res = new Schema()
-        .convert(
-          {
-            type: "integer",
-          },
-          "status",
-        )
-        .toType();
-
-      expect(res).toEqual("number");
-    });
-
-    it("should handle number", () => {
-      const res = new Schema()
-        .convert(
-          {
-            type: "number",
-          },
-          "status",
-        )
-        .toType();
-
-      expect(res).toEqual("number");
-    });
-  });
-
-  describe("file", () => {
-    it("should handle file", () => {
-      const res = new Schema()
-        .convert(
-          {
-            type: "file",
-          },
-          "status",
-        )
-        .toType();
-
-      expect(res).toEqual("File");
-    });
+    expect(res).toEqual(expected);
   });
 });
