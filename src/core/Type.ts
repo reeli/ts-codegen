@@ -3,6 +3,9 @@ import { ISchema } from "src/v3/OpenAPI";
 import { Schema } from "swagger-schema-official";
 import { isArray, quoteKey, toCapitalCase } from "src/core/utils";
 
+export type CustomSchema = Schema | ISchema;
+export type CustomType = Ref | Obj | Arr | Enum | OneOf | BasicType;
+
 abstract class TypeFactory {
   abstract toType(): string;
 }
@@ -32,7 +35,7 @@ class Enum extends TypeFactory {
 }
 
 class OneOf extends TypeFactory {
-  constructor(private types: TType[]) {
+  constructor(private types: CustomType[]) {
     super();
   }
 
@@ -43,15 +46,15 @@ class OneOf extends TypeFactory {
 
 export class Arr extends TypeFactory {
   // TODO: remove any later
-  constructor(private data: TType[] | TType) {
+  constructor(private data: CustomType[] | CustomType) {
     super();
   }
 
   toType(): string {
     if (isArray(this.data)) {
-      return `[${map(this.data as TType[], (v) => v.toType())}]`;
+      return `[${map(this.data as CustomType[], (v) => v.toType())}]`;
     }
-    return `${(this.data as TType).toType()}[]`;
+    return `${(this.data as CustomType).toType()}[]`;
   }
 }
 
@@ -74,12 +77,12 @@ export class Ref extends TypeFactory {
 }
 
 export class Obj extends TypeFactory {
-  constructor(private props: { [key: string]: TType }, private extend?: Ref[]) {
+  constructor(private props: { [key: string]: CustomType }, private extend?: Ref[]) {
     super();
   }
 
   toType(): string {
-    const handler = (props: { [key: string]: TType } | Obj): string => {
+    const handler = (props: { [key: string]: CustomType } | Obj): string => {
       // //TODO: refactor next line later
       if (props instanceof Obj) {
         return props.toType();
@@ -96,18 +99,14 @@ export class Obj extends TypeFactory {
   }
 }
 
-export type CustomSchema = (Schema | ISchema) & { _name?: string; _propKey?: string };
-
-export type TType = Ref | Obj | Arr | Enum | OneOf | BasicType;
-
 // 利用闭包持有状态（私有变量）
 const getScanner = () => {
-  const decls: { [id: string]: TType } = {};
-  const refs: { [id: string]: TType } = {};
+  const decls: { [id: string]: CustomType } = {};
+  const refs: { [id: string]: CustomType } = {};
   const enums: { [id: string]: any } = {};
 
   return {
-    register: (id: string, type: TType) => {
+    register: (id: string, type: CustomType) => {
       decls[id] = type;
     },
 
@@ -133,49 +132,47 @@ const getScanner = () => {
 export const scanner = getScanner();
 
 export class Type {
-  constructor() {}
-
   //TODO: 解决 id 重名的问题
-  enum(value: any[], id: string = uniqueId("Enum")) {
+  static enum(value: any[], id: string = uniqueId("Enum")) {
     const name = toCapitalCase(id);
     scanner.setEnum(name, value);
     return new Enum(name);
   }
 
-  ref($ref: string) {
+  static ref($ref: string) {
     const id = getRefId($ref);
     return scanner.setRef(id);
   }
 
-  array(types: TType[]) {
+  static array(types: CustomType[]) {
     return new Arr(types);
   }
 
-  oneOf(types: TType[]) {
+  static oneOf(types: CustomType[]) {
     return new OneOf(types);
   }
 
-  object(props: { [key: string]: TType }, extend?: Ref[]) {
+  static object(props: { [key: string]: CustomType }, extend?: Ref[]) {
     return new Obj(props, extend);
   }
 
-  boolean() {
+  static boolean() {
     return BasicType.type("boolean");
   }
 
-  string() {
+  static string() {
     return BasicType.type("string");
   }
 
-  null() {
+  static null() {
     return BasicType.type("null");
   }
 
-  number() {
+  static number() {
     return BasicType.type("number");
   }
 
-  file() {
+  static file() {
     return BasicType.type("File");
   }
 }
