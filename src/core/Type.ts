@@ -144,7 +144,7 @@ export class Type {
     return scanner.setRef(id);
   }
 
-  static array(types: CustomType[]) {
+  static array(types: CustomType | CustomType[]) {
     return new Arr(types);
   }
 

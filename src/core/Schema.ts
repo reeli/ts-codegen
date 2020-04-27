@@ -17,7 +17,6 @@ export class Schema {
     }
 
     if (schema.items) {
-      // TODO: if schema.type === "array" string[] Pet[]... [Pet, Cat, Dog] enum[]
       return Type.array(this.handleItems(schema.items, name));
     }
 
@@ -52,31 +51,6 @@ export class Schema {
     return Type.null();
   }
 
-  // TODO: remove any later
-  handleItems(items: CustomSchema | IReference | CustomSchema[], name?: string): any {
-    if (isArray(items)) {
-      return map(items, (v) => this.handleItems(v, name));
-    }
-
-    return this.convert(items, name);
-  }
-
-  handleProperties(properties: { [key: string]: CustomSchema }, name: string = ""): { [key: string]: CustomType } {
-    return reduce(
-      properties,
-      (res, v, k) => {
-        return {
-          ...res,
-          [`${k}${indexOf(v.required, k) > -1 ? "" : "?"}`]: this.convert(
-            v,
-            `${toCapitalCase(name)}${toCapitalCase(k)}`,
-          ),
-        };
-      },
-      {},
-    );
-  }
-
   handleAllOf(schemas: Array<CustomSchema>, _name?: string) {
     const extend: any[] = [];
     let props: any = {};
@@ -93,5 +67,28 @@ export class Schema {
       extend,
       props,
     };
+  }
+
+  handleItems(items: CustomSchema | IReference | CustomSchema[], name?: string): CustomType | CustomType[] {
+    if (isArray(items)) {
+      return map(items, (v) => this.handleItems(v, name)) as CustomType[];
+    }
+    return this.convert(items, name);
+  }
+
+  handleProperties(properties: { [key: string]: CustomSchema }, name?: string): { [key: string]: CustomType } {
+    return reduce(
+      properties,
+      (res, v, k) => {
+        return {
+          ...res,
+          [`${k}${indexOf(v.required, k) > -1 ? "" : "?"}`]: this.convert(
+            v,
+            `${toCapitalCase(name)}${toCapitalCase(k)}`,
+          ),
+        };
+      },
+      {},
+    );
   }
 }
