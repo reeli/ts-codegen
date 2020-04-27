@@ -89,24 +89,19 @@ export class File extends TypeFactory {
   }
 }
 
-interface IObjInputs {
-  props: { [key: string]: IObjType };
-  extend: Ref[];
-}
-
 export class Obj extends TypeFactory {
-  constructor(private props: IObjInputs["props"], private extend?: IObjInputs["extend"]) {
+  constructor(private props: { [key: string]: TType }, private extend?: Ref[]) {
     super();
   }
 
   toType(): string {
-    const handler = (props: { [key: string]: IObjType }): string => {
-      //TODO: refactor next line later
-      if (props?.props) {
-        return handler(props.props as any);
+    const handler = (props: { [key: string]: TType } | Obj): string => {
+      // //TODO: refactor next line later
+      if (props instanceof Obj) {
+        return props.toType();
       }
       const data = map(props, (v, k) => {
-        return `${quoteKey(k)}${v.required ? "" : "?"}: ${v.value.toType()};`;
+        return `${quoteKey(k)}: ${v.toType()};`;
       });
       return `{${data.join("\n")}}`;
     };
@@ -193,7 +188,7 @@ export class Type {
     return new OneOf(types);
   }
 
-  object(props: IObjInputs["props"], extend?: IObjInputs["extend"]) {
+  object(props: { [key: string]: TType }, extend?: Ref[]) {
     return new Obj(props, extend);
   }
 

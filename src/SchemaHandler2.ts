@@ -1,7 +1,7 @@
 import { isArray, toCapitalCase } from "src/core/utils";
-import { forEach, map, reduce } from "lodash";
+import { forEach, indexOf, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/v3/OpenAPI";
-import { CustomSchema, IObjType, TType, Type } from "src/core/Type";
+import { CustomSchema, TType, Type } from "src/core/Type";
 
 type WriteTo = (k: string, v: any) => void;
 
@@ -88,19 +88,16 @@ export class SchemaHandler2 {
     return this.convert(items);
   }
 
-  handleProperties(properties: { [key: string]: CustomSchema }, _name: string = ""): { [key: string]: IObjType } {
+  handleProperties(properties: { [key: string]: CustomSchema }, _name: string = ""): { [key: string]: TType } {
     return reduce(
       properties,
       (res, v, k) => {
         return {
           ...res,
-          [k]: {
-            value: this.convert({
-              ...v,
-              _name: `${toCapitalCase(_name)}${toCapitalCase(k)}`,
-            }),
-            required: v.required,
-          },
+          [`${k}${indexOf(v.required, k) > -1 ? "" : "?"}`]: this.convert({
+            ...v,
+            _name: `${toCapitalCase(_name)}${toCapitalCase(k)}`,
+          }),
         };
       },
       {},
