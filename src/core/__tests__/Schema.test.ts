@@ -370,6 +370,22 @@ describe("Schema Converter", () => {
     });
   });
 
+  describe("object", () => {
+    it("should handle object type without properties", () => {
+      const res = new Schema()
+        .convert(
+          {
+            type: "object",
+            title: "InputStream",
+          },
+          "InputStream",
+        )
+        .toType();
+
+      expect(res).toEqual("{[key:string]:any}");
+    });
+  });
+
   describe.each([
     ["string", "string"],
     ["integer", "number"],

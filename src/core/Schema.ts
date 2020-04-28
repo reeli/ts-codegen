@@ -4,7 +4,8 @@ import { IReference, ISchema } from "src/v3/OpenAPI";
 import { CustomSchema, CustomType, Type } from "src/core/Type";
 
 export class Schema {
-  convert(schema: CustomSchema, name?: string): CustomType {
+  convert(schema: CustomSchema, id?: string): CustomType {
+    const name = id ? toCapitalCase(id) : id;
     const oneOf = (schema as ISchema).oneOf || (schema as ISchema).anyOf;
     if (oneOf) {
       return Type.oneOf(map(oneOf, (v) => this.convert(v)));
@@ -29,7 +30,7 @@ export class Schema {
     }
 
     if (schema.type === "object") {
-      return Type.object(this.handleObject(schema, name)); // TODO: handle when schema.properties not exists
+      return schema.properties ? Type.object(this.handleObject(schema, name)) : Type.object("object");
     }
 
     if (schema.type === "string") {
@@ -78,12 +79,12 @@ export class Schema {
 
   handleObject(schema: CustomSchema, name?: string): { [key: string]: CustomType } {
     return reduce(
-      schema.properties!,
+      schema.properties,
       (res, v, k) => {
         const isRequired = (v as CustomSchema)?.required || schema.required?.includes(k);
         return {
           ...res,
-          [`${k}${isRequired ? "" : "?"}`]: this.convert(v, `${toCapitalCase(name)}${toCapitalCase(k)}`),
+          [`${k}${isRequired ? "" : "?"}`]: this.convert(v, `${name}${toCapitalCase(k)}`),
         };
       },
       {},
