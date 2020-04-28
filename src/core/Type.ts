@@ -77,11 +77,15 @@ export class Ref extends TypeFactory {
 }
 
 export class Obj extends TypeFactory {
-  constructor(private props: { [key: string]: CustomType } | string, private extend?: Ref[]) {
+  constructor(
+    private props: { [key: string]: CustomType } | string,
+    private refs?: Ref[],
+    private useExtends?: boolean,
+  ) {
     super();
   }
 
-  toType(useExtend: boolean = true): string {
+  toType(): string {
     if (this.props === "object") {
       return "{[key:string]:any}";
     }
@@ -96,12 +100,12 @@ export class Obj extends TypeFactory {
       });
       return `{${data.join("")}}`;
     };
-    if (this.extend) {
-      return useExtend
-        ? `extends ${map(this.extend, (v) => v.toType()).join(",")} ${handler(
+    if (this.refs) {
+      return this.useExtends
+        ? `extends ${map(this.refs, (v) => v.toType()).join(",")} ${handler(
             this.props as { [key: string]: CustomType },
           )}`
-        : `${map(this.extend, (v) => v.toType()).join("&")}&${handler(this.props as { [key: string]: CustomType })}`;
+        : `${map(this.refs, (v) => v.toType()).join("&")}&${handler(this.props as { [key: string]: CustomType })}`;
     }
     return handler(this.props as { [key: string]: CustomType });
   }
@@ -160,8 +164,8 @@ export class Type {
     return new OneOf(types);
   }
 
-  static object(props: { [key: string]: CustomType } | string, extend?: Ref[]) {
-    return new Obj(props, extend);
+  static object(props: { [key: string]: CustomType } | string, refs?: Ref[], useExtends?: boolean) {
+    return new Obj(props, refs, useExtends);
   }
 
   static boolean() {

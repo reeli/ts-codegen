@@ -1,5 +1,5 @@
 import { isArray, toCapitalCase } from "src/core/utils";
-import { forEach, isEmpty, map, reduce } from "lodash";
+import { find, forEach, isEmpty, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/v3/OpenAPI";
 import { CustomSchema, CustomType, Type } from "src/core/Type";
 
@@ -13,8 +13,8 @@ export class Schema {
 
     const allOf = (schema as ISchema).allOf;
     if (allOf) {
-      const { props, extend } = this.handleAllOf(allOf, name);
-      return Type.object(props, extend);
+      const { props, refs, useExtends } = this.handleAllOf(allOf, name);
+      return Type.object(props, refs, useExtends);
     }
 
     if (schema.items) {
@@ -53,20 +53,22 @@ export class Schema {
   }
 
   handleAllOf(schemas: Array<CustomSchema>, name?: string) {
-    const extend: any[] = [];
+    const refs: any[] = [];
     let props: any = {};
+    let useExtends = !!find(schemas, (schema) => schema.$ref) && !!find(schemas, (schema) => schema.type == "object");
 
     forEach(schemas, (schema) => {
       if (schema.$ref) {
-        extend.push(this.convert(schema, name));
+        refs.push(this.convert(schema, name));
       } else if (!isEmpty(schema)) {
         props = this.convert(schema, name);
       }
     });
 
     return {
-      extend,
+      refs,
       props,
+      useExtends,
     };
   }
 

@@ -167,7 +167,7 @@ describe("Schema Converter", () => {
           },
           "Pet",
         )
-        .toType(false);
+        .toType();
 
       expect(res).toEqual("NewPet&string");
     });
@@ -190,7 +190,7 @@ describe("Schema Converter", () => {
           },
           "Pet",
         )
-        .toType(false);
+        .toType();
 
       expect(res).toEqual("NewPet&Dog&string");
     });
@@ -383,6 +383,54 @@ describe("Schema Converter", () => {
         .toType();
 
       expect(res).toEqual("{[key:string]:any}");
+    });
+
+    it("should handle object with enum", () => {
+      const res = new Schema()
+        .convert(
+          {
+            type: "object",
+            properties: {
+              visitsCount: {
+                type: "array",
+                example: ["ZERO"],
+                items: {
+                  type: "string",
+                  enum: ["ZERO", "ONE", "TWO", "THREE", "MORE_THAN_THREE", "FOUR", "FIVE", "FIVE_OR_MORE"],
+                },
+              },
+            },
+          },
+          "test",
+        )
+        .toType();
+
+      expect(res).toEqual("{'visitsCount'?: keyof typeof TestVisitsCount[];}");
+    });
+
+    it("should handle required prop in schema", () => {
+      const res = new Schema()
+        .convert(
+          {
+            type: "object",
+            required: ["id", "name"],
+            properties: {
+              visitsCount: {
+                type: "number",
+              },
+              id: {
+                type: "string",
+              },
+              name: {
+                type: "string",
+              },
+            },
+          },
+          "test",
+        )
+        .toType();
+
+      expect(res).toEqual("{'visitsCount'?: number;'id': string;'name': string;}");
     });
   });
 
