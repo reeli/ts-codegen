@@ -1,5 +1,5 @@
 import { isArray, toCapitalCase } from "src/core/utils";
-import { forEach, indexOf, map, reduce } from "lodash";
+import { forEach, isEmpty, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/v3/OpenAPI";
 import { CustomSchema, CustomType, Type } from "src/core/Type";
 
@@ -12,7 +12,7 @@ export class Schema {
 
     const allOf = (schema as ISchema).allOf;
     if (allOf) {
-      const { props, extend } = this.handleAllOf(allOf);
+      const { props, extend } = this.handleAllOf(allOf, name);
       return Type.object(props, extend);
     }
 
@@ -29,7 +29,7 @@ export class Schema {
     }
 
     if (schema.type === "object") {
-      return Type.object(this.handleProperties(schema.properties!, name)); // TODO: handle when schema.properties not exists
+      return Type.object(this.handleObject(schema, name)); // TODO: handle when schema.properties not exists
     }
 
     if (schema.type === "string") {
@@ -51,15 +51,15 @@ export class Schema {
     return Type.null();
   }
 
-  handleAllOf(schemas: Array<CustomSchema>, _name?: string) {
+  handleAllOf(schemas: Array<CustomSchema>, name?: string) {
     const extend: any[] = [];
     let props: any = {};
 
     forEach(schemas, (schema) => {
       if (schema.$ref) {
-        extend.push(this.convert(schema));
-      } else if (schema.type === "object") {
-        props = this.convert(schema);
+        extend.push(this.convert(schema, name));
+      } else if (!isEmpty(schema)) {
+        props = this.convert(schema, name);
       }
     });
 
@@ -76,16 +76,14 @@ export class Schema {
     return this.convert(items, name);
   }
 
-  handleProperties(properties: { [key: string]: CustomSchema }, name?: string): { [key: string]: CustomType } {
+  handleObject(schema: CustomSchema, name?: string): { [key: string]: CustomType } {
     return reduce(
-      properties,
+      schema.properties!,
       (res, v, k) => {
+        const isRequired = (v as CustomSchema)?.required || schema.required?.includes(k);
         return {
           ...res,
-          [`${k}${indexOf(v.required, k) > -1 ? "" : "?"}`]: this.convert(
-            v,
-            `${toCapitalCase(name)}${toCapitalCase(k)}`,
-          ),
+          [`${k}${isRequired ? "" : "?"}`]: this.convert(v, `${toCapitalCase(name)}${toCapitalCase(k)}`),
         };
       },
       {},

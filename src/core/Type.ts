@@ -81,19 +81,21 @@ export class Obj extends TypeFactory {
     super();
   }
 
-  toType(): string {
-    const handler = (props: { [key: string]: CustomType } | Obj): string => {
+  toType(useExtend: boolean = true): string {
+    const handler = (props: { [key: string]: CustomType } | CustomType): string => {
       // //TODO: refactor next line later
-      if (props instanceof Obj) {
-        return props.toType();
+      if (props?.toType) {
+        return (props as CustomType).toType();
       }
       const data = map(props, (v, k) => {
-        return `${quoteKey(k)}: ${v.toType()};`;
+        return `${quoteKey(k)}: ${(v as CustomType).toType()};`;
       });
-      return `{${data.join("\n")}}`;
+      return `{${data.join("")}}`;
     };
     if (this.extend) {
-      return `extends ${map(this.extend, (v) => v.toType()).join(",")} ${handler(this.props)}`;
+      return useExtend
+        ? `extends ${map(this.extend, (v) => v.toType()).join(",")} ${handler(this.props)}`
+        : `${map(this.extend, (v) => v.toType()).join("&")}&${handler(this.props)}`;
     }
     return handler(this.props);
   }

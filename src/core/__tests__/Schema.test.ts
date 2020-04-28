@@ -125,6 +125,125 @@ describe("Schema Converter", () => {
     });
   });
 
+  describe("allOf", () => {
+    it("should handle ref in `allOf`", () => {
+      const res = new Schema()
+        .convert(
+          {
+            allOf: [
+              {
+                $ref: "#/components/schemas/NewPet",
+              },
+              {
+                type: "object",
+                required: ["id"],
+                properties: {
+                  id: {
+                    $ref: "#/components/schemas/Cat",
+                  },
+                },
+              },
+            ],
+          },
+          "Pet",
+        )
+        .toType();
+
+      expect(res).toEqual("extends NewPet {'id': Cat;}");
+    });
+
+    it("should handle both ref and basic type in `allOf`", () => {
+      const res = new Schema()
+        .convert(
+          {
+            allOf: [
+              {
+                $ref: "#/components/schemas/NewPet",
+              },
+              {
+                type: "string",
+              },
+            ],
+          },
+          "Pet",
+        )
+        .toType(false);
+
+      expect(res).toEqual("NewPet&string");
+    });
+
+    it("if the ref in `allOf` is a type instead of a interface, should use `&` instead of `extends`", () => {
+      const res = new Schema()
+        .convert(
+          {
+            allOf: [
+              {
+                $ref: "#/components/schemas/NewPet",
+              },
+              {
+                $ref: "#/components/schemas/Dog",
+              },
+              {
+                type: "string",
+              },
+            ],
+          },
+          "Pet",
+        )
+        .toType(false);
+
+      expect(res).toEqual("NewPet&Dog&string");
+    });
+
+    it("should handle empty object in `allOf`", () => {
+      const res = new Schema()
+        .convert(
+          {
+            allOf: [
+              {
+                $ref: "#/components/schemas/NewPet",
+              },
+              {},
+            ],
+          },
+          "Pet",
+        )
+        .toType();
+
+      expect(res).toEqual("extends NewPet {}");
+    });
+
+    it("should handle enum in `allOf`", () => {
+      const res = new Schema()
+        .convert(
+          {
+            allOf: [
+              {
+                $ref: "#/components/schemas/Pet",
+              },
+              {},
+              {
+                type: "object",
+                properties: {
+                  bark: {
+                    type: "boolean",
+                  },
+                  breed: {
+                    type: "string",
+                    enum: ["Dingo", "Husky", "Retriever", "Shepherd"],
+                  },
+                },
+              },
+            ],
+          },
+          "Dog",
+        )
+        .toType();
+
+      expect(res).toEqual("extends Pet {'bark'?: boolean;'breed'?: keyof typeof DogBreed;}");
+    });
+  });
+
   describe("array", () => {
     it("should handle array of enum", () => {
       const res = new Schema()
