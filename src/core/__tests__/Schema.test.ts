@@ -1,4 +1,7 @@
 import { Schema } from "src/core/Schema";
+import { scan } from "src/core/scan";
+import swaggerV2 from "examples/swagger.v2.json";
+import { CustomSchema } from "src/core/Type";
 
 describe("Schema Converter", () => {
   describe("oneOf", () => {
@@ -431,6 +434,13 @@ describe("Schema Converter", () => {
         .toType();
 
       expect(res).toEqual("{'visitsCount'?: number;'id': string;'name': string;}");
+    });
+  });
+
+  describe("swagger v2", () => {
+    it("should handle definitions correctly", () => {
+      const v = scan(swaggerV2.definitions as { [k: string]: CustomSchema });
+      expect(v).toMatchSnapshot();
     });
   });
 

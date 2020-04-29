@@ -1,7 +1,7 @@
 import { keys, map, uniqueId } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import { Schema } from "swagger-schema-official";
-import { isArray, quoteKey } from "src/core/utils";
+import { isArray, quoteKey, toCapitalCase } from "src/core/utils";
 
 export type CustomSchema = Schema | ISchema;
 export type CustomType = Ref | Obj | Arr | Enum | OneOf | BasicType;
@@ -168,7 +168,7 @@ export class Type {
   }
 
   static ref($ref: string) {
-    const id = getRefId($ref);
+    const id = toCapitalCase(getRefId($ref));
     return Register.setRef(id);
   }
 

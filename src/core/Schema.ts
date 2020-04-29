@@ -1,4 +1,4 @@
-import { isArray } from "src/core/utils";
+import { isArray, toCapitalCase } from "src/core/utils";
 import { find, forEach, isEmpty, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/v3/OpenAPI";
 import { CustomSchema, CustomType, Type } from "src/core/Type";
@@ -88,7 +88,7 @@ export class Schema {
         const isRequired = (v as CustomSchema)?.required || schema.required?.includes(k);
         return {
           ...res,
-          [`${k}${isRequired ? "" : "?"}`]: this.convert(v, `${name}${k}`),
+          [`${k}${isRequired ? "" : "?"}`]: this.convert(v, `${name}${toCapitalCase(k)}`),
         };
       },
       {},
