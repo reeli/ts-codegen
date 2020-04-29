@@ -1,4 +1,4 @@
-import { map, uniqueId } from "lodash";
+import { keys, map, uniqueId } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import { Schema } from "swagger-schema-official";
 import { isArray, quoteKey } from "src/core/utils";
@@ -110,9 +110,12 @@ export class Obj extends TypeFactory {
       if (props?.toType) {
         return (props as CustomType).toType();
       }
-      const data = map(props, (v, k) => {
-        return `${quoteKey(k)}: ${(v as CustomType).toType()};`;
-      });
+      const data = keys(props)
+        .sort()
+        .map((k) => {
+          // TODO: remove any later
+          return `${quoteKey(k)}: ${(props as any)[k].toType()};`;
+        });
       return `{${data.join("")}}`;
     };
     if (this.refs) {
@@ -161,7 +164,7 @@ export class Type {
   //TODO: 解决 id 重名的问题
   static enum(value: any[], id: string = uniqueId("Enum")) {
     Register.setType(id, new Enum(id, value));
-    return new Enum(name);
+    return new Enum(id);
   }
 
   static ref($ref: string) {
