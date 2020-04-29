@@ -67,12 +67,18 @@ const getRefId = (str?: string): string => {
 };
 
 export class Ref extends TypeFactory {
-  constructor(private id: string) {
+  alias: string | undefined;
+
+  constructor(private name: string) {
     super();
   }
 
+  rename(alias: string) {
+    this.alias = alias;
+  }
+
   toType(): string {
-    return this.id;
+    return this.alias || this.name;
   }
 }
 
@@ -116,10 +122,15 @@ const getScanner = () => {
   const decls: { [id: string]: CustomType } = {};
   const refs: { [id: string]: CustomType } = {};
   const enums: { [id: string]: any } = {};
+  const prefixes: { [id: string]: string } = {};
 
   return {
     register: (id: string, type: CustomType) => {
       decls[id] = type;
+    },
+
+    setPrefix: (id: string, prefix: string) => {
+      prefixes[id] = prefix;
     },
 
     setRef: (id: string) => {
@@ -138,6 +149,7 @@ const getScanner = () => {
     refs,
     decls,
     enums,
+    prefixes,
   };
 };
 

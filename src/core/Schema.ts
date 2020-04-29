@@ -3,6 +3,9 @@ import { find, forEach, isEmpty, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/v3/OpenAPI";
 import { CustomSchema, CustomType, Type } from "src/core/Type";
 
+export const getUseExtends = (schemas: CustomSchema) =>
+  !!find(schemas, (schema) => schema.$ref) && !!find(schemas, (schema) => schema.type == "object");
+
 export class Schema {
   convert(schema: CustomSchema, id?: string): CustomType {
     const name = id ? toCapitalCase(id) : id;
@@ -55,7 +58,7 @@ export class Schema {
   handleAllOf(schemas: Array<CustomSchema>, name?: string) {
     const refs: any[] = [];
     let props: any = {};
-    let useExtends = !!find(schemas, (schema) => schema.$ref) && !!find(schemas, (schema) => schema.type == "object");
+    let useExtends = getUseExtends(schemas);
 
     forEach(schemas, (schema) => {
       if (schema.$ref) {
