@@ -1,7 +1,7 @@
 import { map, uniqueId } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import { Schema } from "swagger-schema-official";
-import { isArray, quoteKey, toCapitalCase } from "src/core/utils";
+import {isArray, quoteKey, toCapitalCase} from "src/core/utils";
 
 export type CustomSchema = Schema | ISchema;
 export type CustomType = Ref | Obj | Arr | Enum | OneOf | BasicType;
@@ -25,11 +25,20 @@ class BasicType extends TypeFactory {
 }
 
 class Enum extends TypeFactory {
-  constructor(private id: string) {
+  constructor(private id: string, private value?: any[]) {
     super();
   }
 
   toType(): string {
+    if (this.value) {
+      return `enum ${this.id} {
+      ${this.value
+        .map((v) => {
+          return `'${v}' = '${v}'`;
+        })
+        .join("\n")}
+      }`;
+    }
     return `keyof typeof ${this.id}`;
   }
 }
@@ -118,10 +127,9 @@ export class Obj extends TypeFactory {
 }
 
 // 利用闭包持有状态（私有变量）
-const getScanner = () => {
+export const scanner = (() => {
   const decls: { [id: string]: CustomType } = {};
   const refs: { [id: string]: CustomType } = {};
-  const enums: { [id: string]: any } = {};
   const prefixes: { [id: string]: string } = {};
 
   return {
@@ -143,23 +151,17 @@ const getScanner = () => {
 
       return type;
     },
-    setEnum: (id: string, value: any) => {
-      enums[id] = value;
-    },
     refs,
     decls,
-    enums,
     prefixes,
   };
-};
-
-export const scanner = getScanner();
+})();
 
 export class Type {
   //TODO: 解决 id 重名的问题
   static enum(value: any[], id: string = uniqueId("Enum")) {
     const name = toCapitalCase(id);
-    scanner.setEnum(name, value);
+    scanner.register(name, new Enum(name, value));
     return new Enum(name);
   }
 
