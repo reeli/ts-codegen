@@ -1,7 +1,7 @@
 import { map, uniqueId } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import { Schema } from "swagger-schema-official";
-import {isArray, quoteKey, toCapitalCase} from "src/core/utils";
+import { isArray, quoteKey } from "src/core/utils";
 
 export type CustomSchema = Schema | ISchema;
 export type CustomType = Ref | Obj | Arr | Enum | OneOf | BasicType;
@@ -127,13 +127,13 @@ export class Obj extends TypeFactory {
 }
 
 // 利用闭包持有状态（私有变量）
-export const scanner = (() => {
+export const Register = (() => {
   const decls: { [id: string]: CustomType } = {};
   const refs: { [id: string]: CustomType } = {};
   const prefixes: { [id: string]: string } = {};
 
   return {
-    register: (id: string, type: CustomType) => {
+    setType: (id: string, type: CustomType) => {
       decls[id] = type;
     },
 
@@ -160,14 +160,13 @@ export const scanner = (() => {
 export class Type {
   //TODO: 解决 id 重名的问题
   static enum(value: any[], id: string = uniqueId("Enum")) {
-    const name = toCapitalCase(id);
-    scanner.register(name, new Enum(name, value));
+    Register.setType(id, new Enum(id, value));
     return new Enum(name);
   }
 
   static ref($ref: string) {
     const id = getRefId($ref);
-    return scanner.setRef(id);
+    return Register.setRef(id);
   }
 
   static array(types: CustomType | CustomType[]) {
