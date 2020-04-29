@@ -24,7 +24,7 @@ class BasicType extends TypeFactory {
   }
 }
 
-class Enum extends TypeFactory {
+export class Enum extends TypeFactory {
   constructor(private id: string, private value?: any[]) {
     super();
   }
@@ -34,7 +34,7 @@ class Enum extends TypeFactory {
       return `enum ${this.id} {
       ${this.value
         .map((v) => {
-          return `'${v}' = '${v}'`;
+          return `'${v}' = '${v}',`;
         })
         .join("\n")}
       }`;

@@ -1,5 +1,5 @@
 import { IReference } from "src/v3/OpenAPI";
-import { CustomSchema, Ref, Register } from "src/core/Type";
+import { CustomSchema, Enum, Ref, Register } from "src/core/Type";
 import { keys } from "lodash";
 import { getUseExtends, Schema } from "src/core/Schema";
 import { prettifyCode, toCapitalCase } from "src/core/utils";
@@ -31,11 +31,17 @@ export const scan = (schemas: { [k: string]: CustomSchema | IReference }) => {
   keys(Register.decls)
     .sort()
     .forEach((k) => {
+      const t = Register.decls[k];
+      if (t instanceof Enum) {
+        output = output + `export ${t.toType()}\n\n`;
+        return;
+      }
+
       output =
         output +
         `export ${Register.prefixes[k]} ${addPrefix(k)} ${
           Register.prefixes[k] === "interface" ? "" : "="
-        } ${Register.decls[k].toType()}${Register.prefixes[k] === "type" ? ";" : ""}\n\n`;
+        } ${t.toType()}${Register.prefixes[k] === "type" ? ";" : ""}\n\n`;
     });
 
   return prettifyCode(output);

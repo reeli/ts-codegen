@@ -140,3 +140,45 @@ export interface IUrlStreamHandler {
 }
 "
 `;
+
+exports[`Schema Converter swagger v3 should handle schemas correctly 1`] = `
+"export interface ICat extends IPet {
+  age?: number;
+  hunts?: boolean;
+}
+
+export interface ICategory {
+  id?: number;
+  name?: string;
+}
+
+export interface IDog extends IPet {
+  bark?: boolean;
+  breed?: keyof typeof DogBreed;
+}
+
+export enum DogBreed {
+  \\"Dingo\\" = \\"Dingo\\",
+  \\"Husky\\" = \\"Husky\\",
+  \\"Retriever\\" = \\"Retriever\\",
+  \\"Shepherd\\" = \\"Shepherd\\",
+}
+
+export interface IError {
+  code: number;
+  message: string;
+}
+
+export interface INewPet {
+  name: string;
+  tag?: string;
+}
+
+export interface IPet extends INewPet {
+  categories?: ICategory[];
+  id: number;
+}
+
+export type TPets = IPet[];
+"
+`;
