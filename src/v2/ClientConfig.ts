@@ -9,14 +9,14 @@ import {
   Reference,
   Response,
 } from "swagger-schema-official";
-import { compact, filter, get, isEmpty, keys, map, mapValues, pick, reduce, sortBy } from "lodash";
-import { getRequestURL, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
-import { CustomType, Ref, Register } from "src/core/Type";
+import { filter, get, isEmpty, keys, map, pick, reduce } from "lodash";
+import { getRequestURL, toCapitalCase } from "src/core/utils";
+import { CustomType } from "src/core/Type";
 import { Schema } from "src/core/Schema";
 
 type Paths = { [pathName: string]: Path };
 
-interface IClientConfig {
+export interface IClientConfig {
   url: string;
   method: string;
   TResp: CustomType | undefined;
@@ -45,7 +45,7 @@ export class ClientConfig {
     );
   }
 
-  buildConfig(path: Path, pathName: string) {
+  private buildConfig(path: Path, pathName: string) {
     // TODO: handle head method later
     const operations = pick(path, ["get", "post", "put", "delete", "patch", "head"]) as { [method: string]: Operation };
 
@@ -71,30 +71,20 @@ export class ClientConfig {
         },
         pathParams: getParamsNames(pathParams),
         queryParams: getParamsNames(queryParams),
-        contentType: this.getContentType(bodyParams, formDataParams),
+        contentType: getContentType(bodyParams, formDataParams),
         deprecated: operation.deprecated,
       };
     });
   }
 
-  getContentType(bodyParams: BodyParameter[], formData: FormDataParameter[]) {
-    if (!isEmpty(bodyParams)) {
-      return "application/json";
-    }
-    if (!isEmpty(formData)) {
-      return "multipart/form-data";
-    }
-    return "";
-  }
-
-  getParamTypes = (_name?: string) => {
+  private getParamTypes = (_name?: string) => {
     return (
       params: Array<PathParameter | BodyParameter | QueryParameter | FormDataParameter>,
     ): { [key: string]: CustomType } => {
       return params.reduce(
         (results, param) => ({
           ...results,
-          [propName(param)]: this.schemaHandler.convert(
+          [`${param.name}${param.required ? "" : "?"}`]: this.schemaHandler.convert(
             get(param, "schema", param),
             `${toCapitalCase(_name)}${toCapitalCase(param.name)}`,
           ),
@@ -104,7 +94,7 @@ export class ClientConfig {
     };
   };
 
-  getResponseType = (responses: Operation["responses"]) => {
+  private getResponseType = (responses: Operation["responses"]) => {
     const response200 = get(responses, "200");
     const response201 = get(responses, "201");
 
@@ -117,49 +107,18 @@ export class ClientConfig {
   };
 }
 
-const pickParams = (parameters: Array<Parameter | Reference>) => (type: "path" | "query" | "body" | "formData") =>
-  filter(parameters, (param) => (param as Parameter).in === type);
-
-const getParamsNames = (params: any[]) => (isEmpty(params) ? [] : map(params, (param) => (param as Parameter).name));
-
-const toRequestParams = (data: any[] = []) =>
-  !isEmpty(data)
-    ? `{
-${data.join(",\n")}
-}`
-    : undefined;
-const propName = (param: Parameter) => `${param.name}${param.required ? "" : "?"}`;
-
-const addPrefix = (name: string) => `${Register.prefixes[name] === "interface" ? "I" : "T"}${name}`;
-
-export const toRequest = (clientConfigs: IClientConfig[]): string[] => {
-  for (let name in Register.refs) {
-    if (!(Register.refs[name] as Ref).alias) {
-      (Register.refs[name] as Ref).rename(addPrefix(name));
-    }
+const getContentType = (bodyParams: BodyParameter[], formData: FormDataParameter[]) => {
+  if (!isEmpty(bodyParams)) {
+    return "application/json";
   }
-  const clientConfig = sortBy(clientConfigs, (o) => o.operationId);
-
-  return clientConfig.map((v: IClientConfig) => {
-    const TReq = !isEmpty(v.TReq) ? toTypes(mapValues(v.TReq, (v) => v.toType())) : "";
-    const requestParamList = compact([...v.pathParams, ...v.queryParams, v.contentType ? "requestBody" : ""]);
-    const requestInputs = isEmpty(requestParamList) ? "" : toRequestParams(requestParamList);
-
-    const getParams = () => {
-      const params = toRequestParams(get(v, "queryParams"));
-      return params ? `params: ${params},` : "";
-    };
-
-    const getHeaders = () => (v.contentType ? `headers: { "Content-Type": '${v.contentType}' },` : "");
-
-    return `
-${v.deprecated ? setDeprecated(v.operationId) : ""}
-export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp?.toType() || ""}>("${
-      v.operationId
-    }", (${requestInputs}) => ({ url: \`${v.url}\`,method: "${v.method}",${
-      v.contentType ? `data: requestBody,` : ""
-    }${getParams()}${getHeaders()} })
-);
-`;
-  });
+  if (!isEmpty(formData)) {
+    return "multipart/form-data";
+  }
+  return "";
 };
+
+// TODO: handle the reference later
+const pickParams = (params: Array<Parameter | Reference>) => (type: "path" | "query" | "body" | "formData") =>
+  filter(params, (param) => (param as Parameter).in === type);
+
+const getParamsNames = (params: Parameter[]) => (isEmpty(params) ? [] : map(params, (param) => param.name));
