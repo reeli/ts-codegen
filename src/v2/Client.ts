@@ -9,12 +9,12 @@ import {
   Reference,
   Response,
 } from "swagger-schema-official";
-import { camelCase, compact, filter, get, isEmpty, keys, map, mapValues, pick, reduce, sortBy } from "lodash";
+import { compact, filter, get, isEmpty, keys, map, mapValues, pick, reduce, sortBy } from "lodash";
 import { getRequestURL, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
 import { CustomType, Ref, Register } from "src/core/Type";
 import { Schema } from "src/core/Schema";
 
-type TPaths = { [pathName: string]: Path };
+type Paths = { [pathName: string]: Path };
 
 interface IClientConfig {
   url: string;
@@ -24,8 +24,7 @@ interface IClientConfig {
   operationId?: string;
   pathParams: string[];
   queryParams: string[];
-  bodyParams: string[];
-  formDataParams: string[];
+  contentType: string;
   deprecated?: boolean;
 }
 
@@ -33,11 +32,11 @@ export class Client {
   clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
 
-  static of(paths: TPaths, basePath: string = "") {
+  static of(paths: Paths, basePath: string = "") {
     return new Client(paths, basePath);
   }
 
-  constructor(private paths: TPaths, private basePath: string) {
+  constructor(private paths: Paths, private basePath: string) {
     this.schemaHandler = new Schema();
     this.clientConfigs = reduce(
       this.paths,
@@ -62,7 +61,7 @@ export class Client {
       return {
         url: getRequestURL(pathName, this.basePath),
         method,
-        operationId: camelCase(operation.operationId), // TODO: add tests later
+        operationId: operation.operationId, //camelCase(operation.operationId) TODO: add tests later, 向后兼容？
         TResp: this.getResponseType(operation.responses),
         TReq: {
           ...getParamTypes(pathParams),
@@ -72,11 +71,20 @@ export class Client {
         },
         pathParams: getParamsNames(pathParams),
         queryParams: getParamsNames(queryParams),
-        bodyParams: getParamsNames(bodyParams),
-        formDataParams: getParamsNames(formDataParams),
+        contentType: this.getContentType(bodyParams, formDataParams),
         deprecated: operation.deprecated,
       };
     });
+  }
+
+  getContentType(bodyParams: BodyParameter[], formData: FormDataParameter[]) {
+    if (!isEmpty(bodyParams)) {
+      return "application/json";
+    }
+    if (!isEmpty(formData)) {
+      return "multipart/form-data";
+    }
+    return "";
   }
 
   getParamTypes = (_name?: string) => {
@@ -124,35 +132,17 @@ const propName = (param: Parameter) => `${param.name}${param.required ? "" : "?"
 
 const addPrefix = (name: string) => `${Register.prefixes[name] === "interface" ? "I" : "T"}${name}`;
 
-export const toRequest = (config: IClientConfig): string[] => {
+export const toRequest = (clientConfigs: IClientConfig[]): string[] => {
   for (let name in Register.refs) {
     if (!(Register.refs[name] as Ref).alias) {
       (Register.refs[name] as Ref).rename(addPrefix(name));
     }
   }
+  const clientConfig = sortBy(clientConfigs, (o) => o.operationId);
 
-  const clientConfig = sortBy(config, (o) => o.operationId);
-  const requests = clientConfig.map((v: IClientConfig) => {
+  return clientConfig.map((v: IClientConfig) => {
     const TReq = !isEmpty(v.TReq) ? toTypes(mapValues(v.TReq, (v) => v.toType())) : "";
-    const getRequestBody = () => {
-      if (isEmpty(v.bodyParams) && isEmpty(v.formDataParams)) {
-        return null;
-      }
-      if (isEmpty(v.bodyParams)) {
-        return v.formDataParams;
-      }
-      return v.bodyParams;
-    };
-
-    const getData = () => {
-      const requestBody = getRequestBody();
-      if (!requestBody) {
-        return "";
-      }
-      return requestBody.length > 1 ? `data: {${requestBody.join(",")}},` : `data: ${requestBody},`;
-    };
-
-    const requestParamList = compact([...v.pathParams, ...v.queryParams, ...v.bodyParams, ...v.formDataParams]);
+    const requestParamList = compact([...v.pathParams, ...v.queryParams, v.contentType ? "requestBody" : ""]);
     const requestInputs = isEmpty(requestParamList) ? "" : toRequestParams(requestParamList);
 
     const getParams = () => {
@@ -160,24 +150,16 @@ export const toRequest = (config: IClientConfig): string[] => {
       return params ? `params: ${params},` : "";
     };
 
-    const getHeaders = () => {
-      const requestBody = getRequestBody();
-      if (!requestBody) {
-        return "";
-      }
-      return `headers: { "Content-Type": ${
-        !isEmpty(v.formDataParams) ? "'multipart/form-data'" : "'application/json'"
-      } },`;
-    };
+    const getHeaders = () => (v.contentType ? `headers: { "Content-Type": '${v.contentType}' },` : "");
 
     return `
 ${v.deprecated ? setDeprecated(v.operationId) : ""}
 export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp?.toType() || ""}>("${
       v.operationId
-    }", (${requestInputs}) => ({ url: \`${v.url}\`,method: "${v.method}",${getData()}${getParams()}${getHeaders()} })
+    }", (${requestInputs}) => ({ url: \`${v.url}\`,method: "${v.method}",${
+      v.contentType ? `data: requestBody,` : ""
+    }${getParams()}${getHeaders()} })
 );
 `;
   });
-
-  return requests;
 };
