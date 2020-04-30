@@ -9,7 +9,7 @@ import {
   Reference,
   Response,
 } from "swagger-schema-official";
-import { compact, Dictionary, filter, get, isEmpty, keys, map, mapValues, pick, reduce, sortBy } from "lodash";
+import { camelCase, compact, filter, get, isEmpty, keys, map, mapValues, pick, reduce, sortBy } from "lodash";
 import { getRequestURL, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
 import { CustomType, Ref, Register } from "src/core/Type";
 import { Schema } from "src/core/Schema";
@@ -47,52 +47,53 @@ export class Client {
   }
 
   buildConfig(path: Path, pathName: string) {
-    const operations = pick(path, ["get", "post", "put", "delete", "patch", "head"]);
+    // TODO: handle head method later
+    const operations = pick(path, ["get", "post", "put", "delete", "patch", "head"]) as { [method: string]: Operation };
 
     return keys(operations).map((method) => {
-      const operation = (operations as Dictionary<any>)[method];
+      const operation = operations[method];
       const pickParamsByType = pickParams(operation.parameters as Parameter[]);
-      const params = {
-        pathParams: pickParamsByType("path") as PathParameter[],
-        queryParams: pickParamsByType("query") as QueryParameter[],
-        bodyParams: pickParamsByType("body") as BodyParameter[],
-        formDataParams: pickParamsByType("formData") as FormDataParameter[],
-      };
+      const pathParams = pickParamsByType("path") as PathParameter[];
+      const queryParams = pickParamsByType("query") as QueryParameter[];
+      const bodyParams = pickParamsByType("body") as BodyParameter[];
+      const formDataParams = pickParamsByType("formData") as FormDataParameter[];
+      const getParamTypes = this.getParamTypes(operation.operationId);
 
       return {
         url: getRequestURL(pathName, this.basePath),
         method,
-        operationId: operation.operationId,
+        operationId: camelCase(operation.operationId), // TODO: add tests later
         TResp: this.getResponseType(operation.responses),
         TReq: {
-          ...this.getParamTypes(params.pathParams, operation.operationId),
-          ...this.getParamTypes(params.queryParams, operation.operationId),
-          ...this.getParamTypes(params.bodyParams, operation.operationId),
-          ...this.getParamTypes(params.formDataParams, operation.operationId),
+          ...getParamTypes(pathParams),
+          ...getParamTypes(queryParams),
+          ...getParamTypes(bodyParams),
+          ...getParamTypes(formDataParams),
         },
-        pathParams: getParamsNames(params.pathParams),
-        queryParams: getParamsNames(params.queryParams),
-        bodyParams: getParamsNames(params.bodyParams),
-        formDataParams: getParamsNames(params.formDataParams),
+        pathParams: getParamsNames(pathParams),
+        queryParams: getParamsNames(queryParams),
+        bodyParams: getParamsNames(bodyParams),
+        formDataParams: getParamsNames(formDataParams),
         deprecated: operation.deprecated,
       };
     });
   }
 
-  getParamTypes = (
-    params: Array<PathParameter | BodyParameter | QueryParameter | FormDataParameter>,
-    _name: string,
-  ): { [key: string]: CustomType } => {
-    return params.reduce(
-      (results, param) => ({
-        ...results,
-        [propName(param)]: this.schemaHandler.convert(
-          get(param, "schema", param),
-          `${toCapitalCase(_name)}${toCapitalCase(param.name)}`,
-        ),
-      }),
-      {},
-    );
+  getParamTypes = (_name?: string) => {
+    return (
+      params: Array<PathParameter | BodyParameter | QueryParameter | FormDataParameter>,
+    ): { [key: string]: CustomType } => {
+      return params.reduce(
+        (results, param) => ({
+          ...results,
+          [propName(param)]: this.schemaHandler.convert(
+            get(param, "schema", param),
+            `${toCapitalCase(_name)}${toCapitalCase(param.name)}`,
+          ),
+        }),
+        {},
+      );
+    };
   };
 
   getResponseType = (responses: Operation["responses"]) => {
