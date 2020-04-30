@@ -7,7 +7,8 @@ export const getUseExtends = (schemas: CustomSchema) =>
   !!find(schemas, (schema) => schema.$ref) && !!find(schemas, (schema) => schema.type == "object");
 
 export class Schema {
-  convert(schema: CustomSchema, name?: string): CustomType {
+  convert(schema: CustomSchema, id?: string): CustomType {
+    const name = id ? toCapitalCase(id) : id;
     const oneOf = (schema as ISchema).oneOf || (schema as ISchema).anyOf;
     if (oneOf) {
       return Type.oneOf(map(oneOf, (v) => this.convert(v)));

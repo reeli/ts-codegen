@@ -1,4 +1,4 @@
-import { keys, map, uniqueId } from "lodash";
+import { isEmpty, keys, map, uniqueId } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import { Schema } from "swagger-schema-official";
 import { isArray, quoteKey, toCapitalCase } from "src/core/utils";
@@ -118,7 +118,10 @@ export class Obj extends TypeFactory {
         });
       return `{${data.join("")}}`;
     };
-    if (this.refs) {
+    if (!isEmpty(this.refs)) {
+      if (isEmpty(this.props)) {
+        return `extends ${map(this.refs, (v) => v.toType()).join(",")} {}`;
+      }
       return this.useExtends
         ? `extends ${map(this.refs, (v) => v.toType()).join(",")} ${handler(
             this.props as { [key: string]: CustomType },
