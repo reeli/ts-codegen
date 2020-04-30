@@ -9,10 +9,11 @@ import {
   Reference,
   Response,
 } from "swagger-schema-official";
-import { compact, Dictionary, filter, get, isEmpty, keys, map, pick, reduce, sortBy } from "lodash";
-import { generateEnums, getRequestURL, setDeprecated, toTypes } from "src/core/utils";
-import { SchemaHandler } from "src/core/SchemaHandler";
-import { resolve } from "src/core/ReusableTypes";
+import { compact, Dictionary, filter, get, isEmpty, keys, map, mapValues, pick, reduce, sortBy } from "lodash";
+import { getRequestURL, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
+import { CustomType, Ref, Register } from "src/core/Type";
+import { Schema } from "src/core/Schema";
+import { getOutput } from "src/core/scan";
 
 type TPaths = { [pathName: string]: Path };
 
@@ -29,27 +30,30 @@ interface IClientConfig {
   deprecated?: boolean;
 }
 
-export class ClientBuilderV2 {
-  schemaHandler: SchemaHandler;
-  clientConfig: IClientConfig[] = [];
-  enums: Dictionary<any> = {};
+const addPrefix = (name: string) => `${Register.prefixes[name] === "interface" ? "I" : "T"}${name}`;
 
-  static of(paths: TPaths, basePath: string = "", reusableSchemas: Dictionary<any>) {
-    return new ClientBuilderV2(paths, basePath, reusableSchemas);
+export class ClientBuilderV2 {
+  clientConfig: IClientConfig[] = [];
+  schemaHandler: Schema;
+
+  static of(paths: TPaths, basePath: string = "") {
+    return new ClientBuilderV2(paths, basePath);
   }
 
-  constructor(private paths: TPaths, private basePath: string, private reusableSchemas: Dictionary<any>) {
-    this.schemaHandler = SchemaHandler.of((k, v) => {
-      if (k) {
-        this.enums[k] = v;
-      }
-    });
+  constructor(private paths: TPaths, private basePath: string) {
+    this.schemaHandler = new Schema();
   }
 
   toRequest = (): string[] => {
+    for (let name in Register.refs) {
+      if (!(Register.refs[name] as Ref).alias) {
+        (Register.refs[name] as Ref).rename(addPrefix(name));
+      }
+    }
+
     const clientConfig = sortBy(this.clientConfig, (o) => o.operationId);
     const requests = clientConfig.map((v: IClientConfig) => {
-      const TReq = !isEmpty(v.TReq) ? toTypes(v.TReq) : undefined;
+      const TReq = !isEmpty(v.TReq) ? toTypes(mapValues(v.TReq, (v) => v.toType())) : "";
       const getRequestBody = () => {
         if (isEmpty(v.bodyParams) && isEmpty(v.formDataParams)) {
           return null;
@@ -88,15 +92,14 @@ export class ClientBuilderV2 {
 
       return `
 ${v.deprecated ? setDeprecated(v.operationId) : ""}
-export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${
+export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp?.toType() || ""}>("${
         v.operationId
       }", (${requestInputs}) => ({ url: \`${v.url}\`,method: "${v.method}",${getData()}${getParams()}${getHeaders()} })
 );
 `;
     });
 
-    const enums = keys(this.enums).map((k) => generateEnums(this.enums, k));
-    return [...requests, ...enums];
+    return [...requests, getOutput()];
   };
 
   scan = () => {
@@ -141,34 +144,32 @@ export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp}>("${
     });
   }
 
-  getParamTypes = (params: Array<PathParameter | BodyParameter | QueryParameter | FormDataParameter>, _name: string) =>
-    params.reduce(
+  getParamTypes = (
+    params: Array<PathParameter | BodyParameter | QueryParameter | FormDataParameter>,
+    _name: string,
+  ): { [key: string]: CustomType } => {
+    return params.reduce(
       (results, param) => ({
         ...results,
-        [propName(param)]: resolve(
-          this.schemaHandler.toType({
-            ...get(param, "schema", param),
-            _name,
-            _propKey: param.name,
-          }),
-          this.reusableSchemas,
+        [propName(param)]: this.schemaHandler.convert(
+          get(param, "schema", param),
+          `${toCapitalCase(_name)}${toCapitalCase(param.name)}`,
         ),
       }),
       {},
     );
+  };
 
   getResponseType = (responses: Operation["responses"]) => {
     const response200 = get(responses, "200");
     const response201 = get(responses, "201");
 
     if ((response200 as Reference)?.$ref || (response201 as Reference)?.$ref) {
-      return resolve(this.schemaHandler.toType(response200 || response201), this.reusableSchemas);
+      return this.schemaHandler.convert(response200 || response201);
     }
 
-    return resolve(
-      this.schemaHandler.toType((response200 as Response)?.schema || (response201 as Response)?.schema),
-      this.reusableSchemas,
-    );
+    const v = (response200 as Response)?.schema || (response201 as Response)?.schema;
+    return v ? this.schemaHandler.convert(v) : v;
   };
 }
 
@@ -177,11 +178,10 @@ const pickParams = (parameters: Array<Parameter | Reference>) => (type: "path" |
 
 const getParamsNames = (params: any[]) => (isEmpty(params) ? [] : map(params, (param) => (param as Parameter).name));
 
-const propName = (param: Parameter) => `${param.name}${param.required ? "" : "?"}`;
-
 const toRequestParams = (data: any[] = []) =>
   !isEmpty(data)
     ? `{
 ${data.join(",\n")}
 }`
     : undefined;
+const propName = (param: Parameter) => `${param.name}${param.required ? "" : "?"}`;

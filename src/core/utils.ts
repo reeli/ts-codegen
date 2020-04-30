@@ -42,7 +42,7 @@ const ENUM_SUFFIX = `#EnumSuffix`;
 
 export const toTypes = (obj: Dictionary<any> | string) => {
   if (!obj) {
-    return;
+    return "";
   }
   const list = map<string, any>(obj, (v: any, k: string) => `${quoteKey(k)}: ${replace(v, ENUM_SUFFIX, "")};`);
   return (

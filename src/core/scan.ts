@@ -4,7 +4,7 @@ import { keys } from "lodash";
 import { getUseExtends, Schema } from "src/core/Schema";
 import { prettifyCode, toCapitalCase } from "src/core/utils";
 
-const getDeclarationType = (schema: CustomSchema) => {
+export const getDeclarationType = (schema: CustomSchema) => {
   if (schema.type === "object" || schema.properties || (schema.allOf && getUseExtends(schema.allOf))) {
     return "interface";
   }
@@ -13,20 +13,7 @@ const getDeclarationType = (schema: CustomSchema) => {
 
 const addPrefix = (name: string) => `${Register.prefixes[name] === "interface" ? "I" : "T"}${name}`;
 
-export const scan = (schemas: { [k: string]: CustomSchema | IReference }) => {
-  const schemaHandler = new Schema();
-
-  keys(schemas).forEach((k) => {
-    const name = toCapitalCase(k);
-    const type = schemaHandler.convert(schemas[k], name);
-    Register.setType(name, type);
-    Register.setPrefix(name, getDeclarationType(schemas[k]));
-  });
-
-  for (let name in Register.refs) {
-    (Register.refs[name] as Ref).rename(addPrefix(name));
-  }
-
+export const getOutput = () => {
   let output = "";
   keys(Register.decls)
     .sort()
@@ -43,6 +30,22 @@ export const scan = (schemas: { [k: string]: CustomSchema | IReference }) => {
           Register.prefixes[k] === "interface" ? "" : "="
         } ${t.toType()}${Register.prefixes[k] === "type" ? ";" : ""}\n\n`;
     });
+  return output;
+};
 
-  return prettifyCode(output);
+export const scan = (schemas: { [k: string]: CustomSchema | IReference }) => {
+  const schemaHandler = new Schema();
+
+  keys(schemas).forEach((k) => {
+    const name = toCapitalCase(k);
+    const type = schemaHandler.convert(schemas[k], name);
+    Register.setType(name, type);
+    Register.setPrefix(name, getDeclarationType(schemas[k]));
+  });
+
+  for (let name in Register.refs) {
+    (Register.refs[name] as Ref).rename(addPrefix(name));
+  }
+
+  return prettifyCode(getOutput());
 };
