@@ -19,8 +19,8 @@ type Paths = { [pathName: string]: Path };
 interface IClientConfig {
   url: string;
   method: string;
-  TResp: any;
-  TReq: any;
+  TResp: CustomType | undefined;
+  TReq: { [key: string]: CustomType } | undefined;
   operationId?: string;
   pathParams: string[];
   queryParams: string[];
@@ -28,12 +28,12 @@ interface IClientConfig {
   deprecated?: boolean;
 }
 
-export class Client {
+export class ClientConfig {
   clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
 
   static of(paths: Paths, basePath: string = "") {
-    return new Client(paths, basePath);
+    return new ClientConfig(paths, basePath);
   }
 
   constructor(private paths: Paths, private basePath: string) {
@@ -113,7 +113,7 @@ export class Client {
     }
 
     const v = (response200 as Response)?.schema || (response201 as Response)?.schema;
-    return v ? this.schemaHandler.convert(v) : v;
+    return v ? this.schemaHandler.convert(v) : undefined;
   };
 }
 
