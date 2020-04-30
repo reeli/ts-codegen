@@ -13,7 +13,6 @@ import { compact, Dictionary, filter, get, isEmpty, keys, map, mapValues, pick, 
 import { getRequestURL, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
 import { CustomType, Ref, Register } from "src/core/Type";
 import { Schema } from "src/core/Schema";
-import { getOutput } from "src/core/scan";
 
 type TPaths = { [pathName: string]: Path };
 
@@ -30,86 +29,22 @@ interface IClientConfig {
   deprecated?: boolean;
 }
 
-const addPrefix = (name: string) => `${Register.prefixes[name] === "interface" ? "I" : "T"}${name}`;
-
-export class ClientBuilderV2 {
-  clientConfig: IClientConfig[] = [];
+export class Client {
+  clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
 
   static of(paths: TPaths, basePath: string = "") {
-    return new ClientBuilderV2(paths, basePath);
+    return new Client(paths, basePath);
   }
 
   constructor(private paths: TPaths, private basePath: string) {
     this.schemaHandler = new Schema();
-  }
-
-  toRequest = (): string[] => {
-    for (let name in Register.refs) {
-      if (!(Register.refs[name] as Ref).alias) {
-        (Register.refs[name] as Ref).rename(addPrefix(name));
-      }
-    }
-
-    const clientConfig = sortBy(this.clientConfig, (o) => o.operationId);
-    const requests = clientConfig.map((v: IClientConfig) => {
-      const TReq = !isEmpty(v.TReq) ? toTypes(mapValues(v.TReq, (v) => v.toType())) : "";
-      const getRequestBody = () => {
-        if (isEmpty(v.bodyParams) && isEmpty(v.formDataParams)) {
-          return null;
-        }
-        if (isEmpty(v.bodyParams)) {
-          return v.formDataParams;
-        }
-        return v.bodyParams;
-      };
-
-      const getData = () => {
-        const requestBody = getRequestBody();
-        if (!requestBody) {
-          return "";
-        }
-        return requestBody.length > 1 ? `data: {${requestBody.join(",")}},` : `data: ${requestBody},`;
-      };
-
-      const requestParamList = compact([...v.pathParams, ...v.queryParams, ...v.bodyParams, ...v.formDataParams]);
-      const requestInputs = isEmpty(requestParamList) ? "" : toRequestParams(requestParamList);
-
-      const getParams = () => {
-        const params = toRequestParams(get(v, "queryParams"));
-        return params ? `params: ${params},` : "";
-      };
-
-      const getHeaders = () => {
-        const requestBody = getRequestBody();
-        if (!requestBody) {
-          return "";
-        }
-        return `headers: { "Content-Type": ${
-          !isEmpty(v.formDataParams) ? "'multipart/form-data'" : "'application/json'"
-        } },`;
-      };
-
-      return `
-${v.deprecated ? setDeprecated(v.operationId) : ""}
-export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp?.toType() || ""}>("${
-        v.operationId
-      }", (${requestInputs}) => ({ url: \`${v.url}\`,method: "${v.method}",${getData()}${getParams()}${getHeaders()} })
-);
-`;
-    });
-
-    return [...requests, getOutput()];
-  };
-
-  scan = () => {
-    this.clientConfig = reduce(
+    this.clientConfigs = reduce(
       this.paths,
-      (config: IClientConfig[], path: Path, pathName: string) => [...config, ...this.buildConfig(path, pathName)],
+      (configs: IClientConfig[], path: Path, pathName: string) => [...configs, ...this.buildConfig(path, pathName)],
       [],
     );
-    return this;
-  };
+  }
 
   buildConfig(path: Path, pathName: string) {
     const operations = pick(path, ["get", "post", "put", "delete", "patch", "head"]);
@@ -185,3 +120,63 @@ ${data.join(",\n")}
 }`
     : undefined;
 const propName = (param: Parameter) => `${param.name}${param.required ? "" : "?"}`;
+
+const addPrefix = (name: string) => `${Register.prefixes[name] === "interface" ? "I" : "T"}${name}`;
+
+export const toRequest = (config: IClientConfig): string[] => {
+  for (let name in Register.refs) {
+    if (!(Register.refs[name] as Ref).alias) {
+      (Register.refs[name] as Ref).rename(addPrefix(name));
+    }
+  }
+
+  const clientConfig = sortBy(config, (o) => o.operationId);
+  const requests = clientConfig.map((v: IClientConfig) => {
+    const TReq = !isEmpty(v.TReq) ? toTypes(mapValues(v.TReq, (v) => v.toType())) : "";
+    const getRequestBody = () => {
+      if (isEmpty(v.bodyParams) && isEmpty(v.formDataParams)) {
+        return null;
+      }
+      if (isEmpty(v.bodyParams)) {
+        return v.formDataParams;
+      }
+      return v.bodyParams;
+    };
+
+    const getData = () => {
+      const requestBody = getRequestBody();
+      if (!requestBody) {
+        return "";
+      }
+      return requestBody.length > 1 ? `data: {${requestBody.join(",")}},` : `data: ${requestBody},`;
+    };
+
+    const requestParamList = compact([...v.pathParams, ...v.queryParams, ...v.bodyParams, ...v.formDataParams]);
+    const requestInputs = isEmpty(requestParamList) ? "" : toRequestParams(requestParamList);
+
+    const getParams = () => {
+      const params = toRequestParams(get(v, "queryParams"));
+      return params ? `params: ${params},` : "";
+    };
+
+    const getHeaders = () => {
+      const requestBody = getRequestBody();
+      if (!requestBody) {
+        return "";
+      }
+      return `headers: { "Content-Type": ${
+        !isEmpty(v.formDataParams) ? "'multipart/form-data'" : "'application/json'"
+      } },`;
+    };
+
+    return `
+${v.deprecated ? setDeprecated(v.operationId) : ""}
+export const ${v.operationId} = createRequestAction<${TReq}, ${v.TResp?.toType() || ""}>("${
+      v.operationId
+    }", (${requestInputs}) => ({ url: \`${v.url}\`,method: "${v.method}",${getData()}${getParams()}${getHeaders()} })
+);
+`;
+  });
+
+  return requests;
+};
