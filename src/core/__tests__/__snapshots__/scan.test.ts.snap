@@ -1,7 +1,76 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`swagger v2 should handle definitions correctly 1`] = `
-"export interface IAttachmentBo {
+"export const deleteAttachmentUsingDELETE = createRequestAction<{
+  id: string;
+}>(\\"deleteAttachmentUsingDELETE\\", ({ id }) => ({ url: \`/api/test/\${id}\`, method: \\"delete\\" }));
+
+export const downloadUsingGET = createRequestAction<
+  {
+    id: string;
+  },
+  IResource
+>(\\"downloadUsingGET\\", ({ id }) => ({ url: \`/api/test/\${id}\`, method: \\"get\\" }));
+
+export const findBookByIdUsingGET = createRequestAction<
+  {
+    id: string;
+  },
+  IBookDetailVo
+>(\\"findBookByIdUsingGET\\", ({ id }) => ({ url: \`/api/test/book/\${id}\`, method: \\"get\\" }));
+
+export const getDocumentByIdUsingGET = createRequestAction<
+  {
+    documentId: string;
+    from?: keyof typeof GetDocumentByIdUsingGetFrom;
+  },
+  IDocumentVo
+>(\\"getDocumentByIdUsingGET\\", ({ documentId, from }) => ({
+  url: \`/api/test/documents/\${documentId}/doc\`,
+  method: \\"get\\",
+  params: {
+    from,
+  },
+}));
+
+export const getScheduleDetailsByDateUsingGET = createRequestAction<
+  {
+    roleId?: string;
+    scheduleDate: number;
+  },
+  IScheduleVo[]
+>(\\"getScheduleDetailsByDateUsingGET\\", ({ scheduleDate, roleId }) => ({
+  url: \`/api/test/schedules\`,
+  method: \\"get\\",
+  params: {
+    scheduleDate,
+    roleId,
+  },
+}));
+
+export const updateBookByIdUsingPUT = createRequestAction<{
+  id: string;
+  updateBookRequest: IUpdateBookRequest;
+}>(\\"updateBookByIdUsingPUT\\", ({ id, requestBody }) => ({
+  url: \`/api/test/book/\${id}\`,
+  method: \\"put\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const uploadAttachmentUsingPOST = createRequestAction<
+  {
+    attachment: File;
+  },
+  IAttachmentBo
+>(\\"uploadAttachmentUsingPOST\\", ({ requestBody }) => ({
+  url: \`/api/test\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export interface IAttachmentBo {
   authorName?: string;
   createdDate?: number;
   fileName?: string;
@@ -63,6 +132,11 @@ export interface IFile {
   totalSpace?: number;
   usableSpace?: number;
   writable?: boolean;
+}
+
+export enum GetDocumentByIdUsingGetFrom {
+  \\"AAA\\" = \\"AAA\\",
+  \\"BBB\\" = \\"BBB\\",
 }
 
 export interface IInputStream {
