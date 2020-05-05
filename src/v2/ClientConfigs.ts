@@ -28,12 +28,12 @@ export interface IClientConfig {
   deprecated?: boolean;
 }
 
-export class ClientConfig {
+export class ClientConfigs {
   clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
 
   static of(paths: Paths, basePath: string = "") {
-    return new ClientConfig(paths, basePath);
+    return new ClientConfigs(paths, basePath);
   }
 
   constructor(private paths: Paths, private basePath: string) {

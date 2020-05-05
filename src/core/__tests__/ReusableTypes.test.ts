@@ -4,7 +4,7 @@ import { ReusableTypes } from "src/core/ReusableTypes";
 import { prettifyCode } from "src/core/utils";
 
 describe("ReusableTypes", () => {
-  it("should scan swagger v2 definitions and transform it to correct types", () => {
+  it("should scanner swagger v2 definitions and transform it to correct types", () => {
     const { output } = ReusableTypes.of(swaggerV2 as any).gen(false);
     expect(prettifyCode(`${output.join("\n\n")}`)).toMatchSnapshot();
   });
