@@ -3,8 +3,10 @@ import { CustomSchema, Enum, Ref, Register } from "src/core/Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { getUseExtends, Schema } from "src/core/Schema";
 import { prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
-import { ClientConfigs, IClientConfig } from "src";
 import { Spec } from "swagger-schema-official";
+import { IClientConfigs } from "src/core/types";
+import { ClientConfigs } from "src";
+import { ClientConfigsV3 } from "src/v3/ClientConfigsV3";
 
 export const getDeclarationType = (schema: CustomSchema) => {
   if (schema.type === "object" || schema.properties || (schema.allOf && getUseExtends(schema.allOf))) {
@@ -39,17 +41,18 @@ export class Scanner {
   constructor(private spec: Spec | IOpenAPI) {}
 
   public scan(): string {
-    if (this.spec.swagger) {
-      this.toReusableTypes(this.spec.definitions);
-      const clientConfigs = new ClientConfigs(this.spec.paths, this.spec.basePath).clientConfigs;
+    // TODO: handle v3 base path later
+    const basePath = this.spec.basePath || "";
+    this.toReusableTypes(this.spec.definitions || (this.spec as IOpenAPI)?.components?.schemas);
+    let clientConfigs: IClientConfigs[] = this.spec.swagger
+      ? new ClientConfigs(this.spec.paths, basePath).clientConfigs
+      : new ClientConfigsV3(this.spec.paths, basePath).clientConfigs;
 
-      for (let name in Register.refs) {
-        (Register.refs[name] as Ref).rename(addPrefix(name));
-      }
-
-      return prettifyCode(`${this.toRequest(clientConfigs)} \n\n ${getOutput()}`);
+    for (let name in Register.refs) {
+      (Register.refs[name] as Ref).rename(addPrefix(name));
     }
-    return "";
+
+    return prettifyCode(`${this.toRequest(clientConfigs)} \n\n ${getOutput()}`);
   }
 
   private toReusableTypes(schemas: { [k: string]: CustomSchema | IReference }) {
@@ -64,7 +67,7 @@ export class Scanner {
     });
   }
 
-  private toRequest(clientConfigs: IClientConfig[]): string {
+  private toRequest(clientConfigs: IClientConfigs[]): string {
     // for (let name in Register.refs) {
     //   if (!(Register.refs[name] as Ref).alias) {
     //     (Register.refs[name] as Ref).rename(addPrefix(name));
@@ -73,7 +76,7 @@ export class Scanner {
     const clientConfig = sortBy(clientConfigs, (o) => o.operationId);
 
     return clientConfig
-      .map((v: IClientConfig) => {
+      .map((v: IClientConfigs) => {
         const TReq = !isEmpty(v.TReq) ? toTypes(mapValues(v.TReq, (v) => v.toType())) : "";
         const requestParamList = compact([...v.pathParams, ...v.queryParams, v.contentType ? "requestBody" : ""]);
         const requestInputs = isEmpty(requestParamList) ? "" : toRequestParams(requestParamList);

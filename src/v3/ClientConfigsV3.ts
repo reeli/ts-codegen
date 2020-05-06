@@ -1,5 +1,5 @@
 import { Schema } from "src/core/Schema";
-import { chain, filter, get, isEmpty, keys, map, pick, reduce } from "lodash";
+import { chain, filter, get, isEmpty, keys, map, pick, reduce, values } from "lodash";
 import { IClientConfigs } from "src/core/types";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
 import { CustomSchema, CustomType } from "src/core/Type";
@@ -55,10 +55,11 @@ export class ClientConfigsV3 {
   }
 
   getBodyParamsTypes(requestBody?: IReference | IRequestBody) {
-    // TODO: will handle another content type later
     if (!requestBody) {
       return;
     }
+
+    // TODO: will handle another content type later
     const schema =
       (requestBody as IRequestBody)?.content["application/json"]?.schema ||
       (requestBody as IRequestBody)?.content["application/x-www-form-urlencoded"]?.schema ||
@@ -101,8 +102,8 @@ export class ClientConfigsV3 {
   isPathParam = (str: string) => str.startsWith("{");
 
   private getResponseType = (responses: IOperation["responses"]) => {
-    const response200 = get(responses, "200");
-    const response201 = get(responses, "201");
+    const response200 = values(get(responses, "200.content"))[0];
+    const response201 = values(get(responses, "201.content"))[0];
 
     if ((response200 as IReference)?.$ref || (response201 as IReference)?.$ref) {
       return this.schemaHandler.convert(response200 || response201);

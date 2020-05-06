@@ -12,7 +12,6 @@ describe("swagger v2", () => {
 
 describe("swagger v3", () => {
   it("should handle schemas correctly", () => {
-    const v = new Scanner(swaggerV3 as IOpenAPI);
-    expect(v).toMatchSnapshot();
+    expect(new Scanner(swaggerV3 as IOpenAPI).scan()).toMatchSnapshot();
   });
 });
