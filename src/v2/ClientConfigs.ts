@@ -55,8 +55,14 @@ export class ClientConfigs {
         TReq: {
           ...getParamTypes(pathParams),
           ...getParamTypes(queryParams),
-          ...getParamTypes(bodyParams),
-          ...getParamTypes(formDataParams),
+          ...(!isEmpty(bodyParams) || !isEmpty(formDataParams)
+            ? {
+                requestBody: {
+                  ...getParamTypes(bodyParams),
+                  ...getParamTypes(formDataParams),
+                } as any, // TODO: remove any later
+              }
+            : undefined),
         },
         pathParams: getParamsNames(pathParams),
         queryParams: getParamsNames(queryParams),
@@ -69,21 +75,27 @@ export class ClientConfigs {
   private getParamTypes = (_name?: string) => {
     return (
       params: Array<PathParameter | BodyParameter | QueryParameter | FormDataParameter>,
-    ): { [key: string]: CustomType } => {
-      return params.reduce(
-        (results, param) => ({
+    ): { [key: string]: CustomType } | undefined => {
+      if (!params) {
+        return;
+      }
+      return params.reduce((results, param) => {
+        // TODO: requestBody 是否需要向后兼容？
+        return {
           ...results,
           [`${param.name}${param.required ? "" : "?"}`]: this.schemaHandler.convert(
             get(param, "schema", param),
             `${toCapitalCase(_name)}${toCapitalCase(param.name)}`,
           ),
-        }),
-        {},
-      );
+        };
+      }, {});
     };
   };
 
-  private getResponseType = (responses: Operation["responses"]) => {
+  private getResponseType = (responses?: Operation["responses"]) => {
+    if (!responses) {
+      return;
+    }
     const response200 = get(responses, "200");
     const response201 = get(responses, "201");
 

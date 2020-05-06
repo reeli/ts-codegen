@@ -1,5 +1,5 @@
 import { IOpenAPI, IReference } from "src/v3/OpenAPI";
-import { CustomSchema, Enum, Ref, Register } from "src/core/Type";
+import { CustomSchema, CustomType, Enum, Ref, Register } from "src/core/Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { getUseExtends, Schema } from "src/core/Schema";
 import { prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
@@ -36,6 +36,8 @@ export const getOutput = (): string => {
     });
   return output;
 };
+
+type KType = { [key: string]: CustomType };
 
 export class Scanner {
   constructor(private spec: Spec | IOpenAPI) {}
@@ -75,9 +77,20 @@ export class Scanner {
     // }
     const clientConfig = sortBy(clientConfigs, (o) => o.operationId);
 
+    // TODO: refactor code later
+    function mapper(obj: KType | { [key: string]: KType }): any {
+      return toTypes(
+        mapValues(obj, (v: any) => {
+          if (!v.toType) {
+            return mapper(v);
+          }
+          return v.toType();
+        }),
+      );
+    }
     return clientConfig
       .map((v: IClientConfigs) => {
-        const TReq = !isEmpty(v.TReq) ? toTypes(mapValues(v.TReq, (v) => v.toType())) : "";
+        const TReq = !isEmpty(v.TReq) ? mapper(v.TReq as any) : "";
         const requestParamList = compact([...v.pathParams, ...v.queryParams, v.contentType ? "requestBody" : ""]);
         const requestInputs = isEmpty(requestParamList) ? "" : toRequestParams(requestParamList);
 
@@ -88,9 +101,10 @@ export class Scanner {
 
         const getHeaders = () => (v.contentType ? `headers: { "Content-Type": '${v.contentType}' },` : "");
 
+        const types = compact([TReq, v.TResp?.toType()]).join(",");
         return `
 ${v.deprecated ? setDeprecated(v.operationId) : ""}
-export const ${v.operationId} = createRequestAction<${TReq}${v.TResp?.toType ? " ," + v.TResp?.toType() : ""}>("${
+export const ${v.operationId} = createRequestAction${types ? "<" + types + ">" : ""}("${
           v.operationId
         }", (${requestInputs}) => ({ url: \`${v.url}\`,method: "${v.method}",${
           v.contentType ? `data: requestBody,` : ""

@@ -32,7 +32,7 @@ export class Schema {
       return Type.enum(schema.enum, name);
     }
 
-    if (schema.type === "object") {
+    if (schema.type === "object" || schema.properties) {
       return schema.properties ? Type.object(this.handleObject(schema, name)) : Type.object("object");
     }
 

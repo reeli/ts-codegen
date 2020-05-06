@@ -1,5 +1,5 @@
 import { Schema } from "src/core/Schema";
-import { chain, filter, get, isEmpty, keys, map, pick, reduce, values } from "lodash";
+import { chain, filter, get, isEmpty, keys, map, pick, reduce, values, camelCase } from "lodash";
 import { IClientConfigs } from "src/core/types";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
 import { CustomSchema, CustomType } from "src/core/Type";
@@ -39,7 +39,8 @@ export class ClientConfigsV3 {
       return {
         url: this.getUrl(this.basePath, pathName),
         method,
-        operationId: operation.operationId, //camelCase(operation.operationId) TODO: add tests later, 向后兼容？
+        // TODO: 给下面的这种 case 加测试
+        operationId: camelCase(operation.operationId), //camelCase(operation.operationId) TODO: add tests later, 向后兼容？
         TResp: this.getResponseType(operation.responses),
         TReq: {
           ...getParamTypes(pathParams),

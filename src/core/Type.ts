@@ -120,6 +120,10 @@ export class Obj extends TypeFactory {
     };
     if (!isEmpty(this.refs)) {
       if (isEmpty(this.props)) {
+        // TODO: handle this case and add test for it
+        if (this.refs?.length === 1) {
+          return map(this.refs, (v) => v.toType()).join(",");
+        }
         return `extends ${map(this.refs, (v) => v.toType()).join(",")} {}`;
       }
       return this.useExtends
