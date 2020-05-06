@@ -5,6 +5,8 @@
   "data": [
     "./examples/swagger.json",
     "./examples/swagger.v3.petstore.json",
-    "./examples/swagger.v3.petstore.expanded.json"
+    "./examples/swagger.v3.petstore.expanded.json",
+    "./examples/petstore.json",
+    "./examples/petstore.v3.json"
   ]
 }
