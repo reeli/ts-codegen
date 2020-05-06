@@ -84,7 +84,7 @@ export type Pets = Pet[];
 "
 `;
 
-exports[`ReusableTypes should scan swagger v2 definitions and transform it to correct types 1`] = `
+exports[`ReusableTypes should scanner swagger v2 definitions and transform it to correct types 1`] = `
 "export interface AttachmentBo {
   authorName?: string;
   createdDate?: number;

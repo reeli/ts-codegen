@@ -1,5 +1,3 @@
-import { PathsResolverV3 } from "src/v3/PathsResolverV3";
-import { ReusableTypes } from "src/core/ReusableTypes";
 import { prettifyCode, testJSON } from "src/core/utils";
 import axios from "axios";
 import { map } from "lodash";
@@ -8,20 +6,13 @@ import * as fs from "fs";
 import * as path from "path";
 import { IOpenAPI } from "src/v3/OpenAPI";
 import { Spec } from "swagger-schema-official";
-import { ClientBuilderV2 } from "src";
+import { Scanner } from "src/core/Scanner";
 
 export const codegen = (spec: IOpenAPI | Spec): string => {
   if (!spec) {
     return "";
   }
-  const { resolvedSchemas, output } = ReusableTypes.of(spec).gen();
-  if ((spec as IOpenAPI).openapi) {
-    return [...PathsResolverV3.of(spec.paths, spec.basePath, resolvedSchemas).scan().toRequest(), ...output].join(
-      "\n\n",
-    );
-  }
-
-  return [...ClientBuilderV2.of(spec.paths, spec.basePath, resolvedSchemas).scan().toRequest(), ...output].join("\n\n");
+  return new Scanner(spec as Spec).scan();
 };
 
 const getFilename = (basePath?: string) => (basePath ? `./${basePath.split("/").join(".").slice(1)}` : "./api.client");
