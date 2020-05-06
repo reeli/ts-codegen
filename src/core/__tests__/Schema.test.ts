@@ -210,7 +210,55 @@ describe("Schema Converter", () => {
         )
         .toType();
 
-      expect(res).toEqual("extends NewPet {}");
+      expect(res).toEqual("NewPet");
+    });
+
+    it("should handle empty object with multiple refs in `allOf`", () => {
+      const res = new Schema()
+        .convert(
+          {
+            allOf: [
+              {
+                $ref: "#/components/schemas/NewPet",
+              },
+              {
+                $ref: "#/components/schemas/Dog",
+              },
+              {},
+            ],
+          },
+          "Pet",
+        )
+        .toType();
+
+      expect(res).toEqual("NewPet&Dog");
+    });
+
+    it("should handle multiple refs and object in `allOf` without using extends ", () => {
+      const res = new Schema()
+        .convert(
+          {
+            allOf: [
+              {
+                $ref: "#/components/schemas/NewPet",
+              },
+              {
+                $ref: "#/components/schemas/Dog",
+              },
+              {
+                properties: {
+                  bark: {
+                    type: "boolean",
+                  },
+                },
+              },
+            ],
+          },
+          "Pet",
+        )
+        .toType(false);
+
+      expect(res).toEqual("NewPet&Dog&{'bark'?: boolean;}");
     });
 
     it("should handle enum in `allOf`", () => {

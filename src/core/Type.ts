@@ -100,7 +100,7 @@ export class Obj extends TypeFactory {
     super();
   }
 
-  toType(): string {
+  toType(useExtends = this.useExtends): string {
     if (this.props === "object") {
       return "{[key:string]:any}";
     }
@@ -121,12 +121,12 @@ export class Obj extends TypeFactory {
     if (!isEmpty(this.refs)) {
       if (isEmpty(this.props)) {
         // TODO: handle this case and add test for it
-        if (this.refs?.length === 1) {
-          return map(this.refs, (v) => v.toType()).join(",");
+        if (!useExtends) {
+          return map(this.refs, (v) => v.toType()).join("&");
         }
         return `extends ${map(this.refs, (v) => v.toType()).join(",")} {}`;
       }
-      return this.useExtends
+      return useExtends
         ? `extends ${map(this.refs, (v) => v.toType()).join(",")} ${handler(
             this.props as { [key: string]: CustomType },
           )}`

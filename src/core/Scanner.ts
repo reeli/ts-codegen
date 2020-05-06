@@ -84,7 +84,7 @@ export class Scanner {
           if (!v.toType) {
             return mapper(v);
           }
-          return v.toType();
+          return v.toType(false);
         }),
       );
     }
@@ -101,7 +101,7 @@ export class Scanner {
 
         const getHeaders = () => (v.contentType ? `headers: { "Content-Type": '${v.contentType}' },` : "");
 
-        const types = compact([TReq, v.TResp?.toType()]).join(",");
+        const types = compact([TReq, v.TResp?.toType(false)]).join(",");
         return `
 ${v.deprecated ? setDeprecated(v.operationId) : ""}
 export const ${v.operationId} = createRequestAction${types ? "<" + types + ">" : ""}("${
