@@ -13,23 +13,12 @@ import { filter, get, isEmpty, keys, map, pick, reduce } from "lodash";
 import { getRequestURL, toCapitalCase } from "src/core/utils";
 import { CustomType } from "src/core/Type";
 import { Schema } from "src/core/Schema";
+import { IClientConfigs } from "src/core/types";
 
 type Paths = { [pathName: string]: Path };
 
-export interface IClientConfig {
-  url: string;
-  method: string;
-  TResp: CustomType | undefined;
-  TReq: { [key: string]: CustomType } | undefined;
-  operationId?: string;
-  pathParams: string[];
-  queryParams: string[];
-  contentType: string;
-  deprecated?: boolean;
-}
-
 export class ClientConfigs {
-  clientConfigs: IClientConfig[] = [];
+  clientConfigs: IClientConfigs[] = [];
   schemaHandler: Schema;
 
   static of(paths: Paths, basePath: string = "") {
@@ -40,7 +29,7 @@ export class ClientConfigs {
     this.schemaHandler = new Schema();
     this.clientConfigs = reduce(
       this.paths,
-      (configs: IClientConfig[], path: Path, pathName: string) => [...configs, ...this.buildConfig(path, pathName)],
+      (configs: IClientConfigs[], path: Path, pathName: string) => [...configs, ...this.buildConfig(path, pathName)],
       [],
     );
   }
