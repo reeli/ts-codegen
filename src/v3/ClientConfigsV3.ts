@@ -12,9 +12,9 @@ import { getOperationId, getOperations, getRequestURL, pickParams } from "src/co
 // TODO: 2. query 不要全部 ...，而是以具体的 {[key]: value} 形式，避免外部应用一些不需要的 query
 
 export const getClientConfigV3 = (paths: IPaths, basePath: string = "") =>
-  new ClientConfigs(paths, basePath).clientConfigs;
+  new ClientConfigsV3(paths, basePath).clientConfigs;
 
-class ClientConfigs {
+class ClientConfigsV3 {
   clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
 

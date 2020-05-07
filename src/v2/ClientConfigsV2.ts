@@ -18,9 +18,9 @@ import { getOperationId, getOperations, getRequestURL, pickParams } from "src/co
 
 type Paths = { [pathName: string]: Path };
 
-export const getClientConfigsV2 = (paths: Paths, basePath: string) => new ClientConfigs(paths, basePath).clientConfigs;
+export const getClientConfigsV2 = (paths: Paths, basePath: string) => new ClientConfigsV2(paths, basePath).clientConfigs;
 
-class ClientConfigs {
+class ClientConfigsV2 {
   clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
 
