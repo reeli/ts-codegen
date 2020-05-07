@@ -65,3 +65,8 @@ export enum FindPetsTags {
   "a" = "a",
 }
 ```
+
+
+# Notice
+
+1. 提供的 Swagger 中，必须保证每个 API 请求都包含 operation id。

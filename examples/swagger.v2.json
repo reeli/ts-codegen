@@ -26,11 +26,17 @@
   "paths": {
     "/": {
       "post": {
-        "tags": ["mock-controller"],
+        "tags": [
+          "mock-controller"
+        ],
         "summary": "uploadAttachment",
         "operationId": "uploadAttachmentUsingPOST",
-        "consumes": ["multipart/form-data"],
-        "produces": ["*/*"],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "*/*"
+        ],
         "parameters": [
           {
             "name": "Authorities",
@@ -83,10 +89,14 @@
     },
     "/{id}": {
       "get": {
-        "tags": ["attachment-controller"],
+        "tags": [
+          "attachment-controller"
+        ],
         "summary": "download",
         "operationId": "downloadUsingGET",
-        "produces": ["*/*"],
+        "produces": [
+          "*/*"
+        ],
         "parameters": [
           {
             "name": "Authorities",
@@ -137,10 +147,14 @@
         "deprecated": false
       },
       "delete": {
-        "tags": ["attachment-controller"],
+        "tags": [
+          "attachment-controller"
+        ],
         "summary": "delete attachment by id",
         "operationId": "deleteAttachmentUsingDELETE",
-        "produces": ["*/*"],
+        "produces": [
+          "*/*"
+        ],
         "parameters": [
           {
             "name": "Authorities",
@@ -193,10 +207,14 @@
     },
     "/book/{id}": {
       "get": {
-        "tags": ["book-controller"],
+        "tags": [
+          "book-controller"
+        ],
         "summary": "get book by id",
         "operationId": "findBookByIdUsingGET",
-        "produces": ["*/*"],
+        "produces": [
+          "*/*"
+        ],
         "parameters": [
           {
             "name": "Authorities",
@@ -247,11 +265,17 @@
         "deprecated": false
       },
       "put": {
-        "tags": ["book-controller"],
+        "tags": [
+          "book-controller"
+        ],
         "summary": "update book by given id",
         "operationId": "updateBookByIdUsingPUT",
-        "consumes": ["application/json"],
-        "produces": ["*/*"],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
         "parameters": [
           {
             "name": "Authorities",
@@ -313,10 +337,14 @@
     },
     "/schedules": {
       "get": {
-        "tags": ["schedule-controller"],
+        "tags": [
+          "schedule-controller"
+        ],
         "summary": "getScheduleDetailsByDate",
         "operationId": "getScheduleDetailsByDateUsingGET",
-        "produces": ["*/*"],
+        "produces": [
+          "*/*"
+        ],
         "parameters": [
           {
             "name": "Authorities",
@@ -382,10 +410,14 @@
     },
     "/documents/{documentId}/doc": {
       "get": {
-        "tags": ["documents-controller"],
+        "tags": [
+          "documents-controller"
+        ],
         "summary": "getDocument",
         "operationId": "getDocumentByIdUsingGET",
-        "produces": ["*/*"],
+        "produces": [
+          "*/*"
+        ],
         "parameters": [
           {
             "name": "Authorities",
@@ -414,7 +446,10 @@
             "description": "from",
             "required": false,
             "type": "string",
-            "enum": ["AAA", "BBB"]
+            "enum": [
+              "AAA",
+              "BBB"
+            ]
           },
           {
             "name": "documentId",
@@ -442,6 +477,36 @@
           }
         },
         "deprecated": false
+      }
+    },
+    "/health-check": {
+      "head": {
+        "operationId": "getHealthCheckUsingHEAD",
+        "description": "show flight exist or not.",
+        "parameters": [
+          {
+            "name": "flight_no",
+            "in": "path",
+            "type": "string",
+            "description": "Flight_no",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "flight exist",
+            "schema": {
+              "$ref": "#/definitions/DocumentVO"
+            }
+          },
+          "404": {
+            "description": "flight does not exist"
+          }
+        }
       }
     }
   },
@@ -698,7 +763,10 @@
         },
         "spokenLanguage": {
           "type": "array",
-          "example": ["AH", "AK"],
+          "example": [
+            "AH",
+            "AK"
+          ],
           "items": {
             "type": "string"
           }
@@ -825,7 +893,9 @@
     },
     "BookingResponse": {
       "type": "object",
-      "required": ["data"],
+      "required": [
+        "data"
+      ],
       "properties": {
         "data": {
           "$ref": "#/definitions/DocumentVO"

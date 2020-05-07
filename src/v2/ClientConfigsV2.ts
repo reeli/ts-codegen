@@ -35,7 +35,6 @@ export class ClientConfigsV2 {
   }
 
   private buildConfig(path: Path, pathName: string) {
-    // TODO: handle head method later
     const operations = pick(path, ["get", "post", "put", "delete", "patch", "head"]) as { [method: string]: Operation };
 
     return keys(operations).map((method) => {
