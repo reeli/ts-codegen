@@ -5,7 +5,7 @@ import { Schema } from "src/core/Schema";
 import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
 import { Parameter, Spec } from "swagger-schema-official";
 import { CustomSchema, IClientConfig } from "src/core/types";
-import { ClientConfigsV3, getClientConfigsV2 } from "src";
+import { getClientConfigsV2, getClientConfigV3 } from "src";
 import { Register } from "src/core/Register";
 
 export const getDeclarationType = (schema: CustomSchema) => {
@@ -53,7 +53,7 @@ export class Scanner {
     this.handleParameters(this.spec.parameters || (this.spec as IOpenAPI)?.components?.parameters);
     let clientConfigs: IClientConfig[] = this.spec.swagger
       ? getClientConfigsV2(this.spec.paths, basePath)
-      : new ClientConfigsV3(this.spec.paths, basePath).clientConfigs;
+      : getClientConfigV3(this.spec.paths, basePath);
 
     for (let name in Register.refs) {
       (Register.refs[name] as Ref).rename(addPrefix(name));

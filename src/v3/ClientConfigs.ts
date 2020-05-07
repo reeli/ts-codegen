@@ -8,13 +8,12 @@ import { toCapitalCase } from "src";
 // TODO: 1. 将 inline 的 requestParams 和 requestBody 抽成单独的 interface，方便外面使用
 // TODO: 2. query 不要全部 ...，而是以具体的 {[key]: value} 形式，避免外部应用一些不需要的 query
 
-export class ClientConfigsV3 {
+export const getClientConfigV3 = (paths: IPaths, basePath: string = "") =>
+  new ClientConfigs(paths, basePath).clientConfigs;
+
+export class ClientConfigs {
   clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
-
-  static of(paths: IPaths, basePath: string = "") {
-    return new ClientConfigsV3(paths, basePath);
-  }
 
   constructor(private paths: IPaths, private basePath: string) {
     this.schemaHandler = new Schema();
