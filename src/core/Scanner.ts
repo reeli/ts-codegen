@@ -5,9 +5,8 @@ import { getUseExtends, Schema } from "src/core/Schema";
 import { prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
 import { Spec } from "swagger-schema-official";
 import { IClientConfigs } from "src/core/types";
-import { ClientConfigs } from "src";
-import { ClientConfigsV3 } from "src/v3/ClientConfigsV3";
-import {Register} from "src/core/Register";
+import { ClientConfigsV2, ClientConfigsV3 } from "src";
+import { Register } from "src/core/Register";
 
 export const getDeclarationType = (schema: CustomSchema) => {
   if (schema.type === "object" || schema.properties || (schema.allOf && getUseExtends(schema.allOf))) {
@@ -48,7 +47,7 @@ export class Scanner {
     const basePath = this.spec.basePath || "";
     this.toReusableTypes(this.spec.definitions || (this.spec as IOpenAPI)?.components?.schemas);
     let clientConfigs: IClientConfigs[] = this.spec.swagger
-      ? new ClientConfigs(this.spec.paths, basePath).clientConfigs
+      ? new ClientConfigsV2(this.spec.paths, basePath).clientConfigs
       : new ClientConfigsV3(this.spec.paths, basePath).clientConfigs;
 
     for (let name in Register.refs) {
@@ -89,6 +88,7 @@ export class Scanner {
         }),
       );
     }
+
     return clientConfig
       .map((v: IClientConfigs) => {
         const TReq = !isEmpty(v.TReq) ? mapper(v.TReq as any) : "";

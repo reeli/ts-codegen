@@ -17,12 +17,12 @@ import { IClientConfigs } from "src/core/types";
 
 type Paths = { [pathName: string]: Path };
 
-export class ClientConfigs {
+export class ClientConfigsV2 {
   clientConfigs: IClientConfigs[] = [];
   schemaHandler: Schema;
 
   static of(paths: Paths, basePath: string = "") {
-    return new ClientConfigs(paths, basePath);
+    return new ClientConfigsV2(paths, basePath);
   }
 
   constructor(private paths: Paths, private basePath: string) {
