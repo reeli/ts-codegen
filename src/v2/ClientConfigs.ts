@@ -9,7 +9,7 @@ import {
   Reference,
   Response,
 } from "swagger-schema-official";
-import { compact, get, isEmpty, keys, map, pick, reduce } from "lodash";
+import { camelCase, compact, get, isEmpty, keys, map, pick, reduce } from "lodash";
 import { getRefId, getRequestURL, toCapitalCase, withRequiredName } from "src/core/utils";
 import { CustomType } from "src/core/Type";
 import { Schema } from "src/core/Schema";
@@ -21,6 +21,8 @@ type Paths = { [pathName: string]: Path };
 export const getClientConfigsV2 = (paths: Paths, basePath: string) => new ClientConfigs(paths, basePath).clientConfigs;
 
 // TODO: requestBody 是否需要向后兼容？
+// TODO: 让 method 变成全大写，get -> GET
+
 class ClientConfigs {
   clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
@@ -53,7 +55,7 @@ class ClientConfigs {
       return {
         url: getRequestURL(pathName, this.basePath),
         method,
-        operationId: operation.operationId, //camelCase(operation.operationId) TODO: add tests later, 向后兼容？
+        operationId: camelCase(operation.operationId),
         TResp: this.getResponseType(operation.responses),
         TReq: {
           ...getParamTypes(pathParams),

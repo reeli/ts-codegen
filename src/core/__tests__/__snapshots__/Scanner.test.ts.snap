@@ -1,31 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`swagger v2 should handle spec correctly 1`] = `
-"export const deleteAttachmentUsingDELETE = createRequestAction<{
+"export const deleteAttachmentUsingDelete = createRequestAction<{
   id: string;
-}>(\\"deleteAttachmentUsingDELETE\\", ({ id }) => ({ url: \`/api/test/\${id}\`, method: \\"delete\\" }));
+}>(\\"deleteAttachmentUsingDelete\\", ({ id }) => ({ url: \`/api/test/\${id}\`, method: \\"delete\\" }));
 
-export const downloadUsingGET = createRequestAction<
+export const downloadUsingGet = createRequestAction<
   {
     id: string;
   },
   IResource
->(\\"downloadUsingGET\\", ({ id }) => ({ url: \`/api/test/\${id}\`, method: \\"get\\" }));
+>(\\"downloadUsingGet\\", ({ id }) => ({ url: \`/api/test/\${id}\`, method: \\"get\\" }));
 
-export const findBookByIdUsingGET = createRequestAction<
+export const findBookByIdUsingGet = createRequestAction<
   {
     id: string;
   },
   IBookDetailVo
->(\\"findBookByIdUsingGET\\", ({ id }) => ({ url: \`/api/test/book/\${id}\`, method: \\"get\\" }));
+>(\\"findBookByIdUsingGet\\", ({ id }) => ({ url: \`/api/test/book/\${id}\`, method: \\"get\\" }));
 
-export const getDocumentByIdUsingGET = createRequestAction<
+export const getDocumentByIdUsingGet = createRequestAction<
   {
     documentId: string;
     from?: keyof typeof GetDocumentByIdUsingGetFrom;
   },
   IDocumentVo
->(\\"getDocumentByIdUsingGET\\", ({ documentId, from }) => ({
+>(\\"getDocumentByIdUsingGet\\", ({ documentId, from }) => ({
   url: \`/api/test/documents/\${documentId}/doc\`,
   method: \\"get\\",
   params: {
@@ -33,20 +33,20 @@ export const getDocumentByIdUsingGET = createRequestAction<
   },
 }));
 
-export const getHealthCheckUsingHEAD = createRequestAction<
+export const getHealthCheckUsingHead = createRequestAction<
   {
     flight_no: string;
   },
   IDocumentVo
->(\\"getHealthCheckUsingHEAD\\", ({ flight_no }) => ({ url: \`/api/test/health-check\`, method: \\"head\\" }));
+>(\\"getHealthCheckUsingHead\\", ({ flight_no }) => ({ url: \`/api/test/health-check\`, method: \\"head\\" }));
 
-export const getScheduleDetailsByDateUsingGET = createRequestAction<
+export const getScheduleDetailsByDateUsingGet = createRequestAction<
   {
     roleId?: string;
     scheduleDate: number;
   },
   IScheduleVo[]
->(\\"getScheduleDetailsByDateUsingGET\\", ({ scheduleDate, roleId }) => ({
+>(\\"getScheduleDetailsByDateUsingGet\\", ({ scheduleDate, roleId }) => ({
   url: \`/api/test/schedules\`,
   method: \\"get\\",
   params: {
@@ -55,10 +55,10 @@ export const getScheduleDetailsByDateUsingGET = createRequestAction<
   },
 }));
 
-export const getTeamListByUsingGET = createRequestAction<{
+export const getTeamListByUsingGet = createRequestAction<{
   limit?: number;
   offset?: number;
-}>(\\"getTeamListByUsingGET\\", ({ offset, limit }) => ({
+}>(\\"getTeamListByUsingGet\\", ({ offset, limit }) => ({
   url: \`/api/test/teams\`,
   method: \\"get\\",
   params: {
@@ -67,10 +67,10 @@ export const getTeamListByUsingGET = createRequestAction<{
   },
 }));
 
-export const getUserListByUsingGET = createRequestAction<{
+export const getUserListByUsingGet = createRequestAction<{
   limit?: number;
   offset?: number;
-}>(\\"getUserListByUsingGET\\", ({ offset, limit }) => ({
+}>(\\"getUserListByUsingGet\\", ({ offset, limit }) => ({
   url: \`/api/test/users\`,
   method: \\"get\\",
   params: {
@@ -79,26 +79,26 @@ export const getUserListByUsingGET = createRequestAction<{
   },
 }));
 
-export const updateBookByIdUsingPUT = createRequestAction<{
+export const updateBookByIdUsingPut = createRequestAction<{
   id: string;
   requestBody: {
     updateBookRequest: IUpdateBookRequest;
   };
-}>(\\"updateBookByIdUsingPUT\\", ({ id, requestBody }) => ({
+}>(\\"updateBookByIdUsingPut\\", ({ id, requestBody }) => ({
   url: \`/api/test/book/\${id}\`,
   method: \\"put\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
-export const uploadAttachmentUsingPOST = createRequestAction<
+export const uploadAttachmentUsingPost = createRequestAction<
   {
     requestBody: {
       attachment: File;
     };
   },
   IAttachmentBo
->(\\"uploadAttachmentUsingPOST\\", ({ requestBody }) => ({
+>(\\"uploadAttachmentUsingPost\\", ({ requestBody }) => ({
   url: \`/api/test\`,
   method: \\"post\\",
   data: requestBody,
