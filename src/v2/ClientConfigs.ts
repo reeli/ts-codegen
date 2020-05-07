@@ -10,7 +10,7 @@ import {
   Response,
 } from "swagger-schema-official";
 import { compact, get, isEmpty, keys, map, pick, reduce } from "lodash";
-import { getRefId, getRequestURL, toCapitalCase } from "src/core/utils";
+import { getRefId, getRequestURL, toCapitalCase, withRequiredName } from "src/core/utils";
 import { CustomType } from "src/core/Type";
 import { Schema } from "src/core/Schema";
 import { IClientConfig } from "src/core/types";
@@ -20,6 +20,7 @@ type Paths = { [pathName: string]: Path };
 
 export const getClientConfigsV2 = (paths: Paths, basePath: string) => new ClientConfigs(paths, basePath).clientConfigs;
 
+// TODO: requestBody 是否需要向后兼容？
 class ClientConfigs {
   clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
@@ -74,24 +75,23 @@ class ClientConfigs {
     });
   }
 
-  private getParamTypes = (_name?: string) => {
-    return (
-      params: Array<PathParameter | BodyParameter | QueryParameter | FormDataParameter>,
-    ): { [key: string]: CustomType } | undefined => {
-      if (!params) {
-        return;
-      }
-      return params.reduce((results, param) => {
-        // TODO: requestBody 是否需要向后兼容？
-        return {
-          ...results,
-          [`${param.name}${param.required ? "" : "?"}`]: this.schemaHandler.convert(
-            get(param, "schema", param),
-            `${toCapitalCase(_name)}${toCapitalCase(param.name)}`,
-          ),
-        };
-      }, {});
-    };
+  private getParamTypes = (operationId?: string) => (
+    params: Parameter[],
+  ): { [key: string]: CustomType } | undefined => {
+    if (!params) {
+      return;
+    }
+
+    return params.reduce(
+      (results, param) => ({
+        ...results,
+        [withRequiredName(param.name, param.required)]: this.schemaHandler.convert(
+          get(param, "schema", param),
+          `${toCapitalCase(operationId)}${toCapitalCase(param.name)}`,
+        ),
+      }),
+      {},
+    );
   };
 
   private getResponseType = (responses?: Operation["responses"]) => {
@@ -120,7 +120,6 @@ const getContentType = (bodyParams: BodyParameter[], formData: FormDataParameter
   return "";
 };
 
-// TODO: handle the reference later
 const pickParams = (params: Array<Parameter | Reference>) => (type: "path" | "query" | "body" | "formData") => {
   const list = map(params, (param) => {
     let data = param;
@@ -133,9 +132,8 @@ const pickParams = (params: Array<Parameter | Reference>) => (type: "path" | "qu
     if ((data as Parameter).in === type) {
       return data;
     }
-
-    return;
   });
+
   return compact(list);
 };
 

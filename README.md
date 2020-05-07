@@ -66,6 +66,8 @@ export enum FindPetsTags {
 }
 ```
 
+4. 处理 Reference 类型的 Parameter
+
 
 # Notice
 

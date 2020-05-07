@@ -133,3 +133,5 @@ export const getRefId = (str?: string): string => {
   const list = str.split("/");
   return list[list.length - 1];
 };
+
+export const withRequiredName = (name: string, required?: boolean) => `${name}${required ? "" : "?"}`;
