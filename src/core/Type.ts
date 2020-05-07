@@ -2,6 +2,7 @@ import { isEmpty, keys, map, uniqueId } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import { Schema } from "swagger-schema-official";
 import { isArray, quoteKey, toCapitalCase } from "src/core/utils";
+import {Register} from "src/core/Register";
 
 export type CustomSchema = Schema | ISchema;
 export type CustomType = Ref | Obj | Arr | Enum | OneOf | BasicType;
@@ -135,37 +136,6 @@ export class Obj extends TypeFactory {
     return handler(this.props as { [key: string]: CustomType });
   }
 }
-
-// 利用闭包持有状态（私有变量）
-export const Register = (() => {
-  const decls: { [id: string]: CustomType } = {};
-  const refs: { [id: string]: CustomType } = {};
-  const prefixes: { [id: string]: string } = {};
-
-  return {
-    setType: (id: string, type: CustomType) => {
-      decls[id] = type;
-    },
-
-    setPrefix: (id: string, prefix: string) => {
-      prefixes[id] = prefix;
-    },
-
-    setRef: (id: string) => {
-      if (refs[id]) {
-        return refs[id];
-      }
-
-      const type = new Ref(id);
-      refs[id] = type;
-
-      return type;
-    },
-    refs,
-    decls,
-    prefixes,
-  };
-})();
 
 export class Type {
   //TODO: 解决 id 重名的问题

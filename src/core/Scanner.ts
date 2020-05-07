@@ -1,5 +1,5 @@
 import { IOpenAPI, IReference } from "src/v3/OpenAPI";
-import { CustomSchema, CustomType, Enum, Ref, Register } from "src/core/Type";
+import { CustomSchema, CustomType, Enum, Ref } from "src/core/Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { getUseExtends, Schema } from "src/core/Schema";
 import { prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
@@ -7,6 +7,7 @@ import { Spec } from "swagger-schema-official";
 import { IClientConfigs } from "src/core/types";
 import { ClientConfigs } from "src";
 import { ClientConfigsV3 } from "src/v3/ClientConfigsV3";
+import {Register} from "src/core/Register";
 
 export const getDeclarationType = (schema: CustomSchema) => {
   if (schema.type === "object" || schema.properties || (schema.allOf && getUseExtends(schema.allOf))) {
