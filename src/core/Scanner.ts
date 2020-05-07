@@ -4,8 +4,8 @@ import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { Schema } from "src/core/Schema";
 import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
 import { Spec } from "swagger-schema-official";
-import { IClientConfigs } from "src/core/types";
-import { ClientConfigsV2, ClientConfigsV3 } from "src";
+import { IClientConfig } from "src/core/types";
+import { ClientConfigsV3, getClientConfigsV2 } from "src";
 import { Register } from "src/core/Register";
 
 export const getDeclarationType = (schema: CustomSchema) => {
@@ -46,8 +46,8 @@ export class Scanner {
     // TODO: handle v3 base path later
     const basePath = this.spec.basePath || "";
     this.toReusableTypes(this.spec.definitions || (this.spec as IOpenAPI)?.components?.schemas);
-    let clientConfigs: IClientConfigs[] = this.spec.swagger
-      ? new ClientConfigsV2(this.spec.paths, basePath).clientConfigs
+    let clientConfigs: IClientConfig[] = this.spec.swagger
+      ? getClientConfigsV2(this.spec.paths, basePath)
       : new ClientConfigsV3(this.spec.paths, basePath).clientConfigs;
 
     for (let name in Register.refs) {
@@ -69,7 +69,7 @@ export class Scanner {
     });
   }
 
-  private toRequest(clientConfigs: IClientConfigs[]): string {
+  private toRequest(clientConfigs: IClientConfig[]): string {
     // for (let name in Register.refs) {
     //   if (!(Register.refs[name] as Ref).alias) {
     //     (Register.refs[name] as Ref).rename(addPrefix(name));
@@ -90,7 +90,7 @@ export class Scanner {
     }
 
     return clientConfig
-      .map((v: IClientConfigs) => {
+      .map((v: IClientConfig) => {
         const TReq = !isEmpty(v.TReq) ? mapper(v.TReq as any) : "";
         const requestParamList = compact([...v.pathParams, ...v.queryParams, v.contentType ? "requestBody" : ""]);
         const requestInputs = isEmpty(requestParamList) ? "" : toRequestParams(requestParamList);

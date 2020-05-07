@@ -1,6 +1,6 @@
 import { CustomType } from "src/core/Type";
 
-export interface IClientConfigs {
+export interface IClientConfig {
   url: string;
   method: string;
   TResp: CustomType | undefined;

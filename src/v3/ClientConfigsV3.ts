@@ -1,6 +1,6 @@
 import { Schema } from "src/core/Schema";
 import { chain, filter, get, isEmpty, keys, map, pick, reduce, values, camelCase } from "lodash";
-import { IClientConfigs } from "src/core/types";
+import { IClientConfig } from "src/core/types";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
 import { CustomSchema, CustomType } from "src/core/Type";
 import { toCapitalCase } from "src";
@@ -9,7 +9,7 @@ import { toCapitalCase } from "src";
 // TODO: 2. query 不要全部 ...，而是以具体的 {[key]: value} 形式，避免外部应用一些不需要的 query
 
 export class ClientConfigsV3 {
-  clientConfigs: IClientConfigs[] = [];
+  clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
 
   static of(paths: IPaths, basePath: string = "") {
@@ -20,7 +20,7 @@ export class ClientConfigsV3 {
     this.schemaHandler = new Schema();
     this.clientConfigs = reduce(
       this.paths,
-      (configs: IClientConfigs[], path: IPathItem, pathName: string) => [
+      (configs: IClientConfig[], path: IPathItem, pathName: string) => [
         ...configs,
         ...this.buildConfig(path, pathName),
       ],

@@ -13,23 +13,25 @@ import { filter, get, isEmpty, keys, map, pick, reduce } from "lodash";
 import { getRequestURL, toCapitalCase } from "src/core/utils";
 import { CustomType } from "src/core/Type";
 import { Schema } from "src/core/Schema";
-import { IClientConfigs } from "src/core/types";
+import { IClientConfig } from "src/core/types";
 
 type Paths = { [pathName: string]: Path };
 
-export class ClientConfigsV2 {
-  clientConfigs: IClientConfigs[] = [];
+export const getClientConfigsV2 = (paths: Paths, basePath: string) => new ClientConfigs(paths, basePath).clientConfigs;
+
+class ClientConfigs {
+  clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
 
   static of(paths: Paths, basePath: string = "") {
-    return new ClientConfigsV2(paths, basePath);
+    return new ClientConfigs(paths, basePath);
   }
 
   constructor(private paths: Paths, private basePath: string) {
     this.schemaHandler = new Schema();
     this.clientConfigs = reduce(
       this.paths,
-      (configs: IClientConfigs[], path: Path, pathName: string) => [...configs, ...this.buildConfig(path, pathName)],
+      (configs: IClientConfig[], path: Path, pathName: string) => [...configs, ...this.buildConfig(path, pathName)],
       [],
     );
   }
