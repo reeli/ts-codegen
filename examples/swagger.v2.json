@@ -460,8 +460,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK",
+          "206": {
+            "description": "partial content",
             "schema": {
               "$ref": "#/definitions/DocumentVO"
             }

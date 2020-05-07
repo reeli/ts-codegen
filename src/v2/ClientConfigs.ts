@@ -11,7 +11,7 @@ import {
 } from "swagger-schema-official";
 import { camelCase, compact, get, isEmpty, keys, map, pick, reduce } from "lodash";
 import { getRefId, getRequestURL, toCapitalCase, withRequiredName } from "src/core/utils";
-import { CustomType } from "src/core/Type";
+import { CustomSchema, CustomType } from "src/core/Type";
 import { Schema } from "src/core/Schema";
 import { IClientConfig } from "src/core/types";
 import { Register } from "src/core/Register";
@@ -100,15 +100,24 @@ class ClientConfigs {
     if (!responses) {
       return;
     }
-    const response200 = get(responses, "200");
-    const response201 = get(responses, "201");
+    const resp = keys(responses)
+      .map((code) => {
+        const httpCode = Number(code);
+        if (
+          httpCode >= 200 &&
+          httpCode < 300 &&
+          ((responses[code] as Reference).$ref || (responses[code] as Response).schema)
+        ) {
+          return responses[code];
+        }
+      })
+      .filter((v) => !isEmpty(v))[0];
 
-    if ((response200 as Reference)?.$ref || (response201 as Reference)?.$ref) {
-      return this.schemaHandler.convert(response200 || response201);
+    if ((resp as Reference)?.$ref) {
+      return this.schemaHandler.convert(resp as CustomSchema);
     }
 
-    const v = (response200 as Response)?.schema || (response201 as Response)?.schema;
-    return v ? this.schemaHandler.convert(v) : undefined;
+    return (resp as Response)?.schema ? this.schemaHandler.convert((resp as Response).schema!) : undefined;
   };
 }
 
