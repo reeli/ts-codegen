@@ -1,10 +1,7 @@
-import { Schema } from "src/core/Schema";
-import { chain, get, isEmpty, keys, map, reduce, values } from "lodash";
+import { get, isEmpty, keys, map, reduce, values } from "lodash";
 import { CustomParameters, CustomSchema, IClientConfig } from "src/core/types";
-import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
-import { CustomType } from "src/core/Type";
-import { toCapitalCase } from "src";
-import { getOperationId, getOperations, getRequestURL, pickParams } from "src/core/ClientConfigs";
+import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse } from "src/v3/OpenAPI";
+import { ClientConfigs, getOperationId, getOperations, getRequestURL, pickParams } from "src/core/ClientConfigs";
 
 // TODO: 解决向后兼容的问题，比如（requestBody，method, operationId, enum 等等）
 // TODO: 让 method 变成全大写，get -> GET
@@ -14,12 +11,9 @@ import { getOperationId, getOperations, getRequestURL, pickParams } from "src/co
 export const getClientConfigV3 = (paths: IPaths, basePath: string = "") =>
   new ClientConfigsV3(paths, basePath).clientConfigs;
 
-class ClientConfigsV3 {
-  clientConfigs: IClientConfig[] = [];
-  schemaHandler: Schema;
-
+class ClientConfigsV3 extends ClientConfigs {
   constructor(private paths: IPaths, private basePath: string) {
-    this.schemaHandler = new Schema();
+    super();
     this.clientConfigs = reduce(
       this.paths,
       (configs: IClientConfig[], path: IPathItem, pathName: string) => [
@@ -35,8 +29,8 @@ class ClientConfigsV3 {
     return keys(operations).map((method) => {
       const operation = operations[method] as IOperation;
       const pickParamsByType = pickParams(operation.parameters as CustomParameters);
-      const pathParams = pickParamsByType("path") as Array<TParameter | IReference>;
-      const queryParams = pickParamsByType("query") as Array<TParameter | IReference>;
+      const pathParams = pickParamsByType("path");
+      const queryParams = pickParamsByType("query");
       const getParamTypes = this.getParamTypes(operation.operationId);
       const getNames = (list: any[]) => (isEmpty(list) ? [] : map(list, (item) => item.name));
 
@@ -73,37 +67,6 @@ class ClientConfigsV3 {
       requestBody: this.schemaHandler.convert(schema as CustomSchema),
     };
   }
-
-  private getParamTypes = (_name?: string) => {
-    return (params?: Array<TParameter | IReference>): { [key: string]: CustomType } | undefined => {
-      if (!params) {
-        return;
-      }
-      return params.reduce((results, param) => {
-        //TODO: will handle reference here
-
-        return {
-          ...results,
-          [`${(param as TParameter).name}${(param as TParameter).required ? "" : "?"}`]: this.schemaHandler.convert(
-            get(param, "schema", param),
-            `${toCapitalCase(_name)}${toCapitalCase((param as TParameter).name)}`,
-          ),
-        };
-      }, {});
-    };
-  };
-
-  getUrl(basePath: string, pathName: string) {
-    const path = chain(pathName)
-      .split("/")
-      .map((p) => (this.isPathParam(p) ? `$${p}` : p))
-      .join("/")
-      .value();
-
-    return `${basePath}${path === "/" && !!basePath ? "" : path}`;
-  }
-
-  isPathParam = (str: string) => str.startsWith("{");
 
   private getResponseType = (responses: IOperation["responses"]) => {
     const response200 = values(get(responses, "200.content"))[0];

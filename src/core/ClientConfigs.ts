@@ -1,7 +1,16 @@
-import { camelCase, chain, compact, map, pick } from "lodash";
-import { getRefId } from "src/core/utils";
+import { camelCase, chain, compact, get, map, pick } from "lodash";
+import { getRefId, toCapitalCase, withRequiredName } from "src/core/utils";
 import { Register } from "src/core/Register";
-import { CustomOperation, CustomParameter, CustomParameters, CustomPath, CustomReference } from "src/core/types";
+import {
+  CustomOperation,
+  CustomParameter,
+  CustomParameters,
+  CustomPath,
+  CustomReference,
+  IClientConfig,
+} from "src/core/types";
+import { Schema } from "src/core/Schema";
+import { CustomType } from "src/core/Type";
 
 export const getOperations = (path: CustomPath) =>
   pick(path, ["get", "post", "put", "delete", "patch", "head"]) as { [method: string]: CustomOperation };
@@ -20,7 +29,7 @@ export const pickParams = (params?: CustomParameters) => (type: "path" | "query"
     }
   });
 
-  return compact(list);
+  return compact(list) as CustomParameter[];
 };
 
 export const getRequestURL = (pathName: string, basePath?: string) => {
@@ -35,3 +44,31 @@ export const getRequestURL = (pathName: string, basePath?: string) => {
 };
 
 export const getOperationId = (operationId?: string) => camelCase(operationId);
+
+export class ClientConfigs {
+  clientConfigs: IClientConfig[] = [];
+  schemaHandler: Schema;
+
+  constructor() {
+    this.schemaHandler = new Schema();
+  }
+
+  getParamTypes = (operationId?: string) => (
+    params: Array<CustomParameter>,
+  ): { [key: string]: CustomType } | undefined => {
+    if (!params) {
+      return;
+    }
+
+    return params.reduce(
+      (results, param) => ({
+        ...results,
+        [withRequiredName(param.name, param.required)]: this.schemaHandler.convert(
+          get(param, "schema", param),
+          `${toCapitalCase(operationId)}${toCapitalCase(param.name)}`,
+        ),
+      }),
+      {},
+    );
+  };
+}
