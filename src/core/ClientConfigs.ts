@@ -25,13 +25,13 @@ export const pickParams = (params?: CustomParameters) => (type: "path" | "query"
 
 export const getRequestURL = (pathName: string, basePath?: string) => {
   const isPathParam = (str: string) => str.startsWith("{");
-  const resolvedPathName = chain(pathName)
+  const path = chain(pathName)
     .split("/")
     .map((p) => (isPathParam(p) ? `$${p}` : p))
     .join("/")
     .value();
 
-  return `${basePath}${resolvedPathName === "/" && !!basePath ? "" : resolvedPathName}`;
+  return `${basePath}${path === "/" && !!basePath ? "" : path}`;
 };
 
 export const getOperationId = (operationId?: string) => camelCase(operationId);

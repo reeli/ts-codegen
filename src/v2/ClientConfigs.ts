@@ -20,16 +20,9 @@ type Paths = { [pathName: string]: Path };
 
 export const getClientConfigsV2 = (paths: Paths, basePath: string) => new ClientConfigs(paths, basePath).clientConfigs;
 
-// TODO: 解决向后兼容的问题，比如（requestBody，method, operationId, enum 等等）
-// TODO: 让 method 变成全大写，get -> GET
-
 class ClientConfigs {
   clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
-
-  static of(paths: Paths, basePath: string = "") {
-    return new ClientConfigs(paths, basePath);
-  }
 
   constructor(private paths: Paths, private basePath: string) {
     this.schemaHandler = new Schema();

@@ -1,17 +1,20 @@
 import { Schema } from "src/core/Schema";
-import { camelCase, chain, filter, get, isEmpty, keys, map, pick, reduce, values } from "lodash";
-import { CustomSchema, IClientConfig } from "src/core/types";
+import { chain, get, isEmpty, keys, map, reduce, values } from "lodash";
+import { CustomParameters, CustomSchema, IClientConfig } from "src/core/types";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
 import { CustomType } from "src/core/Type";
 import { toCapitalCase } from "src";
+import { getOperationId, getOperations, getRequestURL, pickParams } from "src/core/ClientConfigs";
 
+// TODO: 解决向后兼容的问题，比如（requestBody，method, operationId, enum 等等）
+// TODO: 让 method 变成全大写，get -> GET
 // TODO: 1. 将 inline 的 requestParams 和 requestBody 抽成单独的 interface，方便外面使用
 // TODO: 2. query 不要全部 ...，而是以具体的 {[key]: value} 形式，避免外部应用一些不需要的 query
 
 export const getClientConfigV3 = (paths: IPaths, basePath: string = "") =>
   new ClientConfigs(paths, basePath).clientConfigs;
 
-export class ClientConfigs {
+class ClientConfigs {
   clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
 
@@ -28,21 +31,19 @@ export class ClientConfigs {
   }
 
   buildConfig(path: IPathItem, pathName: string) {
-    const operations = pick(path, ["get", "post", "put", "delete", "patch", "head"]) as { [k: string]: IOperation };
-
+    const operations = getOperations(path);
     return keys(operations).map((method) => {
-      const operation = operations[method];
-      const pickParamsByType = this.pickParams(operation.parameters);
+      const operation = operations[method] as IOperation;
+      const pickParamsByType = pickParams(operation.parameters as CustomParameters);
       const pathParams = pickParamsByType("path") as Array<TParameter | IReference>;
       const queryParams = pickParamsByType("query") as Array<TParameter | IReference>;
       const getParamTypes = this.getParamTypes(operation.operationId);
       const getNames = (list: any[]) => (isEmpty(list) ? [] : map(list, (item) => item.name));
 
       return {
-        url: this.getUrl(this.basePath, pathName),
+        url: getRequestURL(pathName, this.basePath),
         method,
-        // TODO: 给下面的这种 case 加测试
-        operationId: camelCase(operation.operationId), //camelCase(operation.operationId) TODO: add tests later, 向后兼容？
+        operationId: getOperationId(operation.operationId),
         TResp: this.getResponseType(operation.responses),
         TReq: {
           ...getParamTypes(pathParams),
@@ -124,18 +125,5 @@ export class ClientConfigs {
 
     // TODO: handle other content type later
     return keys((requestBody as IRequestBody).content)[0];
-  };
-
-  pickParams = (params?: Array<TParameter | IReference>) => (type: "path" | "query" | "body" | "formData") => {
-    if (!params) {
-      return;
-    }
-    return filter(params, (param) => {
-      // TODO: will handle $ref later
-      if (param.$ref) {
-        return;
-      }
-      return (param as TParameter).in === type;
-    });
   };
 }
