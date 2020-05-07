@@ -125,3 +125,11 @@ export const getRequestURL = (pathName: string, basePath?: string) => {
 
 export const getUseExtends = (schemas: CustomSchema) =>
   !!find(schemas, (schema) => schema.$ref) && !!find(schemas, (schema) => schema.type == "object");
+
+export const getRefId = (str?: string): string => {
+  if (!str) {
+    return "";
+  }
+  const list = str.split("/");
+  return list[list.length - 1];
+};

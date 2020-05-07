@@ -1,9 +1,9 @@
-import { IOpenAPI, IReference } from "src/v3/OpenAPI";
+import { IComponents, IOpenAPI, IReference } from "src/v3/OpenAPI";
 import { CustomSchema, CustomType, Enum, Ref } from "src/core/Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { Schema } from "src/core/Schema";
 import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
-import { Spec } from "swagger-schema-official";
+import { Parameter, Spec } from "swagger-schema-official";
 import { IClientConfig } from "src/core/types";
 import { ClientConfigsV3, getClientConfigsV2 } from "src";
 import { Register } from "src/core/Register";
@@ -40,12 +40,17 @@ export const getOutput = (): string => {
 type KType = { [key: string]: CustomType };
 
 export class Scanner {
-  constructor(private spec: Spec | IOpenAPI) {}
+  schemaHandler: Schema;
+
+  constructor(private spec: Spec | IOpenAPI) {
+    this.schemaHandler = new Schema();
+  }
 
   public scan(): string {
     // TODO: handle v3 base path later
     const basePath = this.spec.basePath || "";
     this.toReusableTypes(this.spec.definitions || (this.spec as IOpenAPI)?.components?.schemas);
+    this.handleParameters(this.spec.parameters || (this.spec as IOpenAPI)?.components?.parameters);
     let clientConfigs: IClientConfig[] = this.spec.swagger
       ? getClientConfigsV2(this.spec.paths, basePath)
       : new ClientConfigsV3(this.spec.paths, basePath).clientConfigs;
@@ -58,11 +63,9 @@ export class Scanner {
   }
 
   private toReusableTypes(schemas: { [k: string]: CustomSchema | IReference }) {
-    const schemaHandler = new Schema();
-
     return keys(schemas).map((k) => {
       const name = toCapitalCase(k);
-      const type = schemaHandler.convert(schemas[k], name);
+      const type = this.schemaHandler.convert(schemas[k], name);
       Register.setType(name, type);
       Register.setPrefix(name, getDeclarationType(schemas[k]));
       return type;
@@ -114,6 +117,17 @@ export const ${v.operationId} = createRequestAction${types ? "<" + types + ">" :
 `;
       })
       .join("\n\n");
+  }
+
+  handleParameters(parameters: Spec["parameters"] | IComponents["parameters"]) {
+    if (!parameters) {
+      return;
+    }
+
+    keys(parameters).forEach((key) => {
+      // TODO: resolve parameters[key] later
+      Register.setParameter(key, parameters[key] as Parameter);
+    });
   }
 }
 

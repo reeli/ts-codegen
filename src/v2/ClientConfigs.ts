@@ -9,11 +9,12 @@ import {
   Reference,
   Response,
 } from "swagger-schema-official";
-import { filter, get, isEmpty, keys, map, pick, reduce } from "lodash";
-import { getRequestURL, toCapitalCase } from "src/core/utils";
+import { compact, get, isEmpty, keys, map, pick, reduce } from "lodash";
+import { getRefId, getRequestURL, toCapitalCase } from "src/core/utils";
 import { CustomType } from "src/core/Type";
 import { Schema } from "src/core/Schema";
 import { IClientConfig } from "src/core/types";
+import { Register } from "src/core/Register";
 
 type Paths = { [pathName: string]: Path };
 
@@ -120,7 +121,22 @@ const getContentType = (bodyParams: BodyParameter[], formData: FormDataParameter
 };
 
 // TODO: handle the reference later
-const pickParams = (params: Array<Parameter | Reference>) => (type: "path" | "query" | "body" | "formData") =>
-  filter(params, (param) => (param as Parameter).in === type);
+const pickParams = (params: Array<Parameter | Reference>) => (type: "path" | "query" | "body" | "formData") => {
+  const list = map(params, (param) => {
+    let data = param;
+
+    if ((param as Reference).$ref) {
+      const name = getRefId((param as Reference).$ref);
+      data = Register.parameters[name];
+    }
+
+    if ((data as Parameter).in === type) {
+      return data;
+    }
+
+    return;
+  });
+  return compact(list);
+};
 
 const getParamsNames = (params: Parameter[]) => (isEmpty(params) ? [] : map(params, (param) => param.name));

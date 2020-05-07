@@ -1,8 +1,8 @@
 import { isEmpty, keys, map, uniqueId } from "lodash";
 import { ISchema } from "src/v3/OpenAPI";
 import { Schema } from "swagger-schema-official";
-import { isArray, quoteKey, toCapitalCase } from "src/core/utils";
-import {Register} from "src/core/Register";
+import { getRefId, isArray, quoteKey, toCapitalCase } from "src/core/utils";
+import { Register } from "src/core/Register";
 
 export type CustomSchema = Schema | ISchema;
 export type CustomType = Ref | Obj | Arr | Enum | OneOf | BasicType;
@@ -67,14 +67,6 @@ export class Arr extends TypeFactory {
     return `${(this.data as CustomType).toType()}[]`;
   }
 }
-
-const getRefId = (str?: string): string => {
-  if (!str) {
-    return "";
-  }
-  const list = str.split("/");
-  return list[list.length - 1];
-};
 
 export class Ref extends TypeFactory {
   alias: string | undefined;

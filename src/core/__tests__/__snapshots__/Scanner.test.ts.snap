@@ -33,6 +33,13 @@ export const getDocumentByIdUsingGET = createRequestAction<
   },
 }));
 
+export const getHealthCheckUsingHEAD = createRequestAction<
+  {
+    flight_no: string;
+  },
+  IDocumentVo
+>(\\"getHealthCheckUsingHEAD\\", ({ flight_no }) => ({ url: \`/api/test/health-check\`, method: \\"head\\" }));
+
 export const getScheduleDetailsByDateUsingGET = createRequestAction<
   {
     roleId?: string;
@@ -45,6 +52,30 @@ export const getScheduleDetailsByDateUsingGET = createRequestAction<
   params: {
     scheduleDate,
     roleId,
+  },
+}));
+
+export const getTeamListByUsingGET = createRequestAction<{
+  limit?: number;
+  offset?: number;
+}>(\\"getTeamListByUsingGET\\", ({ offset, limit }) => ({
+  url: \`/api/test/teams\`,
+  method: \\"get\\",
+  params: {
+    offset,
+    limit,
+  },
+}));
+
+export const getUserListByUsingGET = createRequestAction<{
+  limit?: number;
+  offset?: number;
+}>(\\"getUserListByUsingGET\\", ({ offset, limit }) => ({
+  url: \`/api/test/users\`,
+  method: \\"get\\",
+  params: {
+    offset,
+    limit,
   },
 }));
 
