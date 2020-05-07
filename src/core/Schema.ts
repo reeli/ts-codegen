@@ -1,10 +1,7 @@
-import { isArray, toCapitalCase } from "src/core/utils";
-import { find, forEach, isEmpty, map, reduce } from "lodash";
+import {getUseExtends, isArray, toCapitalCase} from "src/core/utils";
+import { forEach, isEmpty, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/v3/OpenAPI";
 import { CustomSchema, CustomType, Type } from "src/core/Type";
-
-export const getUseExtends = (schemas: CustomSchema) =>
-  !!find(schemas, (schema) => schema.$ref) && !!find(schemas, (schema) => schema.type == "object");
 
 export class Schema {
   convert(schema: CustomSchema, id?: string): CustomType {

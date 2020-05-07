@@ -1,6 +1,7 @@
-import { camelCase, chain, Dictionary, forEach, indexOf, map, replace, some, trimEnd } from "lodash";
+import { camelCase, chain, Dictionary, find, forEach, indexOf, map, replace, some, trimEnd } from "lodash";
 import prettier from "prettier";
 import { ERROR_MESSAGES } from "src/core/constants";
+import { CustomSchema } from "src/core/Type";
 
 export const toCapitalCase = (str?: string): string => {
   if (!str) {
@@ -121,3 +122,6 @@ export const getRequestURL = (pathName: string, basePath?: string) => {
 
   return `${basePath}${resolvedPathName === "/" && !!basePath ? "" : resolvedPathName}`;
 };
+
+export const getUseExtends = (schemas: CustomSchema) =>
+  !!find(schemas, (schema) => schema.$ref) && !!find(schemas, (schema) => schema.type == "object");
