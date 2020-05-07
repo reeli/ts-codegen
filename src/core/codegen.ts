@@ -8,12 +8,7 @@ import { IOpenAPI } from "src/v3/OpenAPI";
 import { Spec } from "swagger-schema-official";
 import { Scanner } from "src/core/Scanner";
 
-export const codegen = (spec: IOpenAPI | Spec): string => {
-  if (!spec) {
-    return "";
-  }
-  return new Scanner(spec as Spec).scan();
-};
+export const codegen = (spec: IOpenAPI | Spec): string => (spec ? new Scanner(spec as Spec).scan() : "");
 
 const getFilename = (basePath?: string) => (basePath ? `./${basePath.split("/").join(".").slice(1)}` : "./api.client");
 

@@ -5,6 +5,9 @@ import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TPa
 import { CustomSchema, CustomType } from "src/core/Type";
 import { toCapitalCase } from "src";
 
+// TODO: 1. 将 inline 的 requestParams 和 requestBody 抽成单独的 interface，方便外面使用
+// TODO: 2. query 不要全部 ...，而是以具体的 {[key]: value} 形式，避免外部应用一些不需要的 query
+
 export class ClientConfigsV3 {
   clientConfigs: IClientConfigs[] = [];
   schemaHandler: Schema;
