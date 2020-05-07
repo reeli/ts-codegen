@@ -1,7 +1,8 @@
 import {getUseExtends, isArray, toCapitalCase} from "src/core/utils";
 import { forEach, isEmpty, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/v3/OpenAPI";
-import { CustomSchema, CustomType, Type } from "src/core/Type";
+import { CustomType, Type } from "src/core/Type";
+import { CustomSchema } from "src/core/types";
 
 export class Schema {
   convert(schema: CustomSchema, id?: string): CustomType {

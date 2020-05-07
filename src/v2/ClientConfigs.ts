@@ -9,18 +9,18 @@ import {
   Reference,
   Response,
 } from "swagger-schema-official";
-import { camelCase, compact, get, isEmpty, keys, map, pick, reduce } from "lodash";
-import { getRefId, getRequestURL, toCapitalCase, withRequiredName } from "src/core/utils";
-import { CustomSchema, CustomType } from "src/core/Type";
+import { get, isEmpty, keys, map, reduce } from "lodash";
+import { toCapitalCase, withRequiredName } from "src/core/utils";
+import { CustomType } from "src/core/Type";
 import { Schema } from "src/core/Schema";
-import { IClientConfig } from "src/core/types";
-import { Register } from "src/core/Register";
+import { CustomParameters, CustomSchema, IClientConfig } from "src/core/types";
+import { getOperationId, getOperations, getRequestURL, pickParams } from "src/core/ClientConfigs";
 
 type Paths = { [pathName: string]: Path };
 
 export const getClientConfigsV2 = (paths: Paths, basePath: string) => new ClientConfigs(paths, basePath).clientConfigs;
 
-// TODO: requestBody 是否需要向后兼容？
+// TODO: 解决向后兼容的问题，比如（requestBody，method, operationId, enum 等等）
 // TODO: 让 method 变成全大写，get -> GET
 
 class ClientConfigs {
@@ -41,33 +41,30 @@ class ClientConfigs {
   }
 
   private buildConfig(path: Path, pathName: string) {
-    const operations = pick(path, ["get", "post", "put", "delete", "patch", "head"]) as { [method: string]: Operation };
+    const operations = getOperations(path);
 
     return keys(operations).map((method) => {
       const operation = operations[method];
-      const pickParamsByType = pickParams(operation.parameters as Parameter[]);
+      const pickParamsByType = pickParams(operation.parameters as CustomParameters);
       const pathParams = pickParamsByType("path") as PathParameter[];
       const queryParams = pickParamsByType("query") as QueryParameter[];
       const bodyParams = pickParamsByType("body") as BodyParameter[];
       const formDataParams = pickParamsByType("formData") as FormDataParameter[];
       const getParamTypes = this.getParamTypes(operation.operationId);
+      const requestBodyTypes = {
+        ...getParamTypes(bodyParams),
+        ...getParamTypes(formDataParams),
+      };
 
       return {
         url: getRequestURL(pathName, this.basePath),
         method,
-        operationId: camelCase(operation.operationId),
+        operationId: getOperationId(operation.operationId),
         TResp: this.getResponseType(operation.responses),
         TReq: {
           ...getParamTypes(pathParams),
           ...getParamTypes(queryParams),
-          ...(!isEmpty(bodyParams) || !isEmpty(formDataParams)
-            ? {
-                requestBody: {
-                  ...getParamTypes(bodyParams),
-                  ...getParamTypes(formDataParams),
-                } as any, // TODO: remove any later
-              }
-            : undefined),
+          ...(!isEmpty(requestBodyTypes) && { requestBody: requestBodyTypes }),
         },
         pathParams: getParamsNames(pathParams),
         queryParams: getParamsNames(queryParams),
@@ -129,23 +126,6 @@ const getContentType = (bodyParams: BodyParameter[], formData: FormDataParameter
     return "multipart/form-data";
   }
   return "";
-};
-
-const pickParams = (params: Array<Parameter | Reference>) => (type: "path" | "query" | "body" | "formData") => {
-  const list = map(params, (param) => {
-    let data = param;
-
-    if ((param as Reference).$ref) {
-      const name = getRefId((param as Reference).$ref);
-      data = Register.parameters[name];
-    }
-
-    if ((data as Parameter).in === type) {
-      return data;
-    }
-  });
-
-  return compact(list);
 };
 
 const getParamsNames = (params: Parameter[]) => (isEmpty(params) ? [] : map(params, (param) => param.name));

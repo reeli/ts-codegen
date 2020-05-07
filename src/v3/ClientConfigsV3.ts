@@ -1,8 +1,8 @@
 import { Schema } from "src/core/Schema";
-import { chain, filter, get, isEmpty, keys, map, pick, reduce, values, camelCase } from "lodash";
-import { IClientConfig } from "src/core/types";
+import { camelCase, chain, filter, get, isEmpty, keys, map, pick, reduce, values } from "lodash";
+import { CustomSchema, IClientConfig } from "src/core/types";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse, TParameter } from "src/v3/OpenAPI";
-import { CustomSchema, CustomType } from "src/core/Type";
+import { CustomType } from "src/core/Type";
 import { toCapitalCase } from "src";
 
 // TODO: 1. 将 inline 的 requestParams 和 requestBody 抽成单独的 interface，方便外面使用

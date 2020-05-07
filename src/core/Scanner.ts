@@ -1,10 +1,10 @@
 import { IComponents, IOpenAPI, IReference } from "src/v3/OpenAPI";
-import { CustomSchema, CustomType, Enum, Ref } from "src/core/Type";
+import { CustomType, Enum, Ref } from "src/core/Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { Schema } from "src/core/Schema";
 import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
 import { Parameter, Spec } from "swagger-schema-official";
-import { IClientConfig } from "src/core/types";
+import { CustomSchema, IClientConfig } from "src/core/types";
 import { ClientConfigsV3, getClientConfigsV2 } from "src";
 import { Register } from "src/core/Register";
 

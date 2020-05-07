@@ -1,10 +1,7 @@
 import { isEmpty, keys, map, uniqueId } from "lodash";
-import { ISchema } from "src/v3/OpenAPI";
-import { Schema } from "swagger-schema-official";
 import { getRefId, isArray, quoteKey, toCapitalCase } from "src/core/utils";
 import { Register } from "src/core/Register";
 
-export type CustomSchema = Schema | ISchema;
 export type CustomType = Ref | Obj | Arr | Enum | OneOf | BasicType;
 
 abstract class TypeFactory {

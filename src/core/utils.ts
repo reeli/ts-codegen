@@ -1,7 +1,7 @@
-import { camelCase, chain, Dictionary, find, forEach, indexOf, map, replace, some, trimEnd } from "lodash";
+import { camelCase, Dictionary, find, forEach, indexOf, map, replace, some, trimEnd } from "lodash";
 import prettier from "prettier";
 import { ERROR_MESSAGES } from "src/core/constants";
-import { CustomSchema } from "src/core/Type";
+import { CustomSchema } from "src/core/types";
 
 export const toCapitalCase = (str?: string): string => {
   if (!str) {
@@ -111,17 +111,6 @@ export const setDeprecated = (operationId: string = "") =>
   * @deprecated ${operationId}
   */
   `;
-
-export const getRequestURL = (pathName: string, basePath?: string) => {
-  const isPathParam = (str: string) => str.startsWith("{");
-  const resolvedPathName = chain(pathName)
-    .split("/")
-    .map((p) => (isPathParam(p) ? `$${p}` : p))
-    .join("/")
-    .value();
-
-  return `${basePath}${resolvedPathName === "/" && !!basePath ? "" : resolvedPathName}`;
-};
 
 export const getUseExtends = (schemas: CustomSchema) =>
   !!find(schemas, (schema) => schema.$ref) && !!find(schemas, (schema) => schema.type == "object");
