@@ -124,3 +124,14 @@ export const getRefId = (str?: string): string => {
 };
 
 export const withRequiredName = (name: string, required?: boolean) => `${name}${required ? "" : "?"}`;
+
+export const resolveRef = (str?: string) => {
+  if (!str) {
+    return {};
+  }
+  const list = str.replace(/^#\//, "").split("/");
+  return {
+    type: list[0],
+    name: list[list.length - 1],
+  };
+};

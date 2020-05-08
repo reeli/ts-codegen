@@ -1,6 +1,7 @@
 // 利用闭包持有状态（私有变量）
 import { CustomType, Ref } from "src/core/Type";
 import { Parameter } from "swagger-schema-official";
+import { IReference, IResponse } from "src/v3/OpenAPI";
 
 export const Register = (() => {
   const decls: { [id: string]: CustomType } = {};
@@ -8,6 +9,9 @@ export const Register = (() => {
   const prefixes: { [id: string]: string } = {};
   const parameters: {
     [id: string]: Parameter;
+  } = {};
+  const responses: {
+    [id: string]: Response | IResponse | IReference;
   } = {};
 
   return {
@@ -21,6 +25,10 @@ export const Register = (() => {
 
     setParameter: (id: string, parameter: Parameter) => {
       parameters[id] = parameter;
+    },
+
+    setResponses: (id: string, response: Response | IResponse | IReference) => {
+      responses[id] = response;
     },
 
     setRef: (id: string) => {
@@ -37,5 +45,6 @@ export const Register = (() => {
     decls,
     prefixes,
     parameters,
+    responses,
   };
 })();

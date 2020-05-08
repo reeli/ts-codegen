@@ -1,7 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`swagger v2 should handle spec correctly 1`] = `
-"export const deleteAttachmentUsingDelete = createRequestAction<{
+"export const createItem = createRequestAction<
+  {
+    requestBody: {
+      item?: IItem;
+    };
+  },
+  IMessage
+>(\\"createItem\\", ({ requestBody }) => ({
+  url: \`/api/test/items\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const deleteAttachmentUsingDelete = createRequestAction<{
   id: string;
 }>(\\"deleteAttachmentUsingDelete\\", ({ id }) => ({ url: \`/api/test/\${id}\`, method: \\"delete\\" }));
 
@@ -39,6 +53,23 @@ export const getHealthCheckUsingHead = createRequestAction<
   },
   IDocumentVo
 >(\\"getHealthCheckUsingHead\\", ({ flight_no }) => ({ url: \`/api/test/health-check\`, method: \\"head\\" }));
+
+export const getItems = createRequestAction<
+  {
+    limit?: number;
+    page?: number;
+    sort?: string[];
+  },
+  TItems
+>(\\"getItems\\", ({ page, limit, sort }) => ({
+  url: \`/api/test/items\`,
+  method: \\"get\\",
+  params: {
+    page,
+    limit,
+    sort,
+  },
+}));
 
 export const getScheduleDetailsByDateUsingGet = createRequestAction<
   {
@@ -143,9 +174,17 @@ export interface IDocumentVo {
   title?: string;
 }
 
+export interface IError {
+  code?: number;
+  field?: string;
+  message?: string;
+}
+
 export interface IErrorInfo {
   errorMessage?: string;
 }
+
+export type TErrors = IError[];
 
 export interface IFile {
   absolute?: boolean;
@@ -176,6 +215,19 @@ export enum GetDocumentByIdUsingGetFrom {
 
 export interface IInputStream {
   [key: string]: any;
+}
+
+export interface IItem {
+  color?: string;
+  id?: string;
+  name?: string;
+  price?: string;
+}
+
+export type TItems = IItem[];
+
+export interface IMessage {
+  message?: string;
 }
 
 export interface IResource {
@@ -246,6 +298,11 @@ export interface IUrl {
 
 export interface IUrlStreamHandler {
   [key: string]: any;
+}
+
+export interface IValidationError {
+  errors?: TErrors;
+  message?: string;
 }
 "
 `;
@@ -482,9 +539,17 @@ export interface IDocumentVo {
   title?: string;
 }
 
+export interface IError {
+  code?: number;
+  field?: string;
+  message?: string;
+}
+
 export interface IErrorInfo {
   errorMessage?: string;
 }
+
+export type TErrors = IError[];
 
 export interface IFile {
   absolute?: boolean;
@@ -515,6 +580,19 @@ export enum GetDocumentByIdUsingGetFrom {
 
 export interface IInputStream {
   [key: string]: any;
+}
+
+export interface IItem {
+  color?: string;
+  id?: string;
+  name?: string;
+  price?: string;
+}
+
+export type TItems = IItem[];
+
+export interface IMessage {
+  message?: string;
 }
 
 export interface IOrder {
@@ -631,6 +709,11 @@ export interface IUser {
   phone?: string;
   userStatus?: number;
   username?: string;
+}
+
+export interface IValidationError {
+  errors?: TErrors;
+  message?: string;
 }
 "
 `;
@@ -754,6 +837,8 @@ export interface IErrorInfo {
   errorMessage?: string;
 }
 
+export type TErrors = IError[];
+
 export interface IFile {
   absolute?: boolean;
   absoluteFile?: IFile;
@@ -789,6 +874,19 @@ export enum GetDocumentByIdUsingGetFrom {
 
 export interface IInputStream {
   [key: string]: any;
+}
+
+export interface IItem {
+  color?: string;
+  id?: string;
+  name?: string;
+  price?: string;
+}
+
+export type TItems = IItem[];
+
+export interface IMessage {
+  message?: string;
 }
 
 export interface INewPet {
@@ -908,6 +1006,11 @@ export interface IUser {
   phone?: string;
   userStatus?: number;
   username?: string;
+}
+
+export interface IValidationError {
+  errors?: TErrors;
+  message?: string;
 }
 "
 `;
@@ -1047,6 +1150,8 @@ export interface IErrorInfo {
   errorMessage?: string;
 }
 
+export type TErrors = IError[];
+
 export interface IFile {
   absolute?: boolean;
   absoluteFile?: IFile;
@@ -1089,6 +1194,19 @@ export enum GetDocumentByIdUsingGetFrom {
 
 export interface IInputStream {
   [key: string]: any;
+}
+
+export interface IItem {
+  color?: string;
+  id?: string;
+  name?: string;
+  price?: string;
+}
+
+export type TItems = IItem[];
+
+export interface IMessage {
+  message?: string;
 }
 
 export interface INewPet {
@@ -1211,6 +1329,11 @@ export interface IUser {
   phone?: string;
   userStatus?: number;
   username?: string;
+}
+
+export interface IValidationError {
+  errors?: TErrors;
+  message?: string;
 }
 "
 `;

@@ -546,6 +546,105 @@
           }
         }
       }
+    },
+    "/items": {
+      "x-swagger-router-controller": "ItemController",
+      "get": {
+        "summary": "Returns a list of items",
+        "operationId": "getItems",
+        "parameters": [
+          {
+            "$ref": "#/parameters/page"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/sort"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Items"
+            },
+            "headers": {
+              "Pagination-Count": {
+                "description": "Total number of items",
+                "type": "integer"
+              },
+              "Pagination-Page": {
+                "description": "Current page number",
+                "type": "integer"
+              },
+              "Pagination-Limit": {
+                "description": "Number of returned items",
+                "type": "integer"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/401Unauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/403Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/404NotFound"
+          },
+          "429": {
+            "$ref": "#/responses/429TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/responses/500InternalServerError"
+          },
+          "503": {
+            "$ref": "#/responses/503ServiceUnavailable"
+          }
+        }
+      },
+      "post": {
+        "summary": "Creates a new item",
+        "operationId": "createItem",
+        "parameters": [
+          {
+            "$ref": "#/parameters/item"
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/SuccessMessage"
+          },
+          "400": {
+            "$ref": "#/responses/400BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/401Unauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/403Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/404NotFound"
+          },
+          "409": {
+            "$ref": "#/responses/409Conflict"
+          },
+          "429": {
+            "$ref": "#/responses/429TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/responses/500InternalServerError"
+          },
+          "503": {
+            "$ref": "#/responses/503ServiceUnavailable"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -955,6 +1054,70 @@
         }
       },
       "title": "ErrorInfo"
+    },
+    "Item": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        }
+      }
+    },
+    "Items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Item"
+      }
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        }
+      }
+    },
+    "Errors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Error"
+      }
+    },
+    "ValidationError": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "errors": {
+          "$ref": "#/definitions/Errors"
+        }
+      }
     }
   },
   "parameters": {
@@ -975,6 +1138,115 @@
       "maximum": 50,
       "default": 20,
       "description": "The numbers of items to return."
+    },
+    "id": {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "Item id",
+      "type": "string"
+    },
+    "page": {
+      "name": "page",
+      "in": "query",
+      "description": "Current page number",
+      "required": false,
+      "type": "integer",
+      "format": "int32",
+      "default": 1,
+      "minimum": 1
+    },
+    "limit": {
+      "name": "limit",
+      "in": "query",
+      "description": "Limits the number of returned items",
+      "required": false,
+      "type": "integer",
+      "format": "int32",
+      "default": 10,
+      "minimum": 10,
+      "maximum": 100,
+      "multipleOf": 10
+    },
+    "sort": {
+      "name": "sort",
+      "in": "query",
+      "type": "array",
+      "required": false,
+      "description": "Sorting order of items",
+      "uniqueItems": true,
+      "minItems": 1,
+      "maxItems": 6,
+      "collectionFormat": "pipes",
+      "items": {
+        "type": "string",
+        "pattern": "([+-]\\w*){1}(\\|[+-]\\w*){0,5}",
+        "default": "+name"
+      }
+    },
+    "item": {
+      "name": "item",
+      "in": "body",
+      "description": "An item",
+      "schema": {
+        "$ref": "#/definitions/Item"
+      }
+    }
+  },
+  "responses": {
+    "SuccessMessage": {
+      "description": "Success",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "400BadRequest": {
+      "description": "The request was invalid or cannot be otherwise served.",
+      "schema": {
+        "$ref": "#/definitions/ValidationError"
+      }
+    },
+    "401Unauthorized": {
+      "description": "Authentication credentials were missing or incorrect.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "403Forbidden": {
+      "description": "The request is understood, but it has been refused or access is not allowed.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "404NotFound": {
+      "description": "The URI requested is invalid or the resource requested does not exists.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "409Conflict": {
+      "description": "Any message which should help the user to resolve the conflict.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "429TooManyRequests": {
+      "description": "The request cannot be served due to the application’s rate limit having been exhausted for the resource.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "500InternalServerError": {
+      "description": "Something is broken.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "503ServiceUnavailable": {
+      "description": "The server is up, but overloaded with requests. Try again later.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
     }
   }
 }

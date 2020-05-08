@@ -10,15 +10,17 @@ import {
   Response,
 } from "swagger-schema-official";
 import { get, isEmpty, keys, map, reduce } from "lodash";
-import { toCapitalCase, withRequiredName } from "src/core/utils";
+import { resolveRef, toCapitalCase, withRequiredName } from "src/core/utils";
 import { CustomType } from "src/core/Type";
 import { Schema } from "src/core/Schema";
 import { CustomParameters, CustomSchema, IClientConfig } from "src/core/types";
 import { getOperationId, getOperations, getRequestURL, pickParams } from "src/core/ClientConfigs";
+import { Register } from "src/core/Register";
 
 type Paths = { [pathName: string]: Path };
 
-export const getClientConfigsV2 = (paths: Paths, basePath: string) => new ClientConfigsV2(paths, basePath).clientConfigs;
+export const getClientConfigsV2 = (paths: Paths, basePath: string) =>
+  new ClientConfigsV2(paths, basePath).clientConfigs;
 
 class ClientConfigsV2 {
   clientConfigs: IClientConfig[] = [];
@@ -53,7 +55,7 @@ class ClientConfigsV2 {
         url: getRequestURL(pathName, this.basePath),
         method,
         operationId: getOperationId(operation.operationId),
-        TResp: this.getResponseType(operation.responses),
+        TResp: this.getResponsesType(operation.responses),
         TReq: {
           ...getParamTypes(pathParams),
           ...getParamTypes(queryParams),
@@ -86,11 +88,11 @@ class ClientConfigsV2 {
     );
   };
 
-  private getResponseType = (responses?: Operation["responses"]) => {
+  private getResponsesType = (responses?: Operation["responses"]) => {
     if (!responses) {
       return;
     }
-    const resp = keys(responses)
+    const response = keys(responses)
       .map((code) => {
         const httpCode = Number(code);
         if (
@@ -103,11 +105,19 @@ class ClientConfigsV2 {
       })
       .filter((v) => !isEmpty(v))[0];
 
-    if ((resp as Reference)?.$ref) {
-      return this.schemaHandler.convert(resp as CustomSchema);
-    }
+    const handleResp = (resp?: Response | Reference): CustomType | undefined => {
+      if ((resp as Reference)?.$ref) {
+        const { type, name } = resolveRef((resp as Reference).$ref);
+        if (type === "responses" && name) {
+          return handleResp(Register.responses[name] as Response | Reference);
+        }
+        return this.schemaHandler.convert(resp as CustomSchema);
+      }
 
-    return (resp as Response)?.schema ? this.schemaHandler.convert((resp as Response).schema!) : undefined;
+      return (resp as Response)?.schema ? this.schemaHandler.convert((resp as Response).schema!) : undefined;
+    };
+
+    return handleResp(response);
   };
 }
 
