@@ -52,6 +52,8 @@ export class Scanner {
     this.toReusableTypes(this.spec.definitions || (this.spec as IOpenAPI)?.components?.schemas);
     this.handleParameters(this.spec.parameters || (this.spec as IOpenAPI)?.components?.parameters);
     this.handleResponses(this.spec.responses || (this.spec as IOpenAPI)?.components?.responses);
+    this.handleRequestBodies((this.spec as IOpenAPI)?.components?.requestBodies);
+
     let clientConfigs: IClientConfig[] = this.spec.swagger
       ? getClientConfigsV2(this.spec.paths, basePath)
       : getClientConfigV3(this.spec.paths, basePath);
@@ -139,6 +141,17 @@ export const ${v.operationId} = createRequestAction${types ? "<" + types + ">" :
     keys(responses).forEach((key) => {
       // TODO: resolve responses[key] later
       Register.setResponses(key, responses[key]);
+    });
+  }
+
+  handleRequestBodies(requestBodies?: IComponents["requestBodies"]) {
+    if (!requestBodies) {
+      return;
+    }
+
+    keys(requestBodies).forEach((key) => {
+      // TODO: resolve body[key] later
+      Register.setRequestBody(key, requestBodies[key]);
     });
   }
 }

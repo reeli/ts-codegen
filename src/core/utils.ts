@@ -130,8 +130,9 @@ export const resolveRef = (str?: string) => {
     return {};
   }
   const list = str.replace(/^#\//, "").split("/");
+  // TODO: refactor code later
   return {
-    type: list[0],
+    type: list[list.length - 2],
     name: list[list.length - 1],
   };
 };

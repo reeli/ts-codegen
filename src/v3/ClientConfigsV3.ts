@@ -4,7 +4,7 @@ import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse } fr
 import { ClientConfigs, getOperationId, getOperations, getRequestURL, pickParams } from "src/core/ClientConfigs";
 import { Reference, Response } from "swagger-schema-official";
 import { CustomType } from "src/core/Type";
-import { resolveRef } from "src";
+import { getRefId, resolveRef } from "src";
 import { Register } from "src/core/Register";
 
 // TODO: 解决向后兼容的问题，比如（requestBody，method, operationId, enum 等等）
@@ -56,17 +56,18 @@ class ClientConfigsV3 extends ClientConfigs {
     });
   }
 
-  getBodyParamsTypes(requestBody?: IReference | IRequestBody) {
+  getBodyParamsTypes(requestBody?: IReference | IRequestBody): { [key: string]: CustomType } | undefined {
     if (!requestBody) {
       return;
     }
+    if (requestBody.$ref) {
+      const id = getRefId(requestBody.$ref);
+      const body = Register.requestBodies[id];
+      return this.getBodyParamsTypes(body);
+    }
 
-    // TODO: will handle another content type later
-    const schema =
-      (requestBody as IRequestBody)?.content["application/json"]?.schema ||
-      (requestBody as IRequestBody)?.content["application/x-www-form-urlencoded"]?.schema ||
-      (requestBody as IRequestBody)?.content["multipart/form-data"]?.schema;
-
+    // TODO: 这里是否会存在处理 request body 中 multipart/form-data 和 application/json 并存的情况？
+    const schema = values((requestBody as IRequestBody)?.content)[0]?.schema;
     return {
       requestBody: this.schemaHandler.convert(schema as CustomSchema),
     };

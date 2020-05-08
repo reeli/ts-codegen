@@ -67,6 +67,27 @@ export enum FindPetsTags {
 ```
 
 4. 处理 Reference 类型的 Parameter
+5. 将 query name 明确在 request 中，而非 ES 结构的方式(待确认?)
+
+```typescript
+// after:
+export const getItems = createRequestAction<
+  {
+    limit?: number;
+    page?: number;
+    sort?: string[];
+  },
+  TItems
+>(\"getItems\", ({ page, limit, sort }) => ({
+  url: `/items`,
+  method: \"get\",
+  params: {
+    page,
+    limit,
+    sort,
+  },
+}));
+```
 
 
 # Notice

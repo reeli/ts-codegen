@@ -230,6 +230,50 @@
           }
         }
       }
+    },
+    "/items": {
+      "x-swagger-router-controller": "ItemController",
+      "get": {
+        "summary": "Returns a list of items",
+        "operationId": "getItems",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/sort"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Items"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Creates a new item",
+        "operationId": "createItem",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/item"
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/SuccessMessage"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -355,6 +399,103 @@
             }
           }
         ]
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Item": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        }
+      },
+      "Items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Item"
+        }
+      }
+    },
+    "parameters": {
+      "item": {
+        "name": "item",
+        "in": "query",
+        "description": "An item",
+        "schema": {
+          "$ref": "#/components/schemas/Item"
+        }
+      },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "description": "Current page number",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "default": 1,
+          "minimum": 1
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "in": "query",
+        "description": "Limits the number of returned items",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "default": 10,
+          "minimum": 10,
+          "maximum": 100,
+          "multipleOf": 10
+        }
+      },
+      "sort": {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "description": "Sorting order of items",
+        "schema": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "pattern": "([+-]\\w*){1}(\\|[+-]\\w*){0,5}",
+            "default": "+name"
+          }
+        }
+      }
+    },
+    "responses": {
+      "SuccessMessage": {
+        "description": "Success",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Message"
+            }
+          }
+        }
       }
     }
   }
