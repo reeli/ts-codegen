@@ -789,8 +789,12 @@ export const getItems = createRequestAction<
   },
 }));
 
+export const postBody = createRequestAction<{
+  requestBody: IPet;
+}>(\\"postBody\\", () => ({ url: \`/body\`, method: \\"post\\" }));
+
 export const updatePet = createRequestAction<{
-  requestBody: ICat | IDog;
+  requestBody?: ICat | IDog;
 }>(\\"updatePet\\", ({ requestBody }) => ({
   url: \`/pets\`,
   method: \\"patch\\",

@@ -4,7 +4,7 @@ import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse } fr
 import { ClientConfigs, getOperationId, getOperations, getRequestURL, pickParams } from "src/core/ClientConfigs";
 import { Reference, Response } from "swagger-schema-official";
 import { CustomType } from "src/core/Type";
-import { getRefId, resolveRef } from "src";
+import { getRefId, resolveRef, withRequiredName } from "src";
 import { Register } from "src/core/Register";
 
 // TODO: 解决向后兼容的问题，比如（requestBody，method, operationId, enum 等等）
@@ -69,7 +69,9 @@ class ClientConfigsV3 extends ClientConfigs {
     // TODO: 这里是否会存在处理 request body 中 multipart/form-data 和 application/json 并存的情况？
     const schema = values((requestBody as IRequestBody)?.content)[0]?.schema;
     return {
-      requestBody: this.schemaHandler.convert(schema as CustomSchema),
+      [withRequiredName("requestBody", (requestBody as IRequestBody).required)]: this.schemaHandler.convert(
+        schema as CustomSchema,
+      ),
     };
   }
 

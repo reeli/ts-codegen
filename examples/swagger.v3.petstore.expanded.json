@@ -274,6 +274,19 @@
           }
         }
       }
+    },
+    "/body": {
+      "post": {
+        "operationId": "postBody",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PetBody"
+        },
+        "responses": {
+          "201": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -493,6 +506,19 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Message"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "PetBody": {
+        "description": "A JSON object containing pet information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Pet"
             }
           }
         }
