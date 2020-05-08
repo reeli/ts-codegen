@@ -19,6 +19,7 @@ export interface IClientConfig {
 export type CustomSchema = Schema | ISchema;
 
 export type CustomParameters = Spec["parameters"] | IComponents["parameters"];
+export type CustomResponses = Spec["responses"] | IComponents["responses"];
 export type CustomParameter = Parameter | TParameter;
 export type CustomReference = Reference | IReference;
 export type CustomPath = Path | IPathItem;

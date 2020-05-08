@@ -1,7 +1,11 @@
-import { get, isEmpty, keys, map, reduce, values } from "lodash";
-import { CustomParameters, CustomSchema, IClientConfig } from "src/core/types";
+import { first, isEmpty, keys, map, reduce, values } from "lodash";
+import { CustomParameters, CustomResponses, CustomSchema, IClientConfig } from "src/core/types";
 import { IOperation, IPathItem, IPaths, IReference, IRequestBody, IResponse } from "src/v3/OpenAPI";
 import { ClientConfigs, getOperationId, getOperations, getRequestURL, pickParams } from "src/core/ClientConfigs";
+import { Reference, Response } from "swagger-schema-official";
+import { CustomType } from "src/core/Type";
+import { resolveRef } from "src";
+import { Register } from "src/core/Register";
 
 // TODO: 解决向后兼容的问题，比如（requestBody，method, operationId, enum 等等）
 // TODO: 让 method 变成全大写，get -> GET
@@ -38,7 +42,7 @@ class ClientConfigsV3 extends ClientConfigs {
         url: getRequestURL(pathName, this.basePath),
         method,
         operationId: getOperationId(operation.operationId),
-        TResp: this.getResponseType(operation.responses),
+        TResp: this.getSuccessResponseType(operation.responses),
         TReq: {
           ...getParamTypes(pathParams),
           ...getParamTypes(queryParams),
@@ -68,18 +72,6 @@ class ClientConfigsV3 extends ClientConfigs {
     };
   }
 
-  private getResponseType = (responses: IOperation["responses"]) => {
-    const response200 = values(get(responses, "200.content"))[0];
-    const response201 = values(get(responses, "201.content"))[0];
-
-    if ((response200 as IReference)?.$ref || (response201 as IReference)?.$ref) {
-      return this.schemaHandler.convert(response200 || response201);
-    }
-
-    const v = (response200 as IResponse)?.schema || (response201 as IResponse)?.schema;
-    return v ? this.schemaHandler.convert(v) : undefined;
-  };
-
   getContentType = (requestBody?: IRequestBody | IReference) => {
     if (!requestBody) {
       return "";
@@ -89,4 +81,38 @@ class ClientConfigsV3 extends ClientConfigs {
     // TODO: handle other content type later
     return keys((requestBody as IRequestBody).content)[0];
   };
+
+  getSuccessResponseType(responses?: CustomResponses) {
+    if (!responses) {
+      return;
+    }
+
+    const hasRefOrSchema = (data: IResponse | IReference) => (data as IReference).$ref || (data as IResponse).content;
+    const resp = keys(responses)
+      .map((code) => {
+        const httpCode = Number(code);
+        if (httpCode >= 200 && httpCode < 300 && hasRefOrSchema(responses[code])) {
+          return responses[code] as IResponse;
+        }
+      })
+      .filter((v) => !isEmpty(v))[0];
+
+    if (!resp) {
+      return;
+    }
+
+    return this.handleRespContent(resp);
+  }
+
+  private handleRespContent(resp?: Response | Reference): CustomType | undefined {
+    if ((resp as Reference)?.$ref) {
+      const { type, name } = resolveRef((resp as Reference).$ref);
+      if (type === "responses" && name) {
+        return this.handleRespContent(Register.responses[name] as Response | Reference);
+      }
+      return this.schemaHandler.convert(resp as CustomSchema);
+    }
+    const content = first(values((resp as IResponse).content));
+    return content?.schema ? this.schemaHandler.convert(content?.schema) : undefined;
+  }
 }
