@@ -19,7 +19,6 @@ import {
   CustomParameters,
   CustomPath,
   CustomReference,
-  CustomResponses,
   CustomSchema,
   IClientConfig,
 } from "src/core/types";
@@ -34,6 +33,15 @@ export const getClientConfigsV2 = (
   register: ReturnType<typeof createRegister>,
 ): IClientConfig[] => {
   const schemaHandler = new Schema(register);
+  const getRequestBody = (parameters: CustomParameters) => {
+    const pickParamsByType = pickParams(register)(parameters);
+    const bodyParams = pickParamsByType("body") as BodyParameter[];
+    const formDataParams = pickParamsByType("formData") as FormDataParameter[];
+    return {
+      requestBody: !isEmpty(bodyParams) ? bodyParams : formDataParams,
+      contentType: getContentType(bodyParams, formDataParams),
+    };
+  };
 
   return buildConfigs({
     paths,
@@ -41,11 +49,14 @@ export const getClientConfigsV2 = (
     register,
     createOtherConfig: (operation, pathParams, queryParams) => {
       const getParamTypes = getParamTypesFrom(schemaHandler)(operation.operationId);
-      const { requestBody, contentType } = getRequestBodyV2(register)(operation.parameters as CustomParameters);
+      const { requestBody, contentType } = getRequestBody(operation.parameters as CustomParameters);
       const requestBodyTypes = getParamTypes(requestBody);
 
       return {
-        TResp: getSuccessResponsesTypeV2(schemaHandler, register)(operation.responses),
+        TResp: getSuccessResponsesType(schemaHandler, register)(
+          (resp) => (resp as Response)?.schema,
+          operation.responses,
+        ),
         TReq: {
           ...getParamTypes(pathParams),
           ...getParamTypes(queryParams),
@@ -63,79 +74,6 @@ export const getClientConfigsV3 = (
   register: ReturnType<typeof createRegister>,
 ): IClientConfig[] => {
   const schemaHandler = new Schema(register);
-
-  function handleRespContent(resp?: Response | Reference): CustomType | undefined {
-    if ((resp as Reference)?.$ref) {
-      const { type, name } = resolveRef((resp as Reference).$ref);
-      if (type === "responses" && name) {
-        return handleRespContent(register.getResponses()[name] as Response | Reference);
-      }
-      return schemaHandler.convert(resp as CustomSchema);
-    }
-    const content = first(values((resp as IResponse).content));
-    return content?.schema ? schemaHandler.convert(content?.schema) : undefined;
-  }
-
-  function getSuccessResponseTypeV3(responses?: CustomResponses) {
-    if (!responses) {
-      return;
-    }
-
-    const hasRefOrSchema = (data: IResponse | IReference) => (data as IReference).$ref || (data as IResponse).content;
-    const resp = keys(responses)
-      .map((code) => {
-        const httpCode = Number(code);
-        if (httpCode >= 200 && httpCode < 300 && hasRefOrSchema(responses[code])) {
-          return responses[code] as IResponse;
-        }
-      })
-      .filter((v) => !isEmpty(v))[0];
-
-    if (!resp) {
-      return;
-    }
-
-    return handleRespContent(resp);
-  }
-
-  function getBodyParamsTypes(requestBody?: IReference | IRequestBody): { [key: string]: CustomType } | undefined {
-    if (!requestBody) {
-      return;
-    }
-    if (requestBody.$ref) {
-      const id = getRefId(requestBody.$ref);
-      const body = register.getRequestBodies()[id];
-      return getBodyParamsTypes(body);
-    }
-
-    // TODO: 这里是否会存在处理 request body 中 multipart/form-data 和 application/json 并存的情况？
-    const schema = values((requestBody as IRequestBody)?.content)[0]?.schema;
-    return {
-      [withRequiredName("requestBody", (requestBody as IRequestBody).required)]: schemaHandler.convert(
-        schema as CustomSchema,
-      ),
-    };
-  }
-
-  const getParamTypesFromV3 = (operationId?: string) => (
-    params: Array<CustomParameter>,
-  ): { [key: string]: CustomType } | undefined => {
-    if (!params) {
-      return;
-    }
-
-    return params.reduce(
-      (results, param) => ({
-        ...results,
-        [withRequiredName(param.name, param.required)]: schemaHandler.convert(
-          get(param, "schema", param),
-          `${toCapitalCase(operationId)}${toCapitalCase(param.name)}`,
-        ),
-      }),
-      {},
-    );
-  };
-
   const getContentType = (requestBody?: IRequestBody | IReference) => {
     if (!requestBody) {
       return "";
@@ -151,15 +89,33 @@ export const getClientConfigsV3 = (
     basePath,
     register,
     createOtherConfig: (operation, pathParams, queryParams) => {
-      const getParamTypes = getParamTypesFromV3(operation.operationId);
+      const getParamTypes = getParamTypesFrom(schemaHandler)(operation.operationId);
+      const getRequestBody = (requestBody?: IReference | IRequestBody) => {
+        if (!requestBody) {
+          return;
+        }
+        if (requestBody.$ref) {
+          const id = getRefId(requestBody.$ref);
+          return register.getRequestBodies()[id];
+        }
+        return requestBody;
+      };
+      const requestBody = getRequestBody((operation as IOperation).requestBody);
+      const schema = values((requestBody as IRequestBody)?.content)[0];
+
       return {
-        TResp: getSuccessResponseTypeV3(operation.responses),
+        TResp: getSuccessResponsesType(schemaHandler, register)((resp) => {
+          return first(values((resp as IResponse)?.content))?.schema;
+        }, operation.responses),
         TReq: {
           ...getParamTypes(pathParams),
           ...getParamTypes(queryParams),
-          ...getBodyParamsTypes((operation as IOperation).requestBody),
+          ...(!isEmpty(schema) &&
+            getParamTypes([
+              { name: "requestBody", ...schema, required: (requestBody as IRequestBody).required } as any,
+            ])),
         },
-        contentType: getContentType((operation as IOperation).requestBody),
+        contentType: getContentType(requestBody),
       };
     },
   });
@@ -215,16 +171,6 @@ const getParams = (register: ReturnType<typeof createRegister>) => (parameters: 
   };
 };
 
-const getRequestBodyV2 = (register: ReturnType<typeof createRegister>) => (parameters: CustomParameters) => {
-  const pickParamsByType = pickParams(register)(parameters);
-  const bodyParams = pickParamsByType("body") as BodyParameter[];
-  const formDataParams = pickParamsByType("formData") as FormDataParameter[];
-  return {
-    requestBody: !isEmpty(bodyParams) ? bodyParams : formDataParams,
-    contentType: getContentType(bodyParams, formDataParams),
-  };
-};
-
 const pickParams = (register: ReturnType<typeof createRegister>) => (params?: CustomParameters) => (
   type: "path" | "query" | "body" | "formData",
 ) => {
@@ -263,7 +209,8 @@ const getParamTypesFrom = (schemaHandler: Schema) => (operationId?: string) => (
   );
 };
 
-const getSuccessResponsesTypeV2 = (schemaHandler: Schema, register: ReturnType<typeof createRegister>) => (
+const getSuccessResponsesType = (schemaHandler: Schema, register: ReturnType<typeof createRegister>) => (
+  getSchema: (resp?: Response | Reference) => CustomSchema | undefined,
   responses?: Operation["responses"],
 ) => {
   if (!responses) {
@@ -272,11 +219,7 @@ const getSuccessResponsesTypeV2 = (schemaHandler: Schema, register: ReturnType<t
   const response = keys(responses)
     .map((code) => {
       const httpCode = Number(code);
-      if (
-        httpCode >= 200 &&
-        httpCode < 300 &&
-        ((responses[code] as Reference).$ref || (responses[code] as Response).schema)
-      ) {
+      if (httpCode >= 200 && httpCode < 300 && ((responses[code] as Reference).$ref || getSchema(responses[code]))) {
         return responses[code];
       }
     })
@@ -291,8 +234,13 @@ const getSuccessResponsesTypeV2 = (schemaHandler: Schema, register: ReturnType<t
       return schemaHandler.convert(resp as CustomSchema);
     }
 
-    return (resp as Response)?.schema ? schemaHandler.convert((resp as Response).schema!) : undefined;
+    const schema = getSchema(resp);
+    return schema ? schemaHandler.convert(schema) : undefined;
   };
+
+  if (!response) {
+    return;
+  }
 
   return handleResp(response);
 };

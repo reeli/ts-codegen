@@ -73,7 +73,12 @@ export const getItems = createRequestAction<
 
 export const postBody = createRequestAction<{
   requestBody: IPet;
-}>(\\"postBody\\", () => ({ url: \`/body\`, method: \\"post\\" }));
+}>(\\"postBody\\", ({ requestBody }) => ({
+  url: \`/body\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
 
 export const updatePet = createRequestAction<{
   requestBody?: ICat | IDog;
