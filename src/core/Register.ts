@@ -3,9 +3,9 @@ import { CustomType, Ref } from "src/core/Type";
 import { Parameter } from "swagger-schema-official";
 import { IReference, IRequestBody, IResponse } from "src/v3/OpenAPI";
 
-export const Register = (() => {
+export const createRegister = () => {
   const decls: { [id: string]: CustomType } = {};
-  const refs: { [id: string]: CustomType } = {};
+  const refs: { [id: string]: Ref } = {};
   const prefixes: { [id: string]: string } = {};
   const parameters: {
     [id: string]: Parameter;
@@ -48,11 +48,28 @@ export const Register = (() => {
 
       return type;
     },
-    refs,
-    decls,
-    prefixes,
-    parameters,
-    responses,
-    requestBodies,
+    renameAllRefs: (cb: (newName: string) => string) => {
+      for (let name in refs) {
+        refs[name].rename(cb(name));
+      }
+    },
+    getRefs() {
+      return refs;
+    },
+    getDecls() {
+      return decls;
+    },
+    getPrefixes() {
+      return prefixes;
+    },
+    getParameters() {
+      return parameters;
+    },
+    getResponses() {
+      return responses;
+    },
+    getRequestBodies() {
+      return requestBodies;
+    },
   };
-})();
+};

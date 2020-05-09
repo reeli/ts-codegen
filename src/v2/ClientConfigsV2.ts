@@ -14,20 +14,20 @@ import { resolveRef, toCapitalCase, withRequiredName } from "src/core/utils";
 import { CustomType } from "src/core/Type";
 import { Schema } from "src/core/Schema";
 import { CustomParameters, CustomSchema, IClientConfig } from "src/core/types";
-import { getOperationId, getOperations, getRequestURL, pickParams } from "src/core/ClientConfigs";
-import { Register } from "src/core/Register";
+import { createRegister } from "src/core/Register";
+import { getOperationId, getOperations, getRequestURL, pickParams } from "src";
 
 type Paths = { [pathName: string]: Path };
 
-export const getClientConfigsV2 = (paths: Paths, basePath: string) =>
-  new ClientConfigsV2(paths, basePath).clientConfigs;
+export const getClientConfigsV2 = (paths: Paths, basePath: string, register: ReturnType<typeof createRegister>) =>
+  new ClientConfigsV2(paths, basePath, register).clientConfigs;
 
 class ClientConfigsV2 {
   clientConfigs: IClientConfig[] = [];
   schemaHandler: Schema;
 
-  constructor(private paths: Paths, private basePath: string) {
-    this.schemaHandler = new Schema();
+  constructor(private paths: Paths, private basePath: string, private register: ReturnType<typeof createRegister>) {
+    this.schemaHandler = new Schema(this.register);
     this.clientConfigs = reduce(
       this.paths,
       (configs: IClientConfig[], path: Path, pathName: string) => [...configs, ...this.buildConfig(path, pathName)],
@@ -40,7 +40,7 @@ class ClientConfigsV2 {
 
     return keys(operations).map((method) => {
       const operation = operations[method];
-      const pickParamsByType = pickParams(operation.parameters as CustomParameters);
+      const pickParamsByType = pickParams(this.register)(operation.parameters as CustomParameters);
       const pathParams = pickParamsByType("path") as PathParameter[];
       const queryParams = pickParamsByType("query") as QueryParameter[];
       const bodyParams = pickParamsByType("body") as BodyParameter[];
@@ -109,7 +109,7 @@ class ClientConfigsV2 {
       if ((resp as Reference)?.$ref) {
         const { type, name } = resolveRef((resp as Reference).$ref);
         if (type === "responses" && name) {
-          return handleResp(Register.responses[name] as Response | Reference);
+          return handleResp(this.register.getResponses()[name] as Response | Reference);
         }
         return this.schemaHandler.convert(resp as CustomSchema);
       }

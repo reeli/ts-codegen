@@ -1,56 +1,62 @@
-import {getUseExtends, isArray, toCapitalCase} from "src/core/utils";
+import { getUseExtends, isArray, toCapitalCase } from "src/core/utils";
 import { forEach, isEmpty, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/v3/OpenAPI";
 import { CustomType, Type } from "src/core/Type";
 import { CustomSchema } from "src/core/types";
+import { createRegister } from "src/core/Register";
 
 export class Schema {
+  type: Type;
+
+  constructor(register: ReturnType<typeof createRegister>) {
+    this.type = new Type(register);
+  }
   convert(schema: CustomSchema, id?: string): CustomType {
     const name = id ? toCapitalCase(id) : id;
     const oneOf = (schema as ISchema).oneOf || (schema as ISchema).anyOf;
     if (oneOf) {
-      return Type.oneOf(map(oneOf, (v) => this.convert(v)));
+      return this.type.oneOf(map(oneOf, (v) => this.convert(v)));
     }
 
     const allOf = (schema as ISchema).allOf;
     if (allOf) {
       const { props, refs, useExtends } = this.handleAllOf(allOf, name);
-      return Type.object(props, refs, useExtends);
+      return this.type.object(props, refs, useExtends);
     }
 
     if (schema.items) {
-      return Type.array(this.handleItems(schema.items, name));
+      return this.type.array(this.handleItems(schema.items, name));
     }
 
     if (schema.$ref) {
-      return Type.ref((schema as IReference).$ref);
+      return this.type.ref((schema as IReference).$ref);
     }
 
     if (schema.enum) {
-      return Type.enum(schema.enum, name);
+      return this.type.enum(schema.enum, name);
     }
 
     if (schema.type === "object" || schema.properties) {
-      return schema.properties ? Type.object(this.handleObject(schema, name)) : Type.object("object");
+      return schema.properties ? this.type.object(this.handleObject(schema, name)) : this.type.object("object");
     }
 
     if (schema.type === "string") {
-      return Type.string();
+      return this.type.string();
     }
 
     if (schema.type === "boolean") {
-      return Type.boolean();
+      return this.type.boolean();
     }
 
     if (schema.type === "integer" || schema.type === "number") {
-      return Type.number();
+      return this.type.number();
     }
 
     if (schema.type === "file") {
-      return Type.file();
+      return this.type.file();
     }
 
-    return Type.null();
+    return this.type.null();
   }
 
   handleAllOf(schemas: Array<CustomSchema>, name?: string) {

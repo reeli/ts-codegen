@@ -19,6 +19,7 @@ describe("swagger v2", () => {
 describe("swagger v3", () => {
   it("should handle basic schemas correctly", () => {
     expect(new Scanner(swaggerV3 as IOpenAPI).scan()).toMatchSnapshot();
+    expect(new Scanner(swaggerV3PetStore as IOpenAPI).scan()).toMatchSnapshot();
   });
 
   it("should handle special schemas correctly", () => {

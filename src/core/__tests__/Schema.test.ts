@@ -1,9 +1,14 @@
 import { Schema } from "src/core/Schema";
+import { createRegister } from "src/core/Register";
 
 describe("Schema Converter", () => {
+  let register: ReturnType<typeof createRegister>;
+  beforeAll(() => {
+    register = createRegister();
+  });
   describe("oneOf", () => {
     it("should handle refs in oneOf", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             oneOf: [
@@ -23,7 +28,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle basic type in oneOf", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             oneOf: [
@@ -43,7 +48,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle both refs and basic type in oneOf", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             oneOf: [
@@ -65,7 +70,7 @@ describe("Schema Converter", () => {
 
   describe("anyOf", () => {
     it("should handle refs in anyOf", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             anyOf: [
@@ -85,7 +90,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle basic type in anyOf", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             anyOf: [
@@ -105,7 +110,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle both refs and basic type in anyOf", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             anyOf: [
@@ -127,7 +132,7 @@ describe("Schema Converter", () => {
 
   describe("allOf", () => {
     it("should handle ref in `allOf`", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             allOf: [
@@ -153,7 +158,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle both ref and basic type in `allOf`", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             allOf: [
@@ -173,7 +178,7 @@ describe("Schema Converter", () => {
     });
 
     it("if the ref in `allOf` is a type instead of a interface, should use `&` instead of `extends`", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             allOf: [
@@ -196,7 +201,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle empty object in `allOf`", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             allOf: [
@@ -214,7 +219,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle empty object with multiple refs in `allOf`", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             allOf: [
@@ -235,7 +240,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle multiple refs and object in `allOf` without using extends ", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             allOf: [
@@ -262,7 +267,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle enum in `allOf`", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             allOf: [
@@ -294,7 +299,7 @@ describe("Schema Converter", () => {
 
   describe("array", () => {
     it("should handle array of enum", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             type: "array",
@@ -312,7 +317,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle array of string", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             type: "array",
@@ -328,7 +333,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle array of nested array", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             type: "array",
@@ -347,7 +352,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle array of ref", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             type: "array",
@@ -363,7 +368,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle tuple type", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             type: "array",
@@ -389,7 +394,7 @@ describe("Schema Converter", () => {
 
   describe("ref", () => {
     it("should handle ref", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             $ref: "#/components/schemas/Pet",
@@ -404,7 +409,7 @@ describe("Schema Converter", () => {
 
   describe("enum", () => {
     it("should handle enum", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             type: "string",
@@ -420,7 +425,7 @@ describe("Schema Converter", () => {
 
   describe("object", () => {
     it("should handle object type without properties", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             type: "object",
@@ -434,7 +439,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle object with enum", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             type: "object",
@@ -457,7 +462,7 @@ describe("Schema Converter", () => {
     });
 
     it("should handle required prop in schema", () => {
-      const res = new Schema()
+      const res = new Schema(register)
         .convert(
           {
             type: "object",
@@ -490,7 +495,7 @@ describe("Schema Converter", () => {
     ["null", "null"],
     ["file", "File"],
   ])("should handle type %s in schema", (input, expected) => {
-    const res = new Schema()
+    const res = new Schema(register)
       .convert(
         {
           type: input as any,

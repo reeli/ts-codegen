@@ -1,6 +1,6 @@
 import { isEmpty, keys, map, uniqueId } from "lodash";
 import { getRefId, isArray, quoteKey, toCapitalCase } from "src/core/utils";
-import { Register } from "src/core/Register";
+import { createRegister } from "src/core/Register";
 
 export type CustomType = Ref | Obj | Arr | Enum | OneOf | BasicType;
 
@@ -128,45 +128,46 @@ export class Obj extends TypeFactory {
 
 export class Type {
   //TODO: 解决 id 重名的问题
-  static enum(value: any[], id: string = uniqueId("Enum")) {
-    Register.setType(id, new Enum(id, value));
+  constructor(private register: ReturnType<typeof createRegister>) {}
+  enum(value: any[], id: string = uniqueId("Enum")) {
+    this.register.setType(id, new Enum(id, value));
     return new Enum(id);
   }
 
-  static ref($ref: string) {
+  ref($ref: string) {
     const id = toCapitalCase(getRefId($ref));
-    return Register.setRef(id);
+    return this.register.setRef(id);
   }
 
-  static array(types: CustomType | CustomType[]) {
+  array(types: CustomType | CustomType[]) {
     return new Arr(types);
   }
 
-  static oneOf(types: CustomType[]) {
+  oneOf(types: CustomType[]) {
     return new OneOf(types);
   }
 
-  static object(props: { [key: string]: CustomType } | string, refs?: Ref[], useExtends?: boolean) {
+  object(props: { [key: string]: CustomType } | string, refs?: Ref[], useExtends?: boolean) {
     return new Obj(props, refs, useExtends);
   }
 
-  static boolean() {
+  boolean() {
     return BasicType.type("boolean");
   }
 
-  static string() {
+  string() {
     return BasicType.type("string");
   }
 
-  static null() {
+  null() {
     return BasicType.type("null");
   }
 
-  static number() {
+  number() {
     return BasicType.type("number");
   }
 
-  static file() {
+  file() {
     return BasicType.type("File");
   }
 }

@@ -1,12 +1,12 @@
 import { IComponents, IOpenAPI, IReference } from "src/v3/OpenAPI";
-import { CustomType, Enum, Ref } from "src/core/Type";
+import { CustomType, Enum } from "src/core/Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { Schema } from "src/core/Schema";
 import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
 import { Parameter, Spec } from "swagger-schema-official";
 import { CustomSchema, IClientConfig } from "src/core/types";
 import { getClientConfigsV2, getClientConfigV3 } from "src";
-import { Register } from "src/core/Register";
+import { createRegister } from "src/core/Register";
 
 export const getDeclarationType = (schema: CustomSchema) => {
   if (schema.type === "object" || schema.properties || (schema.allOf && getUseExtends(schema.allOf))) {
@@ -15,14 +15,15 @@ export const getDeclarationType = (schema: CustomSchema) => {
   return "type";
 };
 
-const addPrefix = (name: string) => `${Register.prefixes[name] === "interface" ? "I" : "T"}${name}`;
+const addPrefix = (name: string, prefixes: { [id: string]: string }) =>
+  `${prefixes[name] === "interface" ? "I" : "T"}${name}`;
 
-export const getOutput = (): string => {
+export const getOutput = (decls: { [id: string]: CustomType }, prefixes: { [id: string]: string }): string => {
   let output = "";
-  keys(Register.decls)
+  keys(decls)
     .sort()
     .forEach((k) => {
-      const t = Register.decls[k];
+      const t = decls[k];
       if (t instanceof Enum) {
         output = output + `export ${t.toType()}\n\n`;
         return;
@@ -30,9 +31,9 @@ export const getOutput = (): string => {
 
       output =
         output +
-        `export ${Register.prefixes[k]} ${addPrefix(k)} ${
-          Register.prefixes[k] === "interface" ? "" : "="
-        } ${t.toType()}${Register.prefixes[k] === "type" ? ";" : ""}\n\n`;
+        `export ${prefixes[k]} ${addPrefix(k, prefixes)} ${prefixes[k] === "interface" ? "" : "="} ${t.toType()}${
+          prefixes[k] === "type" ? ";" : ""
+        }\n\n`;
     });
   return output;
 };
@@ -41,9 +42,11 @@ type KType = { [key: string]: CustomType };
 
 export class Scanner {
   schemaHandler: Schema;
+  register: ReturnType<typeof createRegister>;
 
   constructor(private spec: Spec | IOpenAPI) {
-    this.schemaHandler = new Schema();
+    this.register = createRegister();
+    this.schemaHandler = new Schema(this.register);
   }
 
   public scan(): string {
@@ -55,22 +58,21 @@ export class Scanner {
     this.handleRequestBodies((this.spec as IOpenAPI)?.components?.requestBodies);
 
     let clientConfigs: IClientConfig[] = this.spec.swagger
-      ? getClientConfigsV2(this.spec.paths, basePath)
-      : getClientConfigV3(this.spec.paths, basePath);
+      ? getClientConfigsV2(this.spec.paths, basePath, this.register)
+      : getClientConfigV3(this.spec.paths, basePath, this.register);
 
-    for (let name in Register.refs) {
-      (Register.refs[name] as Ref).rename(addPrefix(name));
-    }
-
-    return prettifyCode(`${this.toRequest(clientConfigs)} \n\n ${getOutput()}`);
+    const decls = this.register.getDecls();
+    const prefixes = this.register.getPrefixes();
+    this.register.renameAllRefs((name) => addPrefix(name, prefixes));
+    return prettifyCode(`${this.toRequest(clientConfigs)} \n\n ${getOutput(decls, prefixes)}`);
   }
 
   private toReusableTypes(schemas: { [k: string]: CustomSchema | IReference }) {
     return keys(schemas).map((k) => {
       const name = toCapitalCase(k);
       const type = this.schemaHandler.convert(schemas[k], name);
-      Register.setType(name, type);
-      Register.setPrefix(name, getDeclarationType(schemas[k]));
+      this.register.setType(name, type);
+      this.register.setPrefix(name, getDeclarationType(schemas[k]));
       return type;
     });
   }
@@ -129,7 +131,7 @@ export const ${v.operationId} = createRequestAction${types ? "<" + types + ">" :
 
     keys(parameters).forEach((key) => {
       // TODO: resolve parameters[key] later
-      Register.setParameter(key, parameters[key] as Parameter);
+      this.register.setParameter(key, parameters[key] as Parameter);
     });
   }
 
@@ -140,7 +142,7 @@ export const ${v.operationId} = createRequestAction${types ? "<" + types + ">" :
 
     keys(responses).forEach((key) => {
       // TODO: resolve responses[key] later
-      Register.setResponses(key, responses[key]);
+      this.register.setResponses(key, responses[key]);
     });
   }
 
@@ -151,7 +153,7 @@ export const ${v.operationId} = createRequestAction${types ? "<" + types + ">" :
 
     keys(requestBodies).forEach((key) => {
       // TODO: resolve body[key] later
-      Register.setRequestBody(key, requestBodies[key]);
+      this.register.setRequestBody(key, requestBodies[key]);
     });
   }
 }
