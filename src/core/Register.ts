@@ -3,73 +3,84 @@ import { CustomType, Ref } from "src/core/Type";
 import { Parameter } from "swagger-schema-official";
 import { IReference, IRequestBody, IResponse } from "src/v3/OpenAPI";
 
-export const createRegister = () => {
-  const decls: { [id: string]: CustomType } = {};
-  const refs: { [id: string]: Ref } = {};
-  const prefixes: { [id: string]: string } = {};
-  const parameters: {
+interface IStore {
+  decls: { [id: string]: CustomType };
+  refs: { [id: string]: Ref };
+  prefixes: { [id: string]: string };
+  parameters: {
     [id: string]: Parameter;
-  } = {};
-  const responses: {
+  };
+  responses: {
     [id: string]: Response | IResponse | IReference;
-  } = {};
-  const requestBodies: {
+  };
+  requestBodies: {
     [id: string]: IReference | IRequestBody;
-  } = {};
+  };
+}
+
+export const createRegister = () => {
+  const store: IStore = {
+    decls: {},
+    refs: {},
+    prefixes: {},
+    parameters: {},
+    responses: {},
+    requestBodies: {},
+  };
 
   return {
     setType: (id: string, type: CustomType) => {
-      decls[id] = type;
+      store.decls[id] = type;
     },
 
     setPrefix: (id: string, prefix: string) => {
-      prefixes[id] = prefix;
+      store.prefixes[id] = prefix;
     },
 
     setParameter: (id: string, parameter: Parameter) => {
-      parameters[id] = parameter;
+      store.parameters[id] = parameter;
     },
 
     setResponses: (id: string, response: Response | IResponse | IReference) => {
-      responses[id] = response;
+      store.responses[id] = response;
     },
 
     setRequestBody: (id: string, requestBody: IReference | IRequestBody) => {
-      requestBodies[id] = requestBody;
+      store.requestBodies[id] = requestBody;
     },
 
     setRef: (id: string) => {
-      if (refs[id]) {
-        return refs[id];
+      if (store.refs[id]) {
+        return store.refs[id];
       }
 
       const type = new Ref(id);
-      refs[id] = type;
+      store.refs[id] = type;
 
       return type;
     },
     renameAllRefs: (cb: (newName: string) => string) => {
-      for (let name in refs) {
-        refs[name].rename(cb(name));
+      for (let name in store.refs) {
+        store.refs[name].rename(cb(name));
       }
     },
     getRefs() {
-      return refs;
+      return store.refs;
     },
     getDecls() {
-      return decls;
+      return store.decls;
     },
     getPrefixes() {
-      return prefixes;
+      return store.prefixes;
     },
     getParameters() {
-      return parameters;
+      return store.parameters;
     },
     getResponses() {
-      return responses;
+      return store.responses;
     },
     getRequestBodies() {
-      return requestBodies;
+      return store.requestBodies;
     },
   };
 };

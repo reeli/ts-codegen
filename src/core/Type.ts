@@ -129,6 +129,7 @@ export class Obj extends TypeFactory {
 export class Type {
   //TODO: 解决 id 重名的问题
   constructor(private register: ReturnType<typeof createRegister>) {}
+
   enum(value: any[], id: string = uniqueId("Enum")) {
     this.register.setType(id, new Enum(id, value));
     return new Enum(id);

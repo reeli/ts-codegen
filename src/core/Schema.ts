@@ -6,12 +6,13 @@ import { CustomSchema } from "src/core/types";
 import { createRegister } from "src/core/Register";
 
 export class Schema {
-  type: Type;
+  private type: Type;
 
   constructor(register: ReturnType<typeof createRegister>) {
     this.type = new Type(register);
   }
-  convert(schema: CustomSchema, id?: string): CustomType {
+
+  public convert(schema: CustomSchema, id?: string): CustomType {
     const name = id ? toCapitalCase(id) : id;
     const oneOf = (schema as ISchema).oneOf || (schema as ISchema).anyOf;
     if (oneOf) {
@@ -59,7 +60,7 @@ export class Schema {
     return this.type.null();
   }
 
-  handleAllOf(schemas: Array<CustomSchema>, name?: string) {
+  private handleAllOf(schemas: Array<CustomSchema>, name?: string) {
     const refs: any[] = [];
     let props: any = {};
     let useExtends = getUseExtends(schemas);
@@ -79,14 +80,14 @@ export class Schema {
     };
   }
 
-  handleItems(items: CustomSchema | IReference | CustomSchema[], name?: string): CustomType | CustomType[] {
+  private handleItems(items: CustomSchema | IReference | CustomSchema[], name?: string): CustomType | CustomType[] {
     if (isArray(items)) {
       return map(items, (v) => this.handleItems(v, name)) as CustomType[];
     }
     return this.convert(items, name);
   }
 
-  handleObject(schema: CustomSchema, name?: string): { [key: string]: CustomType } {
+  private handleObject(schema: CustomSchema, name?: string): { [key: string]: CustomType } {
     return reduce(
       schema.properties,
       (res, v, k) => {

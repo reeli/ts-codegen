@@ -1,6 +1,6 @@
 import { CustomType } from "src/core/Type";
-import { Operation, Parameter, Path, Reference, Schema, Spec } from "swagger-schema-official";
-import { IComponents, IOperation, IPathItem, IReference, ISchema, TParameter } from "src/v3/OpenAPI";
+import { Operation, Parameter, Path, Schema, Spec } from "swagger-schema-official";
+import { IComponents, IOperation, IPathItem, ISchema, TParameter } from "src/v3/OpenAPI";
 
 type RequestType = { [key: string]: CustomType };
 
@@ -17,10 +17,11 @@ export interface IClientConfig {
 }
 
 export type CustomSchema = Schema | ISchema;
-
+export type CustomReference = {
+  $ref: string;
+};
 export type CustomParameters = Spec["parameters"] | IComponents["parameters"];
 export type CustomResponses = Spec["responses"] | IComponents["responses"];
 export type CustomParameter = Parameter | TParameter;
-export type CustomReference = Reference | IReference;
 export type CustomPath = Path | IPathItem;
 export type CustomOperation = Operation | IOperation;
