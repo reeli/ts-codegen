@@ -12,7 +12,7 @@ export interface IClientConfig {
   operationId?: string;
   pathParams: string[];
   queryParams: string[];
-  contentType: string;
+  contentType?: string;
   deprecated?: boolean;
 }
 

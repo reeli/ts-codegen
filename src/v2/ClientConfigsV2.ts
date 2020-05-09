@@ -1,6 +1,6 @@
 import { BodyParameter, FormDataParameter, Operation, Path, Response } from "swagger-schema-official";
-import { camelCase, chain, compact, first, get, isEmpty, keys, map, pick, reduce, values } from "lodash";
-import { getPathsFromRef, getRefId, toCapitalCase, withRequiredName } from "src/core/utils";
+import { camelCase, chain, Dictionary, first, get, isEmpty, keys, map, omit, pick, reduce, values } from "lodash";
+import { getPathsFromRef, toCapitalCase, withRequiredName } from "src/core/utils";
 import { CustomType } from "src/core/Type";
 import { Schema } from "src/core/Schema";
 import {
@@ -60,7 +60,7 @@ const getOperations = <TOperation>(path: CustomPath) =>
   pick(path, ["get", "post", "put", "delete", "patch", "head"]) as { [method: string]: TOperation };
 
 const getParams = (register: ReturnType<typeof createRegister>) => (parameters: CustomParameters) => {
-  const pickParamsByType = pickAllParams(register)(parameters);
+  const pickParamsByType = pickParams(register)(parameters);
   return {
     pathParams: pickParamsByType<CustomParameter>("path"),
     queryParams: pickParamsByType<CustomParameter>("query"),
@@ -89,7 +89,7 @@ export const getClientConfigsV2 = (
 ): IClientConfig[] => {
   const schemaHandler = new Schema(register);
   const getRequestBody = (parameters?: Operation["parameters"]) => {
-    const pickParamsByType = pickAllParams(register)(parameters);
+    const pickParamsByType = pickParams(register)(parameters);
 
     const bodyParams = pickParamsByType<BodyParameter>("body");
     const formDataParams = pickParamsByType<FormDataParameter>("formData");
@@ -115,17 +115,17 @@ export const getClientConfigsV2 = (
     basePath,
     register,
     createOtherConfig: (operation, pathParams, queryParams) => {
-      const getRequestTypes = getParamTypesFrom(schemaHandler)(operation.operationId);
+      const requestTypesGetter = getRequestTypes(schemaHandler)(operation.operationId);
 
       const successResponsesGetter = getSuccessResponsesType(schemaHandler, register);
       const { requestBody, contentType } = getRequestBody(operation.parameters);
-      const requestBodyTypes = getRequestTypes(requestBody);
+      const requestBodyTypes = requestTypesGetter(requestBody);
 
       return {
         TResp: successResponsesGetter<Response>(operation.responses, (resp) => resp?.schema),
         TReq: {
-          ...getRequestTypes(pathParams),
-          ...getRequestTypes(queryParams),
+          ...requestTypesGetter(pathParams),
+          ...requestTypesGetter(queryParams),
           ...(!isEmpty(requestBodyTypes) && { requestBody: requestBodyTypes! }),
         },
         contentType,
@@ -140,47 +140,40 @@ export const getClientConfigsV3 = (
   register: ReturnType<typeof createRegister>,
 ): IClientConfig[] => {
   const schemaHandler = new Schema(register);
+  const getRequestBody = (requestBody?: CustomReference | IRequestBody) => {
+    if (!requestBody) {
+      return {};
+    }
+    const bodyData = requestBody?.$ref ? register.getRequestBody(getPathsFromRef(requestBody.$ref)) : requestBody;
+
+    return {
+      // TODO: 这里是否会存在处理 request body 中 multipart/form-data 和 application/json 并存的情况？
+      requestBody: {
+        name: "requestBody",
+        ...omit(bodyData, "content"),
+        ...getFirstValue(bodyData?.content),
+      },
+      // TODO: handle reference later
+      // TODO: handle other content type later
+      contentType: bodyData && getFirstKey(bodyData?.content),
+    };
+  };
+
   return buildConfigs<IOperation>({
     paths,
     basePath,
     register,
     createOtherConfig: (operation, pathParams, queryParams) => {
-      const getParamTypes = getParamTypesFrom(schemaHandler)(operation.operationId);
-      const getBody = (requestBody?: CustomReference | IRequestBody) => {
-        const final = ((body?: CustomReference | IRequestBody) => {
-          if (!body) {
-            return;
-          }
-          if (body.$ref) {
-            const id = getRefId(body.$ref);
-            return register.getRequestBody(id);
-          }
-          return body;
-        })(requestBody);
-
-        return {
-          requestBody: final,
-          // TODO: handle reference later
-          // TODO: handle other content type later
-          contentType: final ? keys((final as IRequestBody).content)[0] : "",
-        };
-      };
-      const { requestBody, contentType } = getBody(operation.requestBody);
-      const schema = values((requestBody as IRequestBody)?.content)[0];
+      const requestTypesGetter = getRequestTypes(schemaHandler)(operation.operationId);
+      const { requestBody, contentType } = getRequestBody(operation.requestBody);
       const successResponsesGetter = getSuccessResponsesType(schemaHandler, register);
 
       return {
-        TResp: successResponsesGetter<IResponse>(operation.responses, (resp) => {
-          // TODO: 这里是否会存在处理 request body 中 multipart/form-data 和 application/json 并存的情况？
-          return first(values(resp?.content))?.schema;
-        }),
+        TResp: successResponsesGetter<IResponse>(operation.responses, (resp) => getFirstValue(resp?.content)?.schema),
         TReq: {
-          ...getParamTypes(pathParams),
-          ...getParamTypes(queryParams),
-          ...(!isEmpty(schema) &&
-            getParamTypes([
-              { name: "requestBody", ...schema, required: (requestBody as IRequestBody).required } as any,
-            ])),
+          ...requestTypesGetter(pathParams),
+          ...requestTypesGetter(queryParams),
+          ...(requestBody && requestTypesGetter([requestBody])),
         },
         contentType,
       };
@@ -188,27 +181,17 @@ export const getClientConfigsV3 = (
   });
 };
 
-const pickAllParams = (register: ReturnType<typeof createRegister>) => (params?: CustomParameters) => <TParameter>(
+const pickParams = (register: ReturnType<typeof createRegister>) => (params?: CustomParameters) => <TParameter>(
   type: "path" | "query" | "body" | "formData",
 ): TParameter[] | undefined => {
-  const list = map(params, (param) => {
-    let data = param;
+  const list = map(params, (param) =>
+    getRef(param) ? register.getParameter(getPathsFromRef(param.$ref)) : param,
+  ).filter((v: CustomParameter) => v.in === type);
 
-    if (getRef(param)) {
-      const name = getRefId(param.$ref);
-      data = register.getParameter(name);
-    }
-
-    if ((data as CustomParameter).in === type) {
-      return data;
-    }
-  });
-
-  const res = compact(list);
-  return isEmpty(res) ? undefined : (res as any); // TODO: remove the any later
+  return isEmpty(list) ? undefined : list;
 };
 
-const getParamTypesFrom = (schemaHandler: Schema) => (operationId?: string) => (
+const getRequestTypes = (schemaHandler: Schema) => (operationId?: string) => (
   params?: CustomParameter[],
 ): { [key: string]: CustomType } | undefined => {
   if (!params) {
@@ -240,7 +223,9 @@ const getSuccessResponsesType = (schemaHandler: Schema, register: ReturnType<typ
   keys(responses).forEach((code) => {
     const httpCode = Number(code);
     const resp = responses[code];
-    if (httpCode >= 200 && httpCode < 300 && (getRef(resp) || getSchema(resp as TResponse)) && !fistSuccessResp) {
+    const hasContent = getRef(resp) || getSchema(resp as TResponse);
+
+    if (httpCode >= 200 && httpCode < 300 && hasContent && !fistSuccessResp) {
       fistSuccessResp = resp;
     }
   });
@@ -260,3 +245,7 @@ const getSuccessResponsesType = (schemaHandler: Schema, register: ReturnType<typ
 };
 
 const getRef = (v: any): v is CustomReference => v.$ref;
+
+const getFirstValue = (data?: Dictionary<any>) => first(values(data));
+
+const getFirstKey = (data?: Dictionary<any>) => first(keys(data));

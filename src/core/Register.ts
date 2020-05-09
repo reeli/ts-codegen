@@ -74,14 +74,14 @@ export const createRegister = () => {
     getPrefixes() {
       return store.prefixes;
     },
-    getParameter(id: string) {
-      return store.parameters[id];
+    getParameter(paths: string[]) {
+      return get(store, paths);
     },
     getResponse(paths: string[]) {
       return get(store, paths);
     },
-    getRequestBody(id: string) {
-      return store.requestBodies[id];
+    getRequestBody(paths: string[]) {
+      return get(store, paths);
     },
   };
 };
