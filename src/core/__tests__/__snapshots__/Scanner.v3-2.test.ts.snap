@@ -1,0 +1,94 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`swagger v3 should handle special schemas correctly 1`] = `
+"export const addPet = createRequestAction<
+  {
+    requestBody: INewPet;
+  },
+  TPet
+>(\\"addPet\\", ({ requestBody }) => ({
+  url: \`/pets\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const deletePet = createRequestAction<{
+  id: number;
+}>(\\"deletePet\\", ({ id }) => ({ url: \`/pets/\${id}\`, method: \\"delete\\" }));
+
+export const findPetById = createRequestAction<
+  {
+    id: number;
+  },
+  TPet
+>(\\"findPetById\\", ({ id }) => ({ url: \`/pets/\${id}\`, method: \\"get\\" }));
+
+export const findPets = createRequestAction<
+  {
+    limit?: number;
+    tags?: keyof typeof FindPetsTags[];
+  },
+  TPet[]
+>(\\"findPets\\", ({ tags, limit }) => ({
+  url: \`/pets\`,
+  method: \\"get\\",
+  params: {
+    tags,
+    limit,
+  },
+}));
+
+export const formMultipartWithFile = createRequestAction<{
+  requestBody: { data?: TPet; file: string; slice?: string[]; string?: string };
+}>(\\"formMultipartWithFile\\", ({ requestBody }) => ({
+  url: \`/demo/forms/multipart\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const formMultipartWithFiles = createRequestAction<{
+  requestBody: { files: string[] };
+}>(\\"formMultipartWithFiles\\", ({ requestBody }) => ({
+  url: \`/demo/forms/multipart-with-files\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const formUrlEncoded = createRequestAction<{
+  requestBody: IRequestForm;
+}>(\\"formUrlEncoded\\", ({ requestBody }) => ({
+  url: \`/demo/forms/url-encoded\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/x-www-form-urlencoded\\" },
+}));
+
+export interface IError {
+  code: number;
+  message: string;
+}
+
+export enum FindPetsTags {
+  \\"z\\" = \\"z\\",
+  \\"b\\" = \\"b\\",
+  \\"c\\" = \\"c\\",
+  \\"a\\" = \\"a\\",
+}
+
+export interface INewPet {
+  name: string;
+  tag?: string;
+}
+
+export type TPet = INewPet & { id: number };
+
+export interface IRequestForm {
+  data: TPet;
+  slice: string[];
+  string: string;
+}
+"
+`;

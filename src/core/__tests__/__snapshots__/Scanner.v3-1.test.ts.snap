@@ -1,0 +1,145 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`swagger v3 should handle basic schemas correctly 1`] = `
+"export const addPet = createRequestAction<
+  {
+    requestBody: INewPet;
+  },
+  IPet
+>(\\"addPet\\", ({ requestBody }) => ({
+  url: \`/pets\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createItem = createRequestAction<
+  {
+    item?: IItem;
+  },
+  IMessage
+>(\\"createItem\\", ({ item }) => ({
+  url: \`/items\`,
+  method: \\"post\\",
+  params: {
+    item,
+  },
+}));
+
+export const deletePet = createRequestAction<{
+  id: number;
+}>(\\"deletePet\\", ({ id }) => ({ url: \`/pets/\${id}\`, method: \\"delete\\" }));
+
+export const findPetById = createRequestAction<
+  {
+    id: number;
+  },
+  IPet
+>(\\"findPetById\\", ({ id }) => ({ url: \`/pets/\${id}\`, method: \\"get\\" }));
+
+export const findPets = createRequestAction<
+  {
+    limit?: number;
+    status: keyof typeof FindPetsStatus[];
+    tags?: string[];
+  },
+  IPet[]
+>(\\"findPets\\", ({ tags, limit, status }) => ({
+  url: \`/pets\`,
+  method: \\"get\\",
+  params: {
+    tags,
+    limit,
+    status,
+  },
+}));
+
+export const getItems = createRequestAction<
+  {
+    limit?: number;
+    page?: number;
+    sort?: string[];
+  },
+  TItems
+>(\\"getItems\\", ({ page, limit, sort }) => ({
+  url: \`/items\`,
+  method: \\"get\\",
+  params: {
+    page,
+    limit,
+    sort,
+  },
+}));
+
+export const postBody = createRequestAction<{
+  requestBody: IPet;
+}>(\\"postBody\\", () => ({ url: \`/body\`, method: \\"post\\" }));
+
+export const updatePet = createRequestAction<{
+  requestBody?: ICat | IDog;
+}>(\\"updatePet\\", ({ requestBody }) => ({
+  url: \`/pets\`,
+  method: \\"patch\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export interface ICat extends IPet {
+  age?: number;
+  hunts?: boolean;
+}
+
+export interface ICategory {
+  id?: number;
+  name?: string;
+}
+
+export interface IDog extends IPet {
+  bark?: boolean;
+  breed?: keyof typeof DogBreed;
+}
+
+export enum DogBreed {
+  \\"Dingo\\" = \\"Dingo\\",
+  \\"Husky\\" = \\"Husky\\",
+  \\"Retriever\\" = \\"Retriever\\",
+  \\"Shepherd\\" = \\"Shepherd\\",
+}
+
+export interface IError {
+  code: number;
+  message: string;
+}
+
+export enum FindPetsStatus {
+  \\"available\\" = \\"available\\",
+  \\"pending\\" = \\"pending\\",
+  \\"sold\\" = \\"sold\\",
+}
+
+export interface IItem {
+  color?: string;
+  id?: string;
+  name?: string;
+  price?: string;
+}
+
+export type TItems = IItem[];
+
+export interface IMessage {
+  message?: string;
+}
+
+export interface INewPet {
+  name: string;
+  tag?: string;
+}
+
+export interface IPet extends INewPet {
+  categories?: ICategory[];
+  id: number;
+}
+
+export type TPets = IPet[];
+"
+`;
