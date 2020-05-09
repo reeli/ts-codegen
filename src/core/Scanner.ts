@@ -5,7 +5,7 @@ import { Schema } from "src/core/Schema";
 import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
 import { Parameter, Spec } from "swagger-schema-official";
 import { CustomSchema, IClientConfig } from "src/core/types";
-import { getClientConfigsV2, getClientConfigV3 } from "src";
+import { getClientConfigsV2, getClientConfigsV3 } from "src";
 import { createRegister } from "src/core/Register";
 
 export const getDeclarationType = (schema: CustomSchema) => {
@@ -59,7 +59,7 @@ export class Scanner {
 
     let clientConfigs: IClientConfig[] = this.spec.swagger
       ? getClientConfigsV2(this.spec.paths, basePath, this.register)
-      : getClientConfigV3(this.spec.paths, basePath, this.register);
+      : getClientConfigsV3(this.spec.paths, basePath, this.register);
 
     const decls = this.register.getDecls();
     const prefixes = this.register.getPrefixes();
