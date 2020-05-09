@@ -1,4 +1,4 @@
-import { camelCase, Dictionary, find, forEach, indexOf, map, replace, some, trimEnd } from "lodash";
+import { camelCase, Dictionary, find, forEach, indexOf, map, replace, some, takeRight, trimEnd } from "lodash";
 import prettier from "prettier";
 import { ERROR_MESSAGES } from "src/core/constants";
 import { CustomSchema } from "src/core/types";
@@ -135,4 +135,13 @@ export const resolveRef = (str?: string) => {
     type: list[list.length - 2],
     name: list[list.length - 1],
   };
+};
+
+export const getPathsFromRef = (str?: string): string[] => {
+  if (!str) {
+    return [];
+  }
+
+  const paths = str.replace(/^#\//, "").split("/");
+  return takeRight(paths, 2);
 };

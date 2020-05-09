@@ -40,12 +40,12 @@ export const getOperationId = (operationId?: string) => camelCase(operationId);
 export const pickParams = (register: ReturnType<typeof createRegister>) => (params?: CustomParameters) => (
   type: "path" | "query" | "body" | "formData",
 ) => {
-  const list = map(params, (param: CustomParameter | CustomReference) => {
+  const list = map(params, (param) => {
     let data = param;
 
     if ((param as CustomReference).$ref) {
       const name = getRefId((param as CustomReference).$ref);
-      data = register.getParameters()[name];
+      data = register.getParameter(name);
     }
 
     if ((data as CustomParameter).in === type) {
@@ -109,7 +109,7 @@ class ClientConfigsV3 {
     }
     if (requestBody.$ref) {
       const id = getRefId(requestBody.$ref);
-      const body = this.register.getRequestBodies()[id];
+      const body = this.register.getRequestBody(id);
       return this.getBodyParamsTypes(body);
     }
 
@@ -158,7 +158,7 @@ class ClientConfigsV3 {
     if ((resp as Reference)?.$ref) {
       const { type, name } = resolveRef((resp as Reference).$ref);
       if (type === "responses" && name) {
-        return this.handleRespContent(this.register.getResponses()[name] as Response | Reference);
+        return this.handleRespContent(this.register.getResponse(name) as Response | Reference);
       }
       return this.schemaHandler.convert(resp as CustomSchema);
     }

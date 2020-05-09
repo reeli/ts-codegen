@@ -2,6 +2,7 @@
 import { CustomType, Ref } from "src/core/Type";
 import { Parameter } from "swagger-schema-official";
 import { IReference, IRequestBody, IResponse } from "src/v3/OpenAPI";
+import { get } from "lodash";
 
 interface IStore {
   decls: { [id: string]: CustomType };
@@ -73,14 +74,14 @@ export const createRegister = () => {
     getPrefixes() {
       return store.prefixes;
     },
-    getParameters() {
-      return store.parameters;
+    getParameter(id: string) {
+      return store.parameters[id];
     },
-    getResponses() {
-      return store.responses;
+    getResponse(paths: string[]) {
+      return get(store, paths);
     },
-    getRequestBodies() {
-      return store.requestBodies;
+    getRequestBody(id: string) {
+      return store.requestBodies[id];
     },
   };
 };
