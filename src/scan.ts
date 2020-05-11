@@ -19,17 +19,11 @@ export const scan = (data: Spec | IOpenAPI) => {
   const schemaHandler = new Schema(register);
   const { dataType, basePath, paths, schemas, parameters, responses, requestBodies } = getInputs(data);
 
-  function generateReusableTypes(s: { [k: string]: CustomSchema | CustomReference }) {
-    return keys(s).map((k) => {
-      const name = toCapitalCase(k);
-      const t = schemaHandler.convert(s[k], name);
-      register.setType(name, t);
-      register.setPrefix(name, getDeclarationType(s[k]));
-      return t;
-    });
-  }
-
-  generateReusableTypes(schemas);
+  keys(schemas).forEach((k) => {
+    const name = toCapitalCase(k);
+    register.setDecl(name, schemaHandler.convert(schemas[k], name));
+    register.setPrefix(name, getDeclarationType(schemas[k]));
+  });
 
   register.setData(["parameters"], parameters);
   register.setData(["responses"], responses);
@@ -40,11 +34,10 @@ export const scan = (data: Spec | IOpenAPI) => {
       ? getClientConfigsV2(paths, basePath, register)
       : getClientConfigsV3(paths, basePath, register);
 
-  const decls = register.getDecls();
   const prefixes = register.getPrefixes();
   register.renameAllRefs((name) => addPrefix(name, prefixes));
 
-  return prettifyCode(`${toRequest(clientConfigs)} \n\n ${getOutput(decls, prefixes)}`);
+  return prettifyCode(`${toRequest(clientConfigs)} \n\n ${getOutput(register.getDecls(), prefixes)}`);
 };
 
 const isOpenApi = (v: any): v is IOpenAPI => v.openapi;

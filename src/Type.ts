@@ -131,7 +131,7 @@ export class Type {
   constructor(private register: ReturnType<typeof createRegister>) {}
 
   enum(value: any[], id: string = uniqueId("Enum")) {
-    this.register.setType(id, new Enum(id, value));
+    this.register.setDecl(id, new Enum(id, value));
     return new Enum(id);
   }
 

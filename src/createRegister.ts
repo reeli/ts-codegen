@@ -30,7 +30,7 @@ export const createRegister = () => {
   };
 
   return {
-    setType: (id: string, type: CustomType) => {
+    setDecl: (id: string, type: CustomType) => {
       store.decls[id] = type;
     },
 
@@ -52,9 +52,6 @@ export const createRegister = () => {
       for (let name in store.refs) {
         store.refs[name].rename(cb(name));
       }
-    },
-    getRefs() {
-      return store.refs;
     },
     getDecls() {
       return store.decls;
