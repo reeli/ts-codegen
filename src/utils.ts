@@ -1,7 +1,7 @@
 import { camelCase, Dictionary, find, forEach, indexOf, map, replace, some, takeRight, trimEnd } from "lodash";
 import prettier from "prettier";
-import { ERROR_MESSAGES } from "src/core/constants";
-import { CustomSchema } from "src/core/types";
+import { CustomSchema } from "src/__types__/types";
+import { ERROR_MESSAGES } from "src/constants";
 
 export const toCapitalCase = (str?: string): string => {
   if (!str) {

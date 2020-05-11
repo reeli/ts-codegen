@@ -1,9 +1,9 @@
-import { getUseExtends, isArray, toCapitalCase } from "src/core/utils";
+import { getUseExtends, isArray, toCapitalCase } from "src/utils";
 import { forEach, isEmpty, map, reduce } from "lodash";
-import { IReference, ISchema } from "src/v3/OpenAPI";
-import { CustomType, Type } from "src/core/Type";
-import { CustomSchema } from "src/core/types";
-import { createRegister } from "src/core/Register";
+import { IReference, ISchema } from "src/__types__/OpenAPI";
+import { CustomType, Type } from "src/Type";
+import { CustomSchema } from "src/__types__/types";
+import { createRegister } from "src/Register";
 
 export class Schema {
   private type: Type;

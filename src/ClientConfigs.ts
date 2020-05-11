@@ -1,8 +1,8 @@
 import { BodyParameter, FormDataParameter, Operation, Path, Response } from "swagger-schema-official";
 import { camelCase, chain, Dictionary, first, get, isEmpty, keys, map, omit, pick, reduce, values } from "lodash";
-import { getPathsFromRef, toCapitalCase, withRequiredName } from "src/core/utils";
-import { CustomType } from "src/core/Type";
-import { Schema } from "src/core/Schema";
+import { getPathsFromRef, toCapitalCase, withRequiredName } from "src/utils";
+import { CustomType } from "src/Type";
+import { Schema } from "src/Schema";
 import {
   CustomOperation,
   CustomParameter,
@@ -12,9 +12,9 @@ import {
   CustomReference,
   CustomSchema,
   IClientConfig,
-} from "src/core/types";
-import { createRegister } from "src/core/Register";
-import { IOperation, IPaths, IRequestBody, IResponse } from "src/v3/OpenAPI";
+} from "src/__types__/types";
+import { createRegister } from "src/Register";
+import { IOperation, IPaths, IRequestBody, IResponse } from "src/__types__/OpenAPI";
 
 // TODO: 解决向后兼容的问题，比如（requestBody，method, operationId, enum 等等）
 // TODO: 让 method 变成全大写，get -> GET

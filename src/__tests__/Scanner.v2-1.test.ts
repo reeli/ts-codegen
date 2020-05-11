@@ -1,5 +1,5 @@
 import swaggerV2 from "examples/swagger.v2.json";
-import { Scanner } from "src/core/Scanner";
+import { Scanner } from "src/Scanner";
 import { Spec } from "swagger-schema-official";
 
 describe("swagger v2", () => {

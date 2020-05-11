@@ -1,5 +1,5 @@
 import swaggerV2PetStore from "examples/petstore.json";
-import { Scanner } from "src/core/Scanner";
+import { Scanner } from "src/Scanner";
 
 describe("swagger v2", () => {
   it("should handle special spec correctly", () => {

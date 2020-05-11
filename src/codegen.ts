@@ -1,12 +1,12 @@
-import { prettifyCode, testJSON } from "src/core/utils";
+import { prettifyCode, testJSON } from "src/utils";
 import axios from "axios";
 import { map } from "lodash";
-import { ERROR_MESSAGES } from "src/core/constants";
 import * as fs from "fs";
 import * as path from "path";
-import { IOpenAPI } from "src/v3/OpenAPI";
+import { IOpenAPI } from "src/__types__/OpenAPI";
 import { Spec } from "swagger-schema-official";
-import { Scanner } from "src/core/Scanner";
+import { Scanner } from "src/Scanner";
+import { ERROR_MESSAGES } from "src/constants";
 
 export const codegen = (spec: IOpenAPI | Spec): string => (spec ? new Scanner(spec as Spec).scan() : "");
 
@@ -59,7 +59,7 @@ export const codegenFromConfig = () => {
 
   (data || []).map((file: string) => {
     const specStr = fs.readFileSync(file, "utf8");
-    const spec = testJSON(specStr);
+    const spec = testJSON(specStr, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
 
     writeSpecToFile(spec);
   });

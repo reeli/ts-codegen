@@ -1,6 +1,6 @@
 import swaggerV3PetStore from "examples/petstore.v3.json";
-import { Scanner } from "src/core/Scanner";
-import { IOpenAPI } from "src/v3/OpenAPI";
+import { Scanner } from "src/Scanner";
+import { IOpenAPI } from "src/__types__/OpenAPI";
 
 describe("swagger v3", () => {
   it("should handle special schemas correctly", () => {

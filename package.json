@@ -17,7 +17,7 @@
     "README.md"
   ],
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register src/core/codegen.ts",
+    "start": "ts-node -r tsconfig-paths/register src/codegen.ts",
     "test": "tsc && jest",
     "build": "rm -rf dist && tsc",
     "release": "rm -rf lib/ && rm -rf module/ && rollup -c rollup.config.ts",
