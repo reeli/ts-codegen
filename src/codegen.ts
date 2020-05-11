@@ -5,10 +5,10 @@ import * as fs from "fs";
 import * as path from "path";
 import { IOpenAPI } from "src/__types__/OpenAPI";
 import { Spec } from "swagger-schema-official";
-import { Scanner } from "src/Scanner";
+import { scan } from "src/scan";
 import { ERROR_MESSAGES } from "src/constants";
 
-export const codegen = (spec: IOpenAPI | Spec): string => (spec ? new Scanner(spec as Spec).scan() : "");
+export const codegen = (spec: IOpenAPI | Spec): string => (spec ? scan(spec) : "");
 
 const getFilename = (basePath?: string) => (basePath ? `./${basePath.split("/").join(".").slice(1)}` : "./api.client");
 

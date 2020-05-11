@@ -1,8 +1,8 @@
 import swaggerV2PetStore from "examples/petstore.json";
-import { Scanner } from "src/Scanner";
+import { scan } from "src/scan";
 
 describe("swagger v2", () => {
   it("should handle special spec correctly", () => {
-    expect(new Scanner(swaggerV2PetStore as any).scan()).toMatchSnapshot();
+    expect(scan(swaggerV2PetStore as any)).toMatchSnapshot();
   });
 });
