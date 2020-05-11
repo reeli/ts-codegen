@@ -1,9 +1,9 @@
-import { IComponents, IOpenAPI, IReference } from "src/v3/OpenAPI";
+import { IOpenAPI, IReference } from "src/v3/OpenAPI";
 import { CustomType, Enum } from "src/core/Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { Schema } from "src/core/Schema";
 import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/core/utils";
-import { Parameter, Spec } from "swagger-schema-official";
+import { Spec } from "swagger-schema-official";
 import { CustomSchema, IClientConfig } from "src/core/types";
 import { getClientConfigsV2, getClientConfigsV3 } from "src";
 import { createRegister } from "src/core/Register";
@@ -53,9 +53,10 @@ export class Scanner {
     // TODO: handle v3 base path later
     const basePath = this.spec.basePath || "";
     this.toReusableTypes(this.spec.definitions || (this.spec as IOpenAPI)?.components?.schemas);
-    this.handleParameters(this.spec.parameters || (this.spec as IOpenAPI)?.components?.parameters);
-    this.handleResponses(this.spec.responses || (this.spec as IOpenAPI)?.components?.responses);
-    this.handleRequestBodies((this.spec as IOpenAPI)?.components?.requestBodies);
+
+    this.register.setData(["parameters"], this.spec.parameters || (this.spec as IOpenAPI)?.components?.parameters);
+    this.register.setData(["responses"], this.spec.responses || (this.spec as IOpenAPI)?.components?.responses);
+    this.register.setData(["requestBodies"], (this.spec as IOpenAPI)?.components?.requestBodies);
 
     let clientConfigs: IClientConfig[] = this.spec.swagger
       ? getClientConfigsV2(this.spec.paths, basePath, this.register)
@@ -122,39 +123,6 @@ export const ${v.operationId} = createRequestAction${types ? "<" + types + ">" :
 `;
       })
       .join("\n\n");
-  }
-
-  handleParameters(parameters: Spec["parameters"] | IComponents["parameters"]) {
-    if (!parameters) {
-      return;
-    }
-
-    keys(parameters).forEach((key) => {
-      // TODO: resolve parameters[key] later
-      this.register.setParameter(key, parameters[key] as Parameter);
-    });
-  }
-
-  handleResponses(responses: Spec["responses"] | IComponents["responses"]) {
-    if (!responses) {
-      return;
-    }
-
-    keys(responses).forEach((key) => {
-      // TODO: resolve responses[key] later
-      this.register.setResponses(key, responses[key]);
-    });
-  }
-
-  handleRequestBodies(requestBodies?: IComponents["requestBodies"]) {
-    if (!requestBodies) {
-      return;
-    }
-
-    keys(requestBodies).forEach((key) => {
-      // TODO: resolve body[key] later
-      this.register.setRequestBody(key, requestBodies[key]);
-    });
   }
 }
 

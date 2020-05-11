@@ -149,7 +149,7 @@ export const getClientConfigsV3 = (
     if (!requestBody) {
       return {};
     }
-    const bodyData = requestBody?.$ref ? register.getRequestBody(getPathsFromRef(requestBody.$ref)) : requestBody;
+    const bodyData = requestBody?.$ref ? register.getData(getPathsFromRef(requestBody.$ref)) : requestBody;
 
     return {
       // TODO: 这里是否会存在处理 request body 中 multipart/form-data 和 application/json 并存的情况？
@@ -189,9 +189,9 @@ export const getClientConfigsV3 = (
 const pickParams = (register: ReturnType<typeof createRegister>) => (params?: CustomParameters) => <TParameter>(
   type: "path" | "query" | "body" | "formData",
 ): TParameter[] | undefined => {
-  const list = map(params, (param) =>
-    getRef(param) ? register.getParameter(getPathsFromRef(param.$ref)) : param,
-  ).filter((v: CustomParameter) => v.in === type);
+  const list = map(params, (param) => (getRef(param) ? register.getData(getPathsFromRef(param.$ref)) : param)).filter(
+    (v: CustomParameter) => v.in === type,
+  );
 
   return isEmpty(list) ? undefined : list;
 };
@@ -238,7 +238,7 @@ const getSuccessResponsesType = (schemaHandler: Schema, register: ReturnType<typ
   const handleResp = (resp?: TResponse | CustomReference): CustomType | undefined => {
     if (getRef(resp)) {
       const paths = getPathsFromRef(resp.$ref);
-      const response = register.getResponse(paths);
+      const response = register.getData(paths);
       return response ? handleResp(response) : schemaHandler.convert(resp);
     }
 
