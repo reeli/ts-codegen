@@ -7,7 +7,7 @@ exports[`swagger v3 should handle special schemas correctly 1`] = `
   },
   TPet
 >(\\"addPet\\", ({ requestBody }) => ({
-  url: \`/pets\`,
+  url: \`/v2/pets\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -15,14 +15,14 @@ exports[`swagger v3 should handle special schemas correctly 1`] = `
 
 export const deletePet = createRequestAction<{
   id: number;
-}>(\\"deletePet\\", ({ id }) => ({ url: \`/pets/\${id}\`, method: \\"delete\\" }));
+}>(\\"deletePet\\", ({ id }) => ({ url: \`/v2/pets/\${id}\`, method: \\"delete\\" }));
 
 export const findPetById = createRequestAction<
   {
     id: number;
   },
   TPet
->(\\"findPetById\\", ({ id }) => ({ url: \`/pets/\${id}\`, method: \\"get\\" }));
+>(\\"findPetById\\", ({ id }) => ({ url: \`/v2/pets/\${id}\`, method: \\"get\\" }));
 
 export const findPets = createRequestAction<
   {
@@ -31,7 +31,7 @@ export const findPets = createRequestAction<
   },
   TPet[]
 >(\\"findPets\\", ({ tags, limit }) => ({
-  url: \`/pets\`,
+  url: \`/v2/pets\`,
   method: \\"get\\",
   params: {
     tags,
@@ -42,7 +42,7 @@ export const findPets = createRequestAction<
 export const formMultipartWithFile = createRequestAction<{
   requestBody: { data?: TPet; file: string; slice?: string[]; string?: string };
 }>(\\"formMultipartWithFile\\", ({ requestBody }) => ({
-  url: \`/demo/forms/multipart\`,
+  url: \`/v2/demo/forms/multipart\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
@@ -51,7 +51,7 @@ export const formMultipartWithFile = createRequestAction<{
 export const formMultipartWithFiles = createRequestAction<{
   requestBody: { files: string[] };
 }>(\\"formMultipartWithFiles\\", ({ requestBody }) => ({
-  url: \`/demo/forms/multipart-with-files\`,
+  url: \`/v2/demo/forms/multipart-with-files\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
@@ -60,7 +60,7 @@ export const formMultipartWithFiles = createRequestAction<{
 export const formUrlEncoded = createRequestAction<{
   requestBody: IRequestForm;
 }>(\\"formUrlEncoded\\", ({ requestBody }) => ({
-  url: \`/demo/forms/url-encoded\`,
+  url: \`/v2/demo/forms/url-encoded\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/x-www-form-urlencoded\\" },

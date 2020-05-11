@@ -1,4 +1,4 @@
-import { IOpenAPI, IReference } from "src/__types__/OpenAPI";
+import { IOpenAPI, IReference, IServer } from "src/__types__/OpenAPI";
 import { CustomType, Enum } from "src/Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { Schema } from "src/Schema";
@@ -7,8 +7,9 @@ import { Spec } from "swagger-schema-official";
 import { CustomSchema, IClientConfig } from "src/__types__/types";
 import { getClientConfigsV2, getClientConfigsV3 } from "src/index";
 import { createRegister } from "src/Register";
+import { parse } from "url";
 
-export const getDeclarationType = (schema: CustomSchema) => {
+const getDeclarationType = (schema: CustomSchema) => {
   if (schema.type === "object" || schema.properties || (schema.allOf && getUseExtends(schema.allOf))) {
     return "interface";
   }
@@ -18,7 +19,7 @@ export const getDeclarationType = (schema: CustomSchema) => {
 const addPrefix = (name: string, prefixes: { [id: string]: string }) =>
   `${prefixes[name] === "interface" ? "I" : "T"}${name}`;
 
-export const getOutput = (decls: { [id: string]: CustomType }, prefixes: { [id: string]: string }): string => {
+const getOutput = (decls: { [id: string]: CustomType }, prefixes: { [id: string]: string }): string => {
   let output = "";
   keys(decls)
     .sort()
@@ -40,6 +41,18 @@ export const getOutput = (decls: { [id: string]: CustomType }, prefixes: { [id: 
 
 type KType = { [key: string]: CustomType };
 
+const getBasePathFromServers = (servers?: IServer[]): string => {
+  if (isEmpty(servers)) {
+    return "";
+  }
+  const server = servers![0];
+  if (server?.variables) {
+    const basePath = get(server, "variables.basePath.default");
+    return basePath ? `/${basePath}` : "";
+  }
+  return parse(server?.url)?.pathname || "";
+};
+
 export class Scanner {
   schemaHandler: Schema;
   register: ReturnType<typeof createRegister>;
@@ -51,7 +64,7 @@ export class Scanner {
 
   public scan(): string {
     // TODO: handle v3 base path later
-    const basePath = this.spec.basePath || "";
+    const basePath = this.spec.basePath || getBasePathFromServers((this.spec as IOpenAPI)?.servers);
     this.toReusableTypes(this.spec.definitions || (this.spec as IOpenAPI)?.components?.schemas);
 
     this.register.setData(["parameters"], this.spec.parameters || (this.spec as IOpenAPI)?.components?.parameters);
