@@ -1,6 +1,6 @@
 import { isEmpty, keys, map, uniqueId } from "lodash";
 import { getRefId, isArray, quoteKey, toCapitalCase } from "src/utils";
-import { createRegister } from "src/createRegister";
+import { createRegister, DeclKinds } from "src/createRegister";
 
 export type CustomType = Ref | Obj | Arr | Enum | OneOf | BasicType;
 
@@ -29,7 +29,7 @@ export class Enum extends TypeFactory {
 
   toType(): string {
     if (this.value) {
-      return `enum ${this.id} {
+      return `{
       ${this.value
         .map((v) => {
           return `'${v}' = '${v}',`;
@@ -131,7 +131,7 @@ export class Type {
   constructor(private register: ReturnType<typeof createRegister>) {}
 
   enum(value: any[], id: string = uniqueId("Enum")) {
-    this.register.setDecl(id, new Enum(id, value));
+    this.register.setDecl(id, new Enum(id, value), DeclKinds.enum);
     return new Enum(id);
   }
 

@@ -4,10 +4,32 @@ import { Parameter } from "swagger-schema-official";
 import { IReference, IRequestBody, IResponse } from "src/__types__/OpenAPI";
 import { get, set } from "lodash";
 
-interface IStore {
-  decls: { [id: string]: CustomType };
+export enum DeclKinds {
+  interface = "interface",
+  type = "type",
+  enum = "enum",
+}
+
+const withPrefix = (name: string, kind: string) => {
+  switch (kind) {
+    case "interface":
+      return `I${name}`;
+    case "type":
+      return `T${name}`;
+    default:
+      return name;
+  }
+};
+
+export interface IStore {
+  decls: {
+    [id: string]: {
+      type: CustomType;
+      kind: string;
+      name: string;
+    };
+  };
   refs: { [id: string]: Ref };
-  prefixes: { [id: string]: string };
   parameters: {
     [id: string]: Parameter;
   };
@@ -23,19 +45,22 @@ export const createRegister = () => {
   const store: IStore = {
     decls: {},
     refs: {},
-    prefixes: {},
     parameters: {},
     responses: {},
     requestBodies: {},
   };
 
   return {
-    setDecl: (id: string, type: CustomType) => {
-      store.decls[id] = type;
+    getDecls() {
+      return store.decls;
     },
 
-    setPrefix: (id: string, prefix: string) => {
-      store.prefixes[id] = prefix;
+    setDecl: (id: string, type: CustomType, kind: string) => {
+      store.decls[id] = {
+        type,
+        kind,
+        name: withPrefix(id, kind),
+      };
     },
 
     setRef: (id: string) => {
@@ -48,22 +73,19 @@ export const createRegister = () => {
 
       return type;
     },
+
+    getData(paths: string[]) {
+      return get(store, paths);
+    },
+
+    setData(paths: string[], data: any) {
+      return set(store, paths, data);
+    },
+
     renameAllRefs: (cb: (newName: string) => string) => {
       for (let name in store.refs) {
         store.refs[name].rename(cb(name));
       }
-    },
-    getDecls() {
-      return store.decls;
-    },
-    getPrefixes() {
-      return store.prefixes;
-    },
-    getData(paths: string[]) {
-      return get(store, paths);
-    },
-    setData(paths: string[], data: any) {
-      return set(store, paths, data);
     },
   };
 };

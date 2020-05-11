@@ -1,12 +1,12 @@
 import { IOpenAPI, IServer } from "src/__types__/OpenAPI";
-import { CustomType, Enum } from "src/Type";
+import { CustomType } from "src/Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { Schema } from "src/Schema";
 import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/utils";
 import { Spec } from "swagger-schema-official";
 import { CustomReference, CustomSchema, IClientConfig } from "src/__types__/types";
 import { getClientConfigsV2, getClientConfigsV3 } from "src/index";
-import { createRegister } from "src/createRegister";
+import { createRegister, DeclKinds, IStore } from "src/createRegister";
 import { parse } from "url";
 
 enum DataType {
@@ -21,8 +21,7 @@ export const scan = (data: Spec | IOpenAPI) => {
 
   keys(schemas).forEach((k) => {
     const name = toCapitalCase(k);
-    register.setDecl(name, schemaHandler.convert(schemas[k], name));
-    register.setPrefix(name, getDeclarationType(schemas[k]));
+    register.setDecl(name, schemaHandler.convert(schemas[k], name), getDeclarationType(schemas[k]));
   });
 
   register.setData(["parameters"], parameters);
@@ -34,10 +33,10 @@ export const scan = (data: Spec | IOpenAPI) => {
       ? getClientConfigsV2(paths, basePath, register)
       : getClientConfigsV3(paths, basePath, register);
 
-  const prefixes = register.getPrefixes();
-  register.renameAllRefs((name) => addPrefix(name, prefixes));
+  const decls = register.getDecls();
+  register.renameAllRefs((key) => decls[key].name);
 
-  return prettifyCode(`${toRequest(clientConfigs)} \n\n ${getOutput(register.getDecls(), prefixes)}`);
+  return print(clientConfigs, decls);
 };
 
 const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
@@ -65,7 +64,11 @@ const getInputs = (data: Spec | IOpenAPI) => {
   };
 };
 
-function toRequest(clientConfigs: IClientConfig[]): string {
+const print = (clientConfigs: IClientConfig[], decls: IStore["decls"]) => {
+  return prettifyCode(`${printRequest(clientConfigs)} \n\n ${printTypes(decls)}`);
+};
+
+function printRequest(clientConfigs: IClientConfig[]): string {
   // for (let name in Register.refs) {
   //   if (!(Register.refs[name] as Ref).alias) {
   //     (Register.refs[name] as Ref).rename(addPrefix(name));
@@ -112,6 +115,21 @@ export const ${v.operationId} = createRequestAction${types ? "<" + types + ">" :
     .join("\n\n");
 }
 
+const printTypes = (decls: IStore["decls"]): string => {
+  let output = "";
+  keys(decls)
+    .sort()
+    .forEach((k) => {
+      const expr = decls[k].kind === DeclKinds.type ? "=" : "";
+      output =
+        output +
+        `export ${decls[k].kind} ${decls[k].name} ${expr} ${decls[k].type.toType()}${
+          decls[k].kind === DeclKinds.type ? ";" : ""
+        }\n\n`;
+    });
+  return output;
+};
+
 const toRequestParams = (data: any[] = []) =>
   !isEmpty(data)
     ? `{
@@ -120,33 +138,10 @@ ${data.join(",\n")}
     : undefined;
 
 const getDeclarationType = (schema: CustomSchema) => {
-  if (schema.type === "object" || schema.properties || (schema.allOf && getUseExtends(schema.allOf))) {
-    return "interface";
+  if (schema?.type === "object" || schema?.properties || (schema?.allOf && getUseExtends(schema?.allOf))) {
+    return DeclKinds.interface;
   }
-  return "type";
-};
-
-const addPrefix = (name: string, prefixes: { [id: string]: string }) =>
-  `${prefixes[name] === "interface" ? "I" : "T"}${name}`;
-
-const getOutput = (decls: { [id: string]: CustomType }, prefixes: { [id: string]: string }): string => {
-  let output = "";
-  keys(decls)
-    .sort()
-    .forEach((k) => {
-      const t = decls[k];
-      if (t instanceof Enum) {
-        output = output + `export ${t.toType()}\n\n`;
-        return;
-      }
-
-      output =
-        output +
-        `export ${prefixes[k]} ${addPrefix(k, prefixes)} ${prefixes[k] === "interface" ? "" : "="} ${t.toType()}${
-          prefixes[k] === "type" ? ";" : ""
-        }\n\n`;
-    });
-  return output;
+  return DeclKinds.type;
 };
 
 type KType = { [key: string]: CustomType };
