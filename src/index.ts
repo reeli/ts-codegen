@@ -1,2 +1,2 @@
-export * from "src/ClientConfigs";
+export * from "src/createClientConfigs";
 export * from "src/utils";

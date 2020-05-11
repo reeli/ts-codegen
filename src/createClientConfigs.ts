@@ -13,7 +13,7 @@ import {
   CustomSchema,
   IClientConfig,
 } from "src/__types__/types";
-import { createRegister } from "src/Register";
+import { createRegister } from "src/createRegister";
 import { IOperation, IPaths, IRequestBody, IResponse } from "src/__types__/OpenAPI";
 
 // TODO: 解决向后兼容的问题，比如（requestBody，method, operationId, enum 等等）

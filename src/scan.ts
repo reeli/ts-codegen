@@ -6,45 +6,20 @@ import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } fr
 import { Spec } from "swagger-schema-official";
 import { CustomReference, CustomSchema, IClientConfig } from "src/__types__/types";
 import { getClientConfigsV2, getClientConfigsV3 } from "src/index";
-import { createRegister } from "src/Register";
+import { createRegister } from "src/createRegister";
 import { parse } from "url";
-
-const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
 
 enum DataType {
   openapi,
   swagger,
 }
 
-const getInputs = (data: Spec | IOpenAPI) => {
-  if (isOpenApi(data)) {
-    return {
-      type: DataType.openapi,
-      basePath: getBasePathFromServers(data?.servers),
-      paths: data.paths,
-      schemas: data.components?.schemas as { [key: string]: CustomSchema | CustomReference },
-      parameters: data.components?.parameters,
-      responses: data.components?.responses,
-      requestBodies: data.components?.requestBodies,
-    };
-  }
-  return {
-    type: DataType.swagger,
-    basePath: data.basePath || "",
-    paths: data.paths,
-    schemas: data.definitions as { [key: string]: CustomSchema },
-    parameters: data.parameters,
-    responses: data.responses,
-    requestBodies: null,
-  };
-};
-
 export const scan = (data: Spec | IOpenAPI) => {
   const register = createRegister();
   const schemaHandler = new Schema(register);
-  const { type, basePath, paths, schemas, parameters, responses, requestBodies } = getInputs(data);
+  const { dataType, basePath, paths, schemas, parameters, responses, requestBodies } = getInputs(data);
 
-  function toReusableTypes(s: { [k: string]: CustomSchema | CustomReference }) {
+  function generateReusableTypes(s: { [k: string]: CustomSchema | CustomReference }) {
     return keys(s).map((k) => {
       const name = toCapitalCase(k);
       const t = schemaHandler.convert(s[k], name);
@@ -54,14 +29,14 @@ export const scan = (data: Spec | IOpenAPI) => {
     });
   }
 
-  toReusableTypes(schemas);
+  generateReusableTypes(schemas);
 
   register.setData(["parameters"], parameters);
   register.setData(["responses"], responses);
   register.setData(["requestBodies"], requestBodies);
 
   let clientConfigs: IClientConfig[] =
-    type === DataType.swagger
+    dataType === DataType.swagger
       ? getClientConfigsV2(paths, basePath, register)
       : getClientConfigsV3(paths, basePath, register);
 
@@ -70,6 +45,31 @@ export const scan = (data: Spec | IOpenAPI) => {
   register.renameAllRefs((name) => addPrefix(name, prefixes));
 
   return prettifyCode(`${toRequest(clientConfigs)} \n\n ${getOutput(decls, prefixes)}`);
+};
+
+const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
+
+const getInputs = (data: Spec | IOpenAPI) => {
+  if (isOpenApi(data)) {
+    return {
+      dataType: DataType.openapi,
+      basePath: getBasePathFromServers(data?.servers),
+      paths: data.paths,
+      schemas: data.components?.schemas as { [key: string]: CustomSchema | CustomReference },
+      parameters: data.components?.parameters,
+      responses: data.components?.responses,
+      requestBodies: data.components?.requestBodies,
+    };
+  }
+  return {
+    dataType: DataType.swagger,
+    basePath: data.basePath || "",
+    paths: data.paths,
+    schemas: data.definitions as { [key: string]: CustomSchema },
+    parameters: data.parameters,
+    responses: data.responses,
+    requestBodies: null,
+  };
 };
 
 function toRequest(clientConfigs: IClientConfig[]): string {

@@ -1,5 +1,5 @@
 import { Schema } from "src/Schema";
-import { createRegister } from "src/Register";
+import { createRegister } from "src/createRegister";
 
 describe("Schema Converter", () => {
   let register: ReturnType<typeof createRegister>;

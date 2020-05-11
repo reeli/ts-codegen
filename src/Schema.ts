@@ -3,7 +3,7 @@ import { forEach, isEmpty, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/__types__/OpenAPI";
 import { CustomType, Type } from "src/Type";
 import { CustomSchema } from "src/__types__/types";
-import { createRegister } from "src/Register";
+import { createRegister } from "src/createRegister";
 
 export class Schema {
   private type: Type;
