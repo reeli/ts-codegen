@@ -5,9 +5,9 @@ import { Schema } from "src/Schema";
 import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/utils";
 import { Spec } from "swagger-schema-official";
 import { CustomReference, CustomSchema, IClientConfig, RequestType } from "src/__types__/types";
-import { getClientConfigsV2, getClientConfigsV3 } from "src/index";
 import { createRegister, DeclKinds, IStore } from "src/createRegister";
 import { parse } from "url";
+import { getClientConfigsV2, getClientConfigsV3 } from "src/createClientConfigs";
 
 enum DataType {
   openapi,

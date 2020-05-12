@@ -145,3 +145,6 @@ export const getPathsFromRef = (str?: string): string[] => {
   const paths = str.replace(/^#\//, "").split("/");
   return takeRight(paths, 2);
 };
+
+export const getFilename = (basePath?: string) =>
+  basePath ? `./${basePath.split("/").join(".").slice(1)}` : "./api.client";

@@ -1,6 +1,6 @@
-import { prettifyCode, testJSON } from "src/utils";
+import { getFilename, prettifyCode, testJSON } from "src/utils";
 import axios from "axios";
-import { map } from "lodash";
+import { isEmpty, map } from "lodash";
 import * as fs from "fs";
 import * as path from "path";
 import { IOpenAPI } from "src/__types__/OpenAPI";
@@ -8,9 +8,44 @@ import { Spec } from "swagger-schema-official";
 import { scan } from "src/scan";
 import { ERROR_MESSAGES } from "src/constants";
 
-export const codegen = (spec: IOpenAPI | Spec): string => (spec ? scan(spec) : "");
+const codegen = () => {
+  const codegenConfigPath = path.resolve("ts-codegen.config.json");
 
-const getFilename = (basePath?: string) => (basePath ? `./${basePath.split("/").join(".").slice(1)}` : "./api.client");
+  const getCodegenConfig = () =>
+    fs.existsSync(codegenConfigPath)
+      ? require(codegenConfigPath)
+      : {
+          output: ".output",
+          actionCreatorImport: "",
+          clients: [],
+        };
+  const { output, actionCreatorImport, timeout, data, clients } = getCodegenConfig();
+
+  const writeSpecToFile = (spec: IOpenAPI | Spec) => {
+    if (!spec) {
+      return;
+    }
+    const fileStr = `${actionCreatorImport} ${scan(spec)}`;
+    write(output, getFilename(spec.basePath), fileStr);
+  };
+
+  if (!isEmpty(data)) {
+    data.map((file: string) => {
+      const specStr = fs.readFileSync(file, "utf8");
+      const spec = testJSON(specStr, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
+
+      writeSpecToFile(spec);
+    });
+  }
+
+  if (!isEmpty(clients)) {
+    fetchSwaggerJSON(clients, timeout).then((results: any[]) => {
+      results.forEach((spec: IOpenAPI | Spec) => {
+        writeSpecToFile(spec);
+      });
+    });
+  }
+};
 
 const write = (output: string, filename: string, str: string) => {
   if (!fs.existsSync(output)) {
@@ -20,9 +55,7 @@ const write = (output: string, filename: string, str: string) => {
   fs.writeFileSync(path.resolve(output, `./${filename}.ts`), prettifyCode(str), "utf-8");
 };
 
-// const codegenFromRemote = () => {};
-
-export const fetchSwaggerJSON = (clients: string[] = [], timeout: number = 10 * 1000) => {
+const fetchSwaggerJSON = (clients: string[] = [], timeout: number = 10 * 1000) => {
   const instance = axios.create({
     timeout,
   });
@@ -39,38 +72,4 @@ export const fetchSwaggerJSON = (clients: string[] = [], timeout: number = 10 * 
   );
 };
 
-export const codegenFromConfig = () => {
-  const codegenConfigPath = path.resolve("ts-codegen.config.json");
-
-  const getCodegenConfig = () =>
-    fs.existsSync(codegenConfigPath)
-      ? require(codegenConfigPath)
-      : {
-          output: ".output",
-          actionCreatorImport: "",
-          clients: [],
-        };
-  const { output, actionCreatorImport, timeout, data, clients } = getCodegenConfig();
-
-  const writeSpecToFile = (spec: IOpenAPI | Spec) => {
-    const fileStr = `${actionCreatorImport} ${codegen(spec)}`;
-    write(output, getFilename(spec.basePath), fileStr);
-  };
-
-  (data || []).map((file: string) => {
-    const specStr = fs.readFileSync(file, "utf8");
-    const spec = testJSON(specStr, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
-
-    writeSpecToFile(spec);
-  });
-
-  if (clients) {
-    fetchSwaggerJSON(clients, timeout).then((results: any[]) => {
-      results.forEach((spec: IOpenAPI | Spec) => {
-        writeSpecToFile(spec);
-      });
-    });
-  }
-};
-
-codegenFromConfig();
+codegen();
