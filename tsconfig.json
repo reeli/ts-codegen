@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "outDir": "dist",
     "baseUrl": ".",
-    "rootDir": "src",
+    "rootDir": ".",
     "resolveJsonModule": true
   },
   "exclude": ["node_modules", "examples", "**/__tests__/**", "rollup.config.ts"]
