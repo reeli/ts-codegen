@@ -1,4 +1,4 @@
-import swaggerV3 from "examples/swagger.v3.petstore.expanded.json";
+import swaggerV3 from "examples/openapi.json";
 import { scan } from "src/scan";
 import { IOpenAPI } from "src/__types__/OpenAPI";
 

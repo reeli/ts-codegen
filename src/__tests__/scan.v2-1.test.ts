@@ -1,4 +1,4 @@
-import swaggerV2 from "examples/swagger.v2.json";
+import swaggerV2 from "examples/swagger.json";
 import { Spec } from "swagger-schema-official";
 import { scan } from "src/scan";
 
