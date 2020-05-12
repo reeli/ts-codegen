@@ -1,7 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`swagger v2 should handle spec correctly 1`] = `
-"export const createItem = createRequestAction<
+"export const addPet = createRequestAction<{
+  requestBody: {
+    body: IPet;
+  };
+}>(\\"addPet\\", ({ requestBody }) => ({
+  url: \`/api/test/pet\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createItem = createRequestAction<
   {
     requestBody: {
       item?: IItem;
@@ -15,9 +26,54 @@ exports[`swagger v2 should handle spec correctly 1`] = `
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
+export const createUser = createRequestAction<{
+  requestBody: {
+    body: IUser;
+  };
+}>(\\"createUser\\", ({ requestBody }) => ({
+  url: \`/api/test/user\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createUsersWithArrayInput = createRequestAction<{
+  requestBody: {
+    body: IUser[];
+  };
+}>(\\"createUsersWithArrayInput\\", ({ requestBody }) => ({
+  url: \`/api/test/user/createWithArray\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createUsersWithListInput = createRequestAction<{
+  requestBody: {
+    body: IUser[];
+  };
+}>(\\"createUsersWithListInput\\", ({ requestBody }) => ({
+  url: \`/api/test/user/createWithList\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
 export const deleteAttachmentUsingDelete = createRequestAction<{
   id: string;
 }>(\\"deleteAttachmentUsingDelete\\", ({ id }) => ({ url: \`/api/test/\${id}\`, method: \\"delete\\" }));
+
+export const deleteOrder = createRequestAction<{
+  orderId: number;
+}>(\\"deleteOrder\\", ({ orderId }) => ({ url: \`/api/test/store/order/\${orderId}\`, method: \\"delete\\" }));
+
+export const deletePet = createRequestAction<{
+  petId: number;
+}>(\\"deletePet\\", ({ petId }) => ({ url: \`/api/test/pet/\${petId}\`, method: \\"delete\\" }));
+
+export const deleteUser = createRequestAction<{
+  username: string;
+}>(\\"deleteUser\\", ({ username }) => ({ url: \`/api/test/user/\${username}\`, method: \\"delete\\" }));
 
 export const downloadUsingGet = createRequestAction<
   {
@@ -32,6 +88,36 @@ export const findBookByIdUsingGet = createRequestAction<
   },
   IBookDetailVo
 >(\\"findBookByIdUsingGet\\", ({ id }) => ({ url: \`/api/test/book/\${id}\`, method: \\"get\\" }));
+
+export const findPetsByStatus = createRequestAction<
+  {
+    status: keyof typeof FindPetsByStatusStatus[];
+  },
+  IPet[]
+>(\\"findPetsByStatus\\", ({ status }) => ({
+  url: \`/api/test/pet/findByStatus\`,
+  method: \\"get\\",
+  params: {
+    status,
+  },
+}));
+
+/**
+ * @deprecated findPetsByTags
+ */
+
+export const findPetsByTags = createRequestAction<
+  {
+    tags: string[];
+  },
+  IPet[]
+>(\\"findPetsByTags\\", ({ tags }) => ({
+  url: \`/api/test/pet/findByTags\`,
+  method: \\"get\\",
+  params: {
+    tags,
+  },
+}));
 
 export const getDocumentByIdUsingGet = createRequestAction<
   {
@@ -54,6 +140,11 @@ export const getHealthCheckUsingHead = createRequestAction<
   IDocumentVo
 >(\\"getHealthCheckUsingHead\\", ({ flight_no }) => ({ url: \`/api/test/health-check\`, method: \\"head\\" }));
 
+export const getInventory = createRequestAction<{ [key: string]: any }>(\\"getInventory\\", () => ({
+  url: \`/api/test/store/inventory\`,
+  method: \\"get\\",
+}));
+
 export const getItems = createRequestAction<
   {
     limit?: number;
@@ -70,6 +161,20 @@ export const getItems = createRequestAction<
     sort,
   },
 }));
+
+export const getOrderById = createRequestAction<
+  {
+    orderId: number;
+  },
+  IOrder
+>(\\"getOrderById\\", ({ orderId }) => ({ url: \`/api/test/store/order/\${orderId}\`, method: \\"get\\" }));
+
+export const getPetById = createRequestAction<
+  {
+    petId: number;
+  },
+  IPet
+>(\\"getPetById\\", ({ petId }) => ({ url: \`/api/test/pet/\${petId}\`, method: \\"get\\" }));
 
 export const getScheduleDetailsByDateUsingGet = createRequestAction<
   {
@@ -98,6 +203,13 @@ export const getTeamListByUsingGet = createRequestAction<{
   },
 }));
 
+export const getUserByName = createRequestAction<
+  {
+    username: string;
+  },
+  IUser
+>(\\"getUserByName\\", ({ username }) => ({ url: \`/api/test/user/\${username}\`, method: \\"get\\" }));
+
 export const getUserListByUsingGet = createRequestAction<{
   limit?: number;
   offset?: number;
@@ -110,6 +222,37 @@ export const getUserListByUsingGet = createRequestAction<{
   },
 }));
 
+export const loginUser = createRequestAction<
+  {
+    password: string;
+    username: string;
+  },
+  string
+>(\\"loginUser\\", ({ username, password }) => ({
+  url: \`/api/test/user/login\`,
+  method: \\"get\\",
+  params: {
+    username,
+    password,
+  },
+}));
+
+export const logoutUser = createRequestAction(\\"logoutUser\\", () => ({ url: \`/api/test/user/logout\`, method: \\"get\\" }));
+
+export const placeOrder = createRequestAction<
+  {
+    requestBody: {
+      body: IOrder;
+    };
+  },
+  IOrder
+>(\\"placeOrder\\", ({ requestBody }) => ({
+  url: \`/api/test/store/order\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
 export const updateBookByIdUsingPut = createRequestAction<{
   id: string;
   requestBody: {
@@ -117,6 +260,42 @@ export const updateBookByIdUsingPut = createRequestAction<{
   };
 }>(\\"updateBookByIdUsingPut\\", ({ id, requestBody }) => ({
   url: \`/api/test/book/\${id}\`,
+  method: \\"put\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const updatePet = createRequestAction<{
+  requestBody: {
+    body: IPet;
+  };
+}>(\\"updatePet\\", ({ requestBody }) => ({
+  url: \`/api/test/pet\`,
+  method: \\"put\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const updatePetWithForm = createRequestAction<{
+  petId: number;
+  requestBody: {
+    name?: string;
+    status?: string;
+  };
+}>(\\"updatePetWithForm\\", ({ petId, requestBody }) => ({
+  url: \`/api/test/pet/\${petId}\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const updateUser = createRequestAction<{
+  requestBody: {
+    body: IUser;
+  };
+  username: string;
+}>(\\"updateUser\\", ({ username, requestBody }) => ({
+  url: \`/api/test/user/\${username}\`,
   method: \\"put\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -135,6 +314,28 @@ export const uploadAttachmentUsingPost = createRequestAction<
   data: requestBody,
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
 }));
+
+export const uploadFile = createRequestAction<
+  {
+    petId: number;
+    requestBody: {
+      additionalMetadata?: string;
+      file?: File;
+    };
+  },
+  IApiResponse
+>(\\"uploadFile\\", ({ petId, requestBody }) => ({
+  url: \`/api/test/pet/\${petId}/uploadImage\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export interface IApiResponse {
+  code?: number;
+  message?: string;
+  type?: string;
+}
 
 export interface IAttachmentBo {
   authorName?: string;
@@ -163,6 +364,11 @@ export interface IBookVo {
 export interface IBookingResponse {
   data: IDocumentVo;
   errors?: IErrorInfo[];
+}
+
+export interface ICategory {
+  id?: number;
+  name?: string;
 }
 
 export interface IDocumentVo {
@@ -208,6 +414,12 @@ export interface IFile {
   writable?: boolean;
 }
 
+export enum FindPetsByStatusStatus {
+  \\"available\\" = \\"available\\",
+  \\"pending\\" = \\"pending\\",
+  \\"sold\\" = \\"sold\\",
+}
+
 export enum GetDocumentByIdUsingGetFrom {
   \\"AAA\\" = \\"AAA\\",
   \\"BBB\\" = \\"BBB\\",
@@ -230,6 +442,36 @@ export interface IMessage {
   message?: string;
 }
 
+export interface IOrder {
+  complete?: boolean;
+  id?: number;
+  petId?: number;
+  quantity?: number;
+  shipDate?: string;
+  status?: keyof typeof OrderStatus;
+}
+
+export enum OrderStatus {
+  \\"placed\\" = \\"placed\\",
+  \\"approved\\" = \\"approved\\",
+  \\"delivered\\" = \\"delivered\\",
+}
+
+export interface IPet {
+  category?: ICategory;
+  id?: number;
+  name: string;
+  photoUrls: string[];
+  status?: keyof typeof PetStatus;
+  tags?: ITag[];
+}
+
+export enum PetStatus {
+  \\"available\\" = \\"available\\",
+  \\"pending\\" = \\"pending\\",
+  \\"sold\\" = \\"sold\\",
+}
+
 export interface IResource {
   description?: string;
   file?: IFile;
@@ -245,6 +487,11 @@ export interface IScheduleVo {
   schedules?: IBookVo[][];
   shiftId?: string;
   team?: string;
+}
+
+export interface ITag {
+  id?: number;
+  name?: string;
 }
 
 export interface IUpdateBookRequest {
@@ -298,6 +545,17 @@ export interface IUrl {
 
 export interface IUrlStreamHandler {
   [key: string]: any;
+}
+
+export interface IUser {
+  email?: string;
+  firstName?: string;
+  id?: number;
+  lastName?: string;
+  password?: string;
+  phone?: string;
+  userStatus?: number;
+  username?: string;
 }
 
 export interface IValidationError {

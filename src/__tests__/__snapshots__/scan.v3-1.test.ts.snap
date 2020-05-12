@@ -41,7 +41,7 @@ export const findPets = createRequestAction<
   {
     limit?: number;
     status: keyof typeof FindPetsStatus[];
-    tags?: string[];
+    tags?: keyof typeof FindPetsTags[];
   },
   IPet[]
 >(\\"findPets\\", ({ tags, limit, status }) => ({
@@ -52,6 +52,33 @@ export const findPets = createRequestAction<
     limit,
     status,
   },
+}));
+
+export const formMultipartWithFile = createRequestAction<{
+  requestBody: { data?: IPet; file: string; slice?: string[]; string?: string };
+}>(\\"formMultipartWithFile\\", ({ requestBody }) => ({
+  url: \`/api/demo/forms/multipart\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const formMultipartWithFiles = createRequestAction<{
+  requestBody: { files: string[] };
+}>(\\"formMultipartWithFiles\\", ({ requestBody }) => ({
+  url: \`/api/demo/forms/multipart-with-files\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const formUrlEncoded = createRequestAction<{
+  requestBody: IRequestForm;
+}>(\\"formUrlEncoded\\", ({ requestBody }) => ({
+  url: \`/api/demo/forms/url-encoded\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/x-www-form-urlencoded\\" },
 }));
 
 export const getItems = createRequestAction<
@@ -122,6 +149,13 @@ export enum FindPetsStatus {
   \\"sold\\" = \\"sold\\",
 }
 
+export enum FindPetsTags {
+  \\"z\\" = \\"z\\",
+  \\"b\\" = \\"b\\",
+  \\"c\\" = \\"c\\",
+  \\"a\\" = \\"a\\",
+}
+
 export interface IItem {
   color?: string;
   id?: string;
@@ -146,5 +180,11 @@ export interface IPet extends INewPet {
 }
 
 export type TPets = IPet[];
+
+export interface IRequestForm {
+  data: IPet;
+  slice: string[];
+  string: string;
+}
 "
 `;
