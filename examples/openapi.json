@@ -17,7 +17,7 @@
   },
   "servers": [
     {
-      "url": "http://petstore.swagger.io/api"
+      "url": "http://petstore.swagger.io/api/v3"
     },
     {
       "url": "https://{username}.gigantic-server.com:{port}/{basePath}",

@@ -6,7 +6,7 @@ exports[`swagger v2 should handle spec correctly 1`] = `
     body: IPet;
   };
 }>(\\"addPet\\", ({ requestBody }) => ({
-  url: \`/api/test/pet\`,
+  url: \`/api/v2/pet\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -20,7 +20,7 @@ export const createItem = createRequestAction<
   },
   IMessage
 >(\\"createItem\\", ({ requestBody }) => ({
-  url: \`/api/test/items\`,
+  url: \`/api/v2/items\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -31,7 +31,7 @@ export const createUser = createRequestAction<{
     body: IUser;
   };
 }>(\\"createUser\\", ({ requestBody }) => ({
-  url: \`/api/test/user\`,
+  url: \`/api/v2/user\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -42,7 +42,7 @@ export const createUsersWithArrayInput = createRequestAction<{
     body: IUser[];
   };
 }>(\\"createUsersWithArrayInput\\", ({ requestBody }) => ({
-  url: \`/api/test/user/createWithArray\`,
+  url: \`/api/v2/user/createWithArray\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -53,7 +53,7 @@ export const createUsersWithListInput = createRequestAction<{
     body: IUser[];
   };
 }>(\\"createUsersWithListInput\\", ({ requestBody }) => ({
-  url: \`/api/test/user/createWithList\`,
+  url: \`/api/v2/user/createWithList\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -61,33 +61,33 @@ export const createUsersWithListInput = createRequestAction<{
 
 export const deleteAttachmentUsingDelete = createRequestAction<{
   id: string;
-}>(\\"deleteAttachmentUsingDelete\\", ({ id }) => ({ url: \`/api/test/\${id}\`, method: \\"delete\\" }));
+}>(\\"deleteAttachmentUsingDelete\\", ({ id }) => ({ url: \`/api/v2/\${id}\`, method: \\"delete\\" }));
 
 export const deleteOrder = createRequestAction<{
   orderId: number;
-}>(\\"deleteOrder\\", ({ orderId }) => ({ url: \`/api/test/store/order/\${orderId}\`, method: \\"delete\\" }));
+}>(\\"deleteOrder\\", ({ orderId }) => ({ url: \`/api/v2/store/order/\${orderId}\`, method: \\"delete\\" }));
 
 export const deletePet = createRequestAction<{
   petId: number;
-}>(\\"deletePet\\", ({ petId }) => ({ url: \`/api/test/pet/\${petId}\`, method: \\"delete\\" }));
+}>(\\"deletePet\\", ({ petId }) => ({ url: \`/api/v2/pet/\${petId}\`, method: \\"delete\\" }));
 
 export const deleteUser = createRequestAction<{
   username: string;
-}>(\\"deleteUser\\", ({ username }) => ({ url: \`/api/test/user/\${username}\`, method: \\"delete\\" }));
+}>(\\"deleteUser\\", ({ username }) => ({ url: \`/api/v2/user/\${username}\`, method: \\"delete\\" }));
 
 export const downloadUsingGet = createRequestAction<
   {
     id: string;
   },
   IResource
->(\\"downloadUsingGet\\", ({ id }) => ({ url: \`/api/test/\${id}\`, method: \\"get\\" }));
+>(\\"downloadUsingGet\\", ({ id }) => ({ url: \`/api/v2/\${id}\`, method: \\"get\\" }));
 
 export const findBookByIdUsingGet = createRequestAction<
   {
     id: string;
   },
   IBookDetailVo
->(\\"findBookByIdUsingGet\\", ({ id }) => ({ url: \`/api/test/book/\${id}\`, method: \\"get\\" }));
+>(\\"findBookByIdUsingGet\\", ({ id }) => ({ url: \`/api/v2/book/\${id}\`, method: \\"get\\" }));
 
 export const findPetsByStatus = createRequestAction<
   {
@@ -95,7 +95,7 @@ export const findPetsByStatus = createRequestAction<
   },
   IPet[]
 >(\\"findPetsByStatus\\", ({ status }) => ({
-  url: \`/api/test/pet/findByStatus\`,
+  url: \`/api/v2/pet/findByStatus\`,
   method: \\"get\\",
   params: {
     status,
@@ -112,10 +112,38 @@ export const findPetsByTags = createRequestAction<
   },
   IPet[]
 >(\\"findPetsByTags\\", ({ tags }) => ({
-  url: \`/api/test/pet/findByTags\`,
+  url: \`/api/v2/pet/findByTags\`,
   method: \\"get\\",
   params: {
     tags,
+  },
+}));
+
+export const getAgencyResponseListUsingGet = createRequestAction<
+  {
+    addressType: keyof typeof GetAgencyResponseListUsingGetAddressType;
+  },
+  IResource[]
+>(\\"getAgencyResponseListUsingGet\\", ({ addressType }) => ({
+  url: \`/api/v2/agency-responses\`,
+  method: \\"get\\",
+  params: {
+    addressType,
+  },
+}));
+
+export const getAgencyResponseUsingGet = createRequestAction<
+  {
+    addressType: keyof typeof GetAgencyResponseUsingGetAddressType;
+    responseDate: string;
+  },
+  IResource
+>(\\"getAgencyResponseUsingGet\\", ({ responseDate, addressType }) => ({
+  url: \`/api/v2/agency-response\`,
+  method: \\"get\\",
+  params: {
+    responseDate,
+    addressType,
   },
 }));
 
@@ -126,7 +154,7 @@ export const getDocumentByIdUsingGet = createRequestAction<
   },
   IDocumentVo
 >(\\"getDocumentByIdUsingGet\\", ({ documentId, from }) => ({
-  url: \`/api/test/documents/\${documentId}/doc\`,
+  url: \`/api/v2/documents/\${documentId}/doc\`,
   method: \\"get\\",
   params: {
     from,
@@ -138,10 +166,10 @@ export const getHealthCheckUsingHead = createRequestAction<
     flight_no: string;
   },
   IDocumentVo
->(\\"getHealthCheckUsingHead\\", ({ flight_no }) => ({ url: \`/api/test/health-check\`, method: \\"head\\" }));
+>(\\"getHealthCheckUsingHead\\", ({ flight_no }) => ({ url: \`/api/v2/health-check/\${flight_no}\`, method: \\"head\\" }));
 
 export const getInventory = createRequestAction<{ [key: string]: any }>(\\"getInventory\\", () => ({
-  url: \`/api/test/store/inventory\`,
+  url: \`/api/v2/store/inventory\`,
   method: \\"get\\",
 }));
 
@@ -153,7 +181,7 @@ export const getItems = createRequestAction<
   },
   TItems
 >(\\"getItems\\", ({ page, limit, sort }) => ({
-  url: \`/api/test/items\`,
+  url: \`/api/v2/items\`,
   method: \\"get\\",
   params: {
     page,
@@ -167,14 +195,14 @@ export const getOrderById = createRequestAction<
     orderId: number;
   },
   IOrder
->(\\"getOrderById\\", ({ orderId }) => ({ url: \`/api/test/store/order/\${orderId}\`, method: \\"get\\" }));
+>(\\"getOrderById\\", ({ orderId }) => ({ url: \`/api/v2/store/order/\${orderId}\`, method: \\"get\\" }));
 
 export const getPetById = createRequestAction<
   {
     petId: number;
   },
   IPet
->(\\"getPetById\\", ({ petId }) => ({ url: \`/api/test/pet/\${petId}\`, method: \\"get\\" }));
+>(\\"getPetById\\", ({ petId }) => ({ url: \`/api/v2/pet/\${petId}\`, method: \\"get\\" }));
 
 export const getScheduleDetailsByDateUsingGet = createRequestAction<
   {
@@ -183,7 +211,7 @@ export const getScheduleDetailsByDateUsingGet = createRequestAction<
   },
   IScheduleVo[]
 >(\\"getScheduleDetailsByDateUsingGet\\", ({ scheduleDate, roleId }) => ({
-  url: \`/api/test/schedules\`,
+  url: \`/api/v2/schedules\`,
   method: \\"get\\",
   params: {
     scheduleDate,
@@ -195,7 +223,7 @@ export const getTeamListByUsingGet = createRequestAction<{
   limit?: number;
   offset?: number;
 }>(\\"getTeamListByUsingGet\\", ({ offset, limit }) => ({
-  url: \`/api/test/teams\`,
+  url: \`/api/v2/teams\`,
   method: \\"get\\",
   params: {
     offset,
@@ -208,13 +236,13 @@ export const getUserByName = createRequestAction<
     username: string;
   },
   IUser
->(\\"getUserByName\\", ({ username }) => ({ url: \`/api/test/user/\${username}\`, method: \\"get\\" }));
+>(\\"getUserByName\\", ({ username }) => ({ url: \`/api/v2/user/\${username}\`, method: \\"get\\" }));
 
 export const getUserListByUsingGet = createRequestAction<{
   limit?: number;
   offset?: number;
 }>(\\"getUserListByUsingGet\\", ({ offset, limit }) => ({
-  url: \`/api/test/users\`,
+  url: \`/api/v2/users\`,
   method: \\"get\\",
   params: {
     offset,
@@ -229,7 +257,7 @@ export const loginUser = createRequestAction<
   },
   string
 >(\\"loginUser\\", ({ username, password }) => ({
-  url: \`/api/test/user/login\`,
+  url: \`/api/v2/user/login\`,
   method: \\"get\\",
   params: {
     username,
@@ -237,7 +265,7 @@ export const loginUser = createRequestAction<
   },
 }));
 
-export const logoutUser = createRequestAction(\\"logoutUser\\", () => ({ url: \`/api/test/user/logout\`, method: \\"get\\" }));
+export const logoutUser = createRequestAction(\\"logoutUser\\", () => ({ url: \`/api/v2/user/logout\`, method: \\"get\\" }));
 
 export const placeOrder = createRequestAction<
   {
@@ -247,7 +275,7 @@ export const placeOrder = createRequestAction<
   },
   IOrder
 >(\\"placeOrder\\", ({ requestBody }) => ({
-  url: \`/api/test/store/order\`,
+  url: \`/api/v2/store/order\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -259,7 +287,7 @@ export const updateBookByIdUsingPut = createRequestAction<{
     updateBookRequest: IUpdateBookRequest;
   };
 }>(\\"updateBookByIdUsingPut\\", ({ id, requestBody }) => ({
-  url: \`/api/test/book/\${id}\`,
+  url: \`/api/v2/book/\${id}\`,
   method: \\"put\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -270,7 +298,7 @@ export const updatePet = createRequestAction<{
     body: IPet;
   };
 }>(\\"updatePet\\", ({ requestBody }) => ({
-  url: \`/api/test/pet\`,
+  url: \`/api/v2/pet\`,
   method: \\"put\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -283,7 +311,7 @@ export const updatePetWithForm = createRequestAction<{
     status?: string;
   };
 }>(\\"updatePetWithForm\\", ({ petId, requestBody }) => ({
-  url: \`/api/test/pet/\${petId}\`,
+  url: \`/api/v2/pet/\${petId}\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
@@ -295,7 +323,7 @@ export const updateUser = createRequestAction<{
   };
   username: string;
 }>(\\"updateUser\\", ({ username, requestBody }) => ({
-  url: \`/api/test/user/\${username}\`,
+  url: \`/api/v2/user/\${username}\`,
   method: \\"put\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -309,7 +337,7 @@ export const uploadAttachmentUsingPost = createRequestAction<
   },
   IAttachmentBo
 >(\\"uploadAttachmentUsingPost\\", ({ requestBody }) => ({
-  url: \`/api/test\`,
+  url: \`/api/v2\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
@@ -325,7 +353,7 @@ export const uploadFile = createRequestAction<
   },
   IApiResponse
 >(\\"uploadFile\\", ({ petId, requestBody }) => ({
-  url: \`/api/test/pet/\${petId}/uploadImage\`,
+  url: \`/api/v2/pet/\${petId}/uploadImage\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
@@ -418,6 +446,16 @@ export enum FindPetsByStatusStatus {
   \\"available\\" = \\"available\\",
   \\"pending\\" = \\"pending\\",
   \\"sold\\" = \\"sold\\",
+}
+
+export enum GetAgencyResponseListUsingGetAddressType {
+  \\"AAA\\" = \\"AAA\\",
+  \\"BBB\\" = \\"BBB\\",
+}
+
+export enum GetAgencyResponseUsingGetAddressType {
+  \\"AAA\\" = \\"AAA\\",
+  \\"BBB\\" = \\"BBB\\",
 }
 
 export enum GetDocumentByIdUsingGetFrom {

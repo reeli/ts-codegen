@@ -7,7 +7,7 @@ exports[`swagger v3 should handle basic schemas correctly 1`] = `
   },
   IPet
 >(\\"addPet\\", ({ requestBody }) => ({
-  url: \`/api/pets\`,
+  url: \`/api/v3/pets\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -19,7 +19,7 @@ export const createItem = createRequestAction<
   },
   IMessage
 >(\\"createItem\\", ({ item }) => ({
-  url: \`/api/items\`,
+  url: \`/api/v3/items\`,
   method: \\"post\\",
   params: {
     item,
@@ -28,14 +28,14 @@ export const createItem = createRequestAction<
 
 export const deletePet = createRequestAction<{
   id: number;
-}>(\\"deletePet\\", ({ id }) => ({ url: \`/api/pets/\${id}\`, method: \\"delete\\" }));
+}>(\\"deletePet\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"delete\\" }));
 
 export const findPetById = createRequestAction<
   {
     id: number;
   },
   IPet
->(\\"findPetById\\", ({ id }) => ({ url: \`/api/pets/\${id}\`, method: \\"get\\" }));
+>(\\"findPetById\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"get\\" }));
 
 export const findPets = createRequestAction<
   {
@@ -45,7 +45,7 @@ export const findPets = createRequestAction<
   },
   IPet[]
 >(\\"findPets\\", ({ tags, limit, status }) => ({
-  url: \`/api/pets\`,
+  url: \`/api/v3/pets\`,
   method: \\"get\\",
   params: {
     tags,
@@ -57,7 +57,7 @@ export const findPets = createRequestAction<
 export const formMultipartWithFile = createRequestAction<{
   requestBody: { data?: IPet; file: string; slice?: string[]; string?: string };
 }>(\\"formMultipartWithFile\\", ({ requestBody }) => ({
-  url: \`/api/demo/forms/multipart\`,
+  url: \`/api/v3/demo/forms/multipart\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
@@ -66,7 +66,7 @@ export const formMultipartWithFile = createRequestAction<{
 export const formMultipartWithFiles = createRequestAction<{
   requestBody: { files: string[] };
 }>(\\"formMultipartWithFiles\\", ({ requestBody }) => ({
-  url: \`/api/demo/forms/multipart-with-files\`,
+  url: \`/api/v3/demo/forms/multipart-with-files\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
@@ -75,7 +75,7 @@ export const formMultipartWithFiles = createRequestAction<{
 export const formUrlEncoded = createRequestAction<{
   requestBody: IRequestForm;
 }>(\\"formUrlEncoded\\", ({ requestBody }) => ({
-  url: \`/api/demo/forms/url-encoded\`,
+  url: \`/api/v3/demo/forms/url-encoded\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/x-www-form-urlencoded\\" },
@@ -89,7 +89,7 @@ export const getItems = createRequestAction<
   },
   TItems
 >(\\"getItems\\", ({ page, limit, sort }) => ({
-  url: \`/api/items\`,
+  url: \`/api/v3/items\`,
   method: \\"get\\",
   params: {
     page,
@@ -101,7 +101,7 @@ export const getItems = createRequestAction<
 export const postBody = createRequestAction<{
   requestBody: IPet;
 }>(\\"postBody\\", ({ requestBody }) => ({
-  url: \`/api/body\`,
+  url: \`/api/v3/body\`,
   method: \\"post\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },
@@ -110,7 +110,7 @@ export const postBody = createRequestAction<{
 export const updatePet = createRequestAction<{
   requestBody?: ICat | IDog;
 }>(\\"updatePet\\", ({ requestBody }) => ({
-  url: \`/api/pets\`,
+  url: \`/api/v3/pets\`,
   method: \\"patch\\",
   data: requestBody,
   headers: { \\"Content-Type\\": \\"application/json\\" },

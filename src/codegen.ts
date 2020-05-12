@@ -5,7 +5,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { IOpenAPI } from "src/__types__/OpenAPI";
 import { Spec } from "swagger-schema-official";
-import { scan } from "src/scan";
+import { getInputs, scan } from "src/scan";
 import { ERROR_MESSAGES } from "src/constants";
 
 const codegen = () => {
@@ -26,7 +26,8 @@ const codegen = () => {
       return;
     }
     const fileStr = `${actionCreatorImport} ${scan(spec)}`;
-    write(output, getFilename(spec.basePath), fileStr);
+    const { basePath } = getInputs(spec);
+    write(output, getFilename(basePath), fileStr);
   };
 
   if (!isEmpty(data)) {

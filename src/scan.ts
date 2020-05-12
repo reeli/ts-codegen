@@ -41,7 +41,7 @@ export const scan = (data: Spec | IOpenAPI) => {
 
 const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
 
-const getInputs = (data: Spec | IOpenAPI) => {
+export const getInputs = (data: Spec | IOpenAPI) => {
   if (isOpenApi(data)) {
     return {
       dataType: DataType.openapi,

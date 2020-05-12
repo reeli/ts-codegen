@@ -1,12 +1,9 @@
 {
   "output": ".output",
-  "actionCreatorImport": "import { createRequestAction } from 'examples/requestActionCreators';\n\n",
+  "actionCreatorImport": "import { createRequestAction } from 'examples/utils/requestActionCreators';\n\n",
   "clients": [],
   "data": [
     "./examples/swagger.json",
-    "./examples/swagger.v3.petstore.json",
-    "./examples/swagger.v3.petstore.expanded.json",
-    "./examples/petstore.json",
-    "./examples/petstore.v3.json"
+    "./examples/openapi.json"
   ]
 }
