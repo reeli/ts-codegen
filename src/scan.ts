@@ -4,7 +4,7 @@ import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { Schema } from "src/Schema";
 import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/utils";
 import { Spec } from "swagger-schema-official";
-import { CustomReference, CustomSchema, IClientConfig } from "src/__types__/types";
+import { CustomReference, CustomSchema, IClientConfig, RequestType } from "src/__types__/types";
 import { getClientConfigsV2, getClientConfigsV3 } from "src/index";
 import { createRegister, DeclKinds, IStore } from "src/createRegister";
 import { parse } from "url";
@@ -69,46 +69,32 @@ const print = (clientConfigs: IClientConfig[], decls: IStore["decls"]) => {
 };
 
 function printRequest(clientConfigs: IClientConfig[]): string {
-  // for (let name in Register.refs) {
-  //   if (!(Register.refs[name] as Ref).alias) {
-  //     (Register.refs[name] as Ref).rename(addPrefix(name));
-  //   }
-  // }
-  const clientConfig = sortBy(clientConfigs, (o) => o.operationId);
+  const configs = sortBy(clientConfigs, (o) => o.operationId);
 
-  // TODO: refactor code later
-  function mapper(obj: KType | { [key: string]: KType }): any {
-    return toTypes(
-      mapValues(obj, (v: any) => {
-        if (!v.toType) {
-          return mapper(v);
-        }
-        return v.toType(false);
-      }),
-    );
-  }
-
-  return clientConfig
-    .map((v: IClientConfig) => {
-      const TReq = !isEmpty(v.TReq) ? mapper(v.TReq as any) : "";
-      const requestParamList = compact([...v.pathParams, ...v.queryParams, v.contentType ? "requestBody" : ""]);
-      const requestInputs = isEmpty(requestParamList) ? "" : toRequestParams(requestParamList);
-
-      const getParams = () => {
-        const params = toRequestParams(get(v, "queryParams"));
+  return configs
+    .map((v) => {
+      const toUrl = () => `url: \`${v.url}\`,`;
+      const toMethod = () => `method: "${v.method}",`;
+      const toRequestBody = () => (v.contentType ? "data: requestBody," : "");
+      const toQueryParams = () => {
+        const params = toRequestParams(v.queryParams);
         return params ? `params: ${params},` : "";
       };
+      const toHeaders = () => (v.contentType ? `headers: {"Content-Type": '${v.contentType}'},` : "");
+      const toGenerators = () => {
+        const types = compact([generateTReq(v.TReq), v.TResp?.toType(false)]).join(",");
+        return types ? `<${types}>` : "";
+      };
+      const toRequestInputs = () => {
+        const list = compact([...v.pathParams, ...v.queryParams, v.contentType ? "requestBody" : ""]);
+        return isEmpty(list) ? "" : toRequestParams(list);
+      };
 
-      const getHeaders = () => (v.contentType ? `headers: { "Content-Type": '${v.contentType}' },` : "");
-
-      const types = compact([TReq, v.TResp?.toType(false)]).join(",");
       return `
 ${v.deprecated ? setDeprecated(v.operationId) : ""}
-export const ${v.operationId} = createRequestAction${types ? "<" + types + ">" : ""}("${
+export const ${v.operationId} = createRequestAction${toGenerators()}("${
         v.operationId
-      }", (${requestInputs}) => ({ url: \`${v.url}\`,method: "${v.method}",${
-        v.contentType ? `data: requestBody,` : ""
-      }${getParams()}${getHeaders()} })
+      }", (${toRequestInputs()}) => ({${toUrl()}${toMethod()}${toRequestBody()}${toQueryParams()}${toHeaders()}})
 );
 `;
     })
@@ -116,21 +102,36 @@ export const ${v.operationId} = createRequestAction${types ? "<" + types + ">" :
 }
 
 const printTypes = (decls: IStore["decls"]): string => {
-  let output = "";
-  keys(decls)
+  return keys(decls)
     .sort()
-    .forEach((k) => {
+    .map((k) => {
       const expr = decls[k].kind === DeclKinds.type ? "=" : "";
-      output =
-        output +
-        `export ${decls[k].kind} ${decls[k].name} ${expr} ${decls[k].type.toType()}${
-          decls[k].kind === DeclKinds.type ? ";" : ""
-        }\n\n`;
-    });
-  return output;
+      const semi = decls[k].kind === DeclKinds.type ? ";" : "";
+      return `export ${decls[k].kind} ${decls[k].name} ${expr} ${decls[k].type.toType()}${semi}`;
+    })
+    .join("\n\n");
 };
 
-const toRequestParams = (data: any[] = []) =>
+function generateTReq(TReq: IClientConfig["TReq"]) {
+  if (isEmpty(TReq)) {
+    return "";
+  }
+
+  function gen(obj: IClientConfig["TReq"]): string {
+    return toTypes(
+      mapValues(obj, (v) => {
+        if (!v.toType) {
+          return gen(v as RequestType);
+        }
+        return (v as CustomType).toType(false);
+      }),
+    );
+  }
+
+  return gen(TReq);
+}
+
+const toRequestParams = (data: string[]) =>
   !isEmpty(data)
     ? `{
 ${data.join(",\n")}
@@ -143,8 +144,6 @@ const getDeclarationType = (schema: CustomSchema) => {
   }
   return DeclKinds.type;
 };
-
-type KType = { [key: string]: CustomType };
 
 const getBasePathFromServers = (servers?: IServer[]): string => {
   if (isEmpty(servers)) {

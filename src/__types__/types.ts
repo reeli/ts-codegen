@@ -2,7 +2,7 @@ import { CustomType } from "src/Type";
 import { Operation, Parameter, Path, Schema, Spec } from "swagger-schema-official";
 import { IComponents, IOpenAPI, IOperation, IPathItem, ISchema, TParameter } from "src/__types__/OpenAPI";
 
-type RequestType = { [key: string]: CustomType };
+export type RequestType = { [key: string]: CustomType };
 
 export interface IClientConfig {
   url: string;
