@@ -82,7 +82,13 @@ function printRequest(clientConfigs: IClientConfig[]): string {
     .map((v) => {
       const toUrl = () => `url: \`${v.url}\`,`;
       const toMethod = () => `method: "${v.method}",`;
-      const toRequestBody = () => (v.contentType ? "data: requestBody," : "");
+      const toRequestBody = () => {
+        if (!isEmpty(v.bodyParams)) {
+          // TODO: refactor code
+          return `data: ${v.bodyParams!.length > 1 ? `{${v.bodyParams!.join(",")}}` : v.bodyParams![0]},`;
+        }
+        return v.contentType ? "data: requestBody," : "";
+      };
       const toQueryParams = () => {
         const params = toRequestParams(v.queryParams);
         return params ? `params: ${params},` : "";
@@ -93,7 +99,13 @@ function printRequest(clientConfigs: IClientConfig[]): string {
         return types ? `<${types}>` : "";
       };
       const toRequestInputs = () => {
-        const list = compact([...v.pathParams, ...v.queryParams, v.contentType ? "requestBody" : ""]);
+        const getRequestBody = () => {
+          if (!isEmpty(v.bodyParams)) {
+            return v.bodyParams!;
+          }
+          return v.contentType ? ["requestBody"] : "";
+        };
+        const list = compact([...v.pathParams, ...v.queryParams, ...getRequestBody()]);
         return isEmpty(list) ? "" : toRequestParams(list);
       };
 

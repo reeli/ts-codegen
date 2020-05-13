@@ -60,6 +60,12 @@ const buildConfigs = <TOperation extends CustomOperation>({
         deprecated: operation.deprecated,
         pathParams: getParamsNames(pathParams),
         queryParams: getParamsNames(queryParams),
+        bodyParams: backwardCompatible
+          ? [
+              ...getParamsNames(pickParams(register)(operation.parameters)("body")),
+              ...getParamsNames(pickParams(register)(operation.parameters)("formData")),
+            ]
+          : undefined,
         ...createOtherConfig(operation, pathParams, queryParams),
       };
     });
@@ -142,7 +148,8 @@ export const getClientConfigsV2 = (
         TReq: {
           ...requestTypesGetter(pathParams),
           ...requestTypesGetter(queryParams),
-          ...(!isEmpty(requestBodyTypes) && { requestBody: requestBodyTypes! }),
+          ...(!isEmpty(requestBodyTypes) &&
+            (backwardCompatible ? requestBodyTypes : { requestBody: requestBodyTypes })),
         },
         contentType,
       };

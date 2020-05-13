@@ -12,6 +12,7 @@ export interface IClientConfig {
   operationId?: string;
   pathParams: string[];
   queryParams: string[];
+  bodyParams?: string[]; // for backward capability, only used in swagger version 2.0
   contentType?: string;
   deprecated?: boolean;
 }

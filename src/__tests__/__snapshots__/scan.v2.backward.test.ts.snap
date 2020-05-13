@@ -2,60 +2,50 @@
 
 exports[`swagger v2 should handle spec without prefix in type name 1`] = `
 "export const addPet = createRequestAction<{
-  requestBody: {
-    body: IPet;
-  };
-}>(\\"addPet\\", ({ requestBody }) => ({
+  body: IPet;
+}>(\\"addPet\\", ({ body }) => ({
   url: \`/api/v2/pet\`,
   method: \\"post\\",
-  data: requestBody,
+  data: body,
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const createItem = createRequestAction<
   {
-    requestBody: {
-      item?: IItem;
-    };
+    item?: IItem;
   },
   IMessage
->(\\"createItem\\", ({ requestBody }) => ({
+>(\\"createItem\\", ({ item }) => ({
   url: \`/api/v2/items\`,
   method: \\"post\\",
-  data: requestBody,
+  data: item,
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const createUser = createRequestAction<{
-  requestBody: {
-    body: IUser;
-  };
-}>(\\"createUser\\", ({ requestBody }) => ({
+  body: IUser;
+}>(\\"createUser\\", ({ body }) => ({
   url: \`/api/v2/user\`,
   method: \\"post\\",
-  data: requestBody,
+  data: body,
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const createUsersWithArrayInput = createRequestAction<{
-  requestBody: {
-    body: IUser[];
-  };
-}>(\\"createUsersWithArrayInput\\", ({ requestBody }) => ({
+  body: IUser[];
+}>(\\"createUsersWithArrayInput\\", ({ body }) => ({
   url: \`/api/v2/user/createWithArray\`,
   method: \\"post\\",
-  data: requestBody,
+  data: body,
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const createUsersWithListInput = createRequestAction<{
-  requestBody: {
-    body: IUser[];
-  };
-}>(\\"createUsersWithListInput\\", ({ requestBody }) => ({
+  body: IUser[];
+}>(\\"createUsersWithListInput\\", ({ body }) => ({
   url: \`/api/v2/user/createWithList\`,
   method: \\"post\\",
-  data: requestBody,
+  data: body,
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
@@ -269,93 +259,79 @@ export const logoutUser = createRequestAction(\\"logoutUser\\", () => ({ url: \`
 
 export const placeOrder = createRequestAction<
   {
-    requestBody: {
-      body: IOrder;
-    };
+    body: IOrder;
   },
   IOrder
->(\\"placeOrder\\", ({ requestBody }) => ({
+>(\\"placeOrder\\", ({ body }) => ({
   url: \`/api/v2/store/order\`,
   method: \\"post\\",
-  data: requestBody,
+  data: body,
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const updateBookByIdUsingPUT = createRequestAction<{
   id: string;
-  requestBody: {
-    updateBookRequest: IUpdateBookRequest;
-  };
-}>(\\"updateBookByIdUsingPUT\\", ({ id, requestBody }) => ({
+  updateBookRequest: IUpdateBookRequest;
+}>(\\"updateBookByIdUsingPUT\\", ({ id, updateBookRequest }) => ({
   url: \`/api/v2/book/\${id}\`,
   method: \\"put\\",
-  data: requestBody,
+  data: updateBookRequest,
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const updatePet = createRequestAction<{
-  requestBody: {
-    body: IPet;
-  };
-}>(\\"updatePet\\", ({ requestBody }) => ({
+  body: IPet;
+}>(\\"updatePet\\", ({ body }) => ({
   url: \`/api/v2/pet\`,
   method: \\"put\\",
-  data: requestBody,
+  data: body,
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const updatePetWithForm = createRequestAction<{
+  name?: string;
   petId: number;
-  requestBody: {
-    name?: string;
-    status?: string;
-  };
-}>(\\"updatePetWithForm\\", ({ petId, requestBody }) => ({
+  status?: string;
+}>(\\"updatePetWithForm\\", ({ petId, name, status }) => ({
   url: \`/api/v2/pet/\${petId}\`,
   method: \\"post\\",
-  data: requestBody,
+  data: { name, status },
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
 }));
 
 export const updateUser = createRequestAction<{
-  requestBody: {
-    body: IUser;
-  };
+  body: IUser;
   username: string;
-}>(\\"updateUser\\", ({ username, requestBody }) => ({
+}>(\\"updateUser\\", ({ username, body }) => ({
   url: \`/api/v2/user/\${username}\`,
   method: \\"put\\",
-  data: requestBody,
+  data: body,
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const uploadAttachmentUsingPOST = createRequestAction<
   {
-    requestBody: {
-      attachment: File;
-    };
+    attachment: File;
   },
   IAttachmentBo
->(\\"uploadAttachmentUsingPOST\\", ({ requestBody }) => ({
+>(\\"uploadAttachmentUsingPOST\\", ({ attachment }) => ({
   url: \`/api/v2\`,
   method: \\"post\\",
-  data: requestBody,
+  data: attachment,
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
 }));
 
 export const uploadFile = createRequestAction<
   {
+    additionalMetadata?: string;
+    file?: File;
     petId: number;
-    requestBody: {
-      additionalMetadata?: string;
-      file?: File;
-    };
   },
   IApiResponse
->(\\"uploadFile\\", ({ petId, requestBody }) => ({
+>(\\"uploadFile\\", ({ petId, additionalMetadata, file }) => ({
   url: \`/api/v2/pet/\${petId}/uploadImage\`,
   method: \\"post\\",
-  data: requestBody,
+  data: { additionalMetadata, file },
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
 }));
 
