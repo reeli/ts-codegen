@@ -1,5 +1,19 @@
 import { BodyParameter, FormDataParameter, Operation, Path, Response } from "swagger-schema-official";
-import { camelCase, chain, Dictionary, first, get, isEmpty, keys, map, omit, pick, reduce, values } from "lodash";
+import {
+  camelCase,
+  chain,
+  Dictionary,
+  first,
+  get,
+  isEmpty,
+  keys,
+  map,
+  omit,
+  pick,
+  reduce,
+  values,
+  upperCase,
+} from "lodash";
 import { getPathsFromRef, toCapitalCase, withRequiredName } from "src/utils";
 import { CustomType } from "src/Type";
 import { Schema } from "src/Schema";
@@ -44,7 +58,7 @@ const buildConfigs = <TOperation extends CustomOperation>({
 
       return {
         url: getRequestURL(pathName, basePath),
-        method,
+        method: upperCase(method),
         operationId: getOperationId(operation.operationId),
         deprecated: operation.deprecated,
         pathParams: getParamsNames(pathParams),
