@@ -3,7 +3,7 @@
 exports[`swagger v2 should handle spec correctly 1`] = `
 "export const addPet = createRequestAction<{
   requestBody: {
-    body: IPet;
+    body: Pet;
   };
 }>(\\"addPet\\", ({ requestBody }) => ({
   url: \`/api/v2/pet\`,
@@ -15,10 +15,10 @@ exports[`swagger v2 should handle spec correctly 1`] = `
 export const createItem = createRequestAction<
   {
     requestBody: {
-      item?: IItem;
+      item?: Item;
     };
   },
-  IMessage
+  Message
 >(\\"createItem\\", ({ requestBody }) => ({
   url: \`/api/v2/items\`,
   method: \\"POST\\",
@@ -28,7 +28,7 @@ export const createItem = createRequestAction<
 
 export const createUser = createRequestAction<{
   requestBody: {
-    body: IUser;
+    body: User;
   };
 }>(\\"createUser\\", ({ requestBody }) => ({
   url: \`/api/v2/user\`,
@@ -39,7 +39,7 @@ export const createUser = createRequestAction<{
 
 export const createUsersWithArrayInput = createRequestAction<{
   requestBody: {
-    body: IUser[];
+    body: User[];
   };
 }>(\\"createUsersWithArrayInput\\", ({ requestBody }) => ({
   url: \`/api/v2/user/createWithArray\`,
@@ -50,7 +50,7 @@ export const createUsersWithArrayInput = createRequestAction<{
 
 export const createUsersWithListInput = createRequestAction<{
   requestBody: {
-    body: IUser[];
+    body: User[];
   };
 }>(\\"createUsersWithListInput\\", ({ requestBody }) => ({
   url: \`/api/v2/user/createWithList\`,
@@ -79,21 +79,21 @@ export const downloadUsingGet = createRequestAction<
   {
     id: string;
   },
-  IResource
+  Resource
 >(\\"downloadUsingGet\\", ({ id }) => ({ url: \`/api/v2/\${id}\`, method: \\"GET\\" }));
 
 export const findBookByIdUsingGet = createRequestAction<
   {
     id: string;
   },
-  IBookDetailVo
+  BookDetailVo
 >(\\"findBookByIdUsingGet\\", ({ id }) => ({ url: \`/api/v2/book/\${id}\`, method: \\"GET\\" }));
 
 export const findPetsByStatus = createRequestAction<
   {
     status: keyof typeof FindPetsByStatusStatus[];
   },
-  IPet[]
+  Pet[]
 >(\\"findPetsByStatus\\", ({ status }) => ({
   url: \`/api/v2/pet/findByStatus\`,
   method: \\"GET\\",
@@ -110,7 +110,7 @@ export const findPetsByTags = createRequestAction<
   {
     tags: string[];
   },
-  IPet[]
+  Pet[]
 >(\\"findPetsByTags\\", ({ tags }) => ({
   url: \`/api/v2/pet/findByTags\`,
   method: \\"GET\\",
@@ -123,7 +123,7 @@ export const getAgencyResponseListUsingGet = createRequestAction<
   {
     addressType: keyof typeof GetAgencyResponseListUsingGetAddressType;
   },
-  IResource[]
+  Resource[]
 >(\\"getAgencyResponseListUsingGet\\", ({ addressType }) => ({
   url: \`/api/v2/agency-responses\`,
   method: \\"GET\\",
@@ -137,7 +137,7 @@ export const getAgencyResponseUsingGet = createRequestAction<
     addressType: keyof typeof GetAgencyResponseUsingGetAddressType;
     responseDate: string;
   },
-  IResource
+  Resource
 >(\\"getAgencyResponseUsingGet\\", ({ responseDate, addressType }) => ({
   url: \`/api/v2/agency-response\`,
   method: \\"GET\\",
@@ -152,7 +152,7 @@ export const getDocumentByIdUsingGet = createRequestAction<
     documentId: string;
     from?: keyof typeof GetDocumentByIdUsingGetFrom;
   },
-  IDocumentVo
+  DocumentVo
 >(\\"getDocumentByIdUsingGet\\", ({ documentId, from }) => ({
   url: \`/api/v2/documents/\${documentId}/doc\`,
   method: \\"GET\\",
@@ -165,7 +165,7 @@ export const getHealthCheckUsingHead = createRequestAction<
   {
     flight_no: string;
   },
-  IDocumentVo
+  DocumentVo
 >(\\"getHealthCheckUsingHead\\", ({ flight_no }) => ({ url: \`/api/v2/health-check/\${flight_no}\`, method: \\"HEAD\\" }));
 
 export const getInventory = createRequestAction<{ [key: string]: any }>(\\"getInventory\\", () => ({
@@ -179,7 +179,7 @@ export const getItems = createRequestAction<
     page?: number;
     sort?: string[];
   },
-  TItems
+  Items
 >(\\"getItems\\", ({ page, limit, sort }) => ({
   url: \`/api/v2/items\`,
   method: \\"GET\\",
@@ -194,14 +194,14 @@ export const getOrderById = createRequestAction<
   {
     orderId: number;
   },
-  IOrder
+  Order
 >(\\"getOrderById\\", ({ orderId }) => ({ url: \`/api/v2/store/order/\${orderId}\`, method: \\"GET\\" }));
 
 export const getPetById = createRequestAction<
   {
     petId: number;
   },
-  IPet
+  Pet
 >(\\"getPetById\\", ({ petId }) => ({ url: \`/api/v2/pet/\${petId}\`, method: \\"GET\\" }));
 
 export const getScheduleDetailsByDateUsingGet = createRequestAction<
@@ -209,7 +209,7 @@ export const getScheduleDetailsByDateUsingGet = createRequestAction<
     roleId?: string;
     scheduleDate: number;
   },
-  IScheduleVo[]
+  ScheduleVo[]
 >(\\"getScheduleDetailsByDateUsingGet\\", ({ scheduleDate, roleId }) => ({
   url: \`/api/v2/schedules\`,
   method: \\"GET\\",
@@ -235,7 +235,7 @@ export const getUserByName = createRequestAction<
   {
     username: string;
   },
-  IUser
+  User
 >(\\"getUserByName\\", ({ username }) => ({ url: \`/api/v2/user/\${username}\`, method: \\"GET\\" }));
 
 export const getUserListByUsingGet = createRequestAction<{
@@ -270,10 +270,10 @@ export const logoutUser = createRequestAction(\\"logoutUser\\", () => ({ url: \`
 export const placeOrder = createRequestAction<
   {
     requestBody: {
-      body: IOrder;
+      body: Order;
     };
   },
-  IOrder
+  Order
 >(\\"placeOrder\\", ({ requestBody }) => ({
   url: \`/api/v2/store/order\`,
   method: \\"POST\\",
@@ -284,7 +284,7 @@ export const placeOrder = createRequestAction<
 export const updateBookByIdUsingPut = createRequestAction<{
   id: string;
   requestBody: {
-    updateBookRequest: IUpdateBookRequest;
+    updateBookRequest: UpdateBookRequest;
   };
 }>(\\"updateBookByIdUsingPut\\", ({ id, requestBody }) => ({
   url: \`/api/v2/book/\${id}\`,
@@ -295,7 +295,7 @@ export const updateBookByIdUsingPut = createRequestAction<{
 
 export const updatePet = createRequestAction<{
   requestBody: {
-    body: IPet;
+    body: Pet;
   };
 }>(\\"updatePet\\", ({ requestBody }) => ({
   url: \`/api/v2/pet\`,
@@ -319,7 +319,7 @@ export const updatePetWithForm = createRequestAction<{
 
 export const updateUser = createRequestAction<{
   requestBody: {
-    body: IUser;
+    body: User;
   };
   username: string;
 }>(\\"updateUser\\", ({ username, requestBody }) => ({
@@ -335,7 +335,7 @@ export const uploadAttachmentUsingPost = createRequestAction<
       attachment: File;
     };
   },
-  IAttachmentBo
+  AttachmentBo
 >(\\"uploadAttachmentUsingPost\\", ({ requestBody }) => ({
   url: \`/api/v2\`,
   method: \\"POST\\",
@@ -351,7 +351,7 @@ export const uploadFile = createRequestAction<
       file?: File;
     };
   },
-  IApiResponse
+  ApiResponse
 >(\\"uploadFile\\", ({ petId, requestBody }) => ({
   url: \`/api/v2/pet/\${petId}/uploadImage\`,
   method: \\"POST\\",
@@ -359,13 +359,13 @@ export const uploadFile = createRequestAction<
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
 }));
 
-export interface IApiResponse {
+export interface ApiResponse {
   code?: number;
   message?: string;
   type?: string;
 }
 
-export interface IAttachmentBo {
+export interface AttachmentBo {
   authorName?: string;
   createdDate?: number;
   fileName?: string;
@@ -374,8 +374,8 @@ export interface IAttachmentBo {
   path?: string;
 }
 
-export interface IBookDetailVo {
-  attachment?: IScheduleVo;
+export interface BookDetailVo {
+  attachment?: ScheduleVo;
   authorName?: string;
   createdDate?: number;
   fileName?: string;
@@ -384,23 +384,23 @@ export interface IBookDetailVo {
   path?: string;
 }
 
-export interface IBookVo {
+export interface BookVo {
   address?: string;
   price?: string;
 }
 
-export interface IBookingResponse {
-  data: IDocumentVo;
-  errors?: IErrorInfo[];
+export interface BookingResponse {
+  data: DocumentVo;
+  errors?: ErrorInfo[];
 }
 
-export interface ICategory {
+export interface Category {
   id?: number;
   name?: string;
 }
 
-export interface IDocumentVo {
-  attachment?: IBookDetailVo;
+export interface DocumentVo {
+  attachment?: BookDetailVo;
   authorName?: string;
   createdDate?: number;
   id?: string;
@@ -408,23 +408,23 @@ export interface IDocumentVo {
   title?: string;
 }
 
-export interface IError {
+export interface Error {
   code?: number;
   field?: string;
   message?: string;
 }
 
-export interface IErrorInfo {
+export interface ErrorInfo {
   errorMessage?: string;
 }
 
-export type TErrors = IError[];
+export type Errors = Error[];
 
-export interface IFile {
+export interface File {
   absolute?: boolean;
-  absoluteFile?: IFile;
+  absoluteFile?: File;
   absolutePath?: string;
-  canonicalFile?: IFile;
+  canonicalFile?: File;
   canonicalPath?: string;
   directory?: boolean;
   executable?: boolean;
@@ -434,7 +434,7 @@ export interface IFile {
   lastModified?: number;
   name?: string;
   parent?: string;
-  parentFile?: IFile;
+  parentFile?: File;
   path?: string;
   readable?: boolean;
   totalSpace?: number;
@@ -463,24 +463,24 @@ export enum GetDocumentByIdUsingGetFrom {
   \\"BBB\\" = \\"BBB\\",
 }
 
-export interface IInputStream {
+export interface InputStream {
   [key: string]: any;
 }
 
-export interface IItem {
+export interface Item {
   color?: string;
   id?: string;
   name?: string;
   price?: string;
 }
 
-export type TItems = IItem[];
+export type Items = Item[];
 
-export interface IMessage {
+export interface Message {
   message?: string;
 }
 
-export interface IOrder {
+export interface Order {
   complete?: boolean;
   id?: number;
   petId?: number;
@@ -495,13 +495,13 @@ export enum OrderStatus {
   \\"delivered\\" = \\"delivered\\",
 }
 
-export interface IPet {
-  category?: ICategory;
+export interface Pet {
+  category?: Category;
   id?: number;
   name: string;
   photoUrls: string[];
   status?: keyof typeof PetStatus;
-  tags?: ITag[];
+  tags?: Tag[];
 }
 
 export enum PetStatus {
@@ -510,29 +510,29 @@ export enum PetStatus {
   \\"sold\\" = \\"sold\\",
 }
 
-export interface IResource {
+export interface Resource {
   description?: string;
-  file?: IFile;
+  file?: File;
   filename?: string;
-  inputStream?: IInputStream;
+  inputStream?: InputStream;
   open?: boolean;
   readable?: boolean;
-  uri?: IUri;
-  url?: IUrl;
+  uri?: Uri;
+  url?: Url;
 }
 
-export interface IScheduleVo {
-  schedules?: IBookVo[][];
+export interface ScheduleVo {
+  schedules?: BookVo[][];
   shiftId?: string;
   team?: string;
 }
 
-export interface ITag {
+export interface Tag {
   id?: number;
   name?: string;
 }
 
-export interface IUpdateBookRequest {
+export interface UpdateBookRequest {
   birthCountry?: string;
   citizenship?: string;
   dateOfBirth?: number;
@@ -545,7 +545,7 @@ export interface IUpdateBookRequest {
   spokenLanguage?: string[];
 }
 
-export interface IUri {
+export interface Uri {
   absolute?: boolean;
   authority?: string;
   fragment?: string;
@@ -565,11 +565,11 @@ export interface IUri {
   userInfo?: string;
 }
 
-export interface IUrl {
+export interface Url {
   authority?: string;
   content?: { [key: string]: any };
   defaultPort?: number;
-  deserializedFields?: IUrlStreamHandler;
+  deserializedFields?: UrlStreamHandler;
   file?: string;
   host?: string;
   path?: string;
@@ -581,11 +581,11 @@ export interface IUrl {
   userInfo?: string;
 }
 
-export interface IUrlStreamHandler {
+export interface UrlStreamHandler {
   [key: string]: any;
 }
 
-export interface IUser {
+export interface User {
   email?: string;
   firstName?: string;
   id?: number;
@@ -596,8 +596,8 @@ export interface IUser {
   username?: string;
 }
 
-export interface IValidationError {
-  errors?: TErrors;
+export interface ValidationError {
+  errors?: Errors;
   message?: string;
 }
 "

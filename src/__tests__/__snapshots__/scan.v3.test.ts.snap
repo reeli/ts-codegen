@@ -3,9 +3,9 @@
 exports[`swagger v3 should handle basic schemas correctly 1`] = `
 "export const addPet = createRequestAction<
   {
-    requestBody: INewPet;
+    requestBody: NewPet;
   },
-  IPet
+  Pet
 >(\\"addPet\\", ({ requestBody }) => ({
   url: \`/api/v3/pets\`,
   method: \\"POST\\",
@@ -15,9 +15,9 @@ exports[`swagger v3 should handle basic schemas correctly 1`] = `
 
 export const createItem = createRequestAction<
   {
-    item?: IItem;
+    item?: Item;
   },
-  IMessage
+  Message
 >(\\"createItem\\", ({ item }) => ({
   url: \`/api/v3/items\`,
   method: \\"POST\\",
@@ -34,7 +34,7 @@ export const findPetById = createRequestAction<
   {
     id: number;
   },
-  IPet
+  Pet
 >(\\"findPetById\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"GET\\" }));
 
 export const findPets = createRequestAction<
@@ -43,7 +43,7 @@ export const findPets = createRequestAction<
     status: keyof typeof FindPetsStatus[];
     tags?: keyof typeof FindPetsTags[];
   },
-  IPet[]
+  Pet[]
 >(\\"findPets\\", ({ tags, limit, status }) => ({
   url: \`/api/v3/pets\`,
   method: \\"GET\\",
@@ -55,7 +55,7 @@ export const findPets = createRequestAction<
 }));
 
 export const formMultipartWithFile = createRequestAction<{
-  requestBody: { data?: IPet; file: string; slice?: string[]; string?: string };
+  requestBody: { data?: Pet; file: string; slice?: string[]; string?: string };
 }>(\\"formMultipartWithFile\\", ({ requestBody }) => ({
   url: \`/api/v3/demo/forms/multipart\`,
   method: \\"POST\\",
@@ -73,7 +73,7 @@ export const formMultipartWithFiles = createRequestAction<{
 }));
 
 export const formUrlEncoded = createRequestAction<{
-  requestBody: IRequestForm;
+  requestBody: RequestForm;
 }>(\\"formUrlEncoded\\", ({ requestBody }) => ({
   url: \`/api/v3/demo/forms/url-encoded\`,
   method: \\"POST\\",
@@ -87,7 +87,7 @@ export const getItems = createRequestAction<
     page?: number;
     sort?: string[];
   },
-  TItems
+  Items
 >(\\"getItems\\", ({ page, limit, sort }) => ({
   url: \`/api/v3/items\`,
   method: \\"GET\\",
@@ -99,7 +99,7 @@ export const getItems = createRequestAction<
 }));
 
 export const postBody = createRequestAction<{
-  requestBody: IPet;
+  requestBody: Pet;
 }>(\\"postBody\\", ({ requestBody }) => ({
   url: \`/api/v3/body\`,
   method: \\"POST\\",
@@ -108,7 +108,7 @@ export const postBody = createRequestAction<{
 }));
 
 export const updatePet = createRequestAction<{
-  requestBody?: ICat | IDog;
+  requestBody?: Cat | Dog;
 }>(\\"updatePet\\", ({ requestBody }) => ({
   url: \`/api/v3/pets\`,
   method: \\"PATCH\\",
@@ -116,17 +116,17 @@ export const updatePet = createRequestAction<{
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
-export interface ICat extends IPet {
+export interface Cat extends Pet {
   age?: number;
   hunts?: boolean;
 }
 
-export interface ICategory {
+export interface Category {
   id?: number;
   name?: string;
 }
 
-export interface IDog extends IPet {
+export interface Dog extends Pet {
   bark?: boolean;
   breed?: keyof typeof DogBreed;
 }
@@ -138,7 +138,7 @@ export enum DogBreed {
   \\"Shepherd\\" = \\"Shepherd\\",
 }
 
-export interface IError {
+export interface Error {
   code: number;
   message: string;
 }
@@ -156,33 +156,33 @@ export enum FindPetsTags {
   \\"a\\" = \\"a\\",
 }
 
-export interface IItem {
+export interface Item {
   color?: string;
   id?: string;
   name?: string;
   price?: string;
 }
 
-export type TItems = IItem[];
+export type Items = Item[];
 
-export interface IMessage {
+export interface Message {
   message?: string;
 }
 
-export interface INewPet {
+export interface NewPet {
   name: string;
   tag?: string;
 }
 
-export interface IPet extends INewPet {
-  categories?: ICategory[];
+export interface Pet extends NewPet {
+  categories?: Category[];
   id: number;
 }
 
-export type TPets = IPet[];
+export type Pets = Pet[];
 
-export interface IRequestForm {
-  data: IPet;
+export interface RequestForm {
+  data: Pet;
   slice: string[];
   string: string;
 }

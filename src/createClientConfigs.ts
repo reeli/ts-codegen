@@ -11,8 +11,8 @@ import {
   omit,
   pick,
   reduce,
-  values,
   upperCase,
+  values,
 } from "lodash";
 import { getPathsFromRef, toCapitalCase, withRequiredName } from "src/utils";
 import { CustomType } from "src/Type";
@@ -39,11 +39,13 @@ const buildConfigs = <TOperation extends CustomOperation>({
   paths,
   basePath,
   register,
+  backwardCompatible,
   createOtherConfig,
 }: {
   paths: CustomPaths;
   basePath: string;
   register: ReturnType<typeof createRegister>;
+  backwardCompatible?: boolean;
   createOtherConfig: (
     operation: TOperation,
     pathParams?: CustomParameter[],
@@ -58,8 +60,8 @@ const buildConfigs = <TOperation extends CustomOperation>({
 
       return {
         url: getRequestURL(pathName, basePath),
-        method: upperCase(method),
-        operationId: getOperationId(operation.operationId),
+        method: backwardCompatible ? method : upperCase(method),
+        operationId: backwardCompatible ? operation.operationId : camelCase(operation.operationId),
         deprecated: operation.deprecated,
         pathParams: getParamsNames(pathParams),
         queryParams: getParamsNames(queryParams),
@@ -97,14 +99,13 @@ const getRequestURL = (pathName: string, basePath?: string) => {
   return `${basePath}${path === "/" && !!basePath ? "" : path}`;
 };
 
-const getOperationId = (operationId?: string) => camelCase(operationId);
-
 const getParamsNames = (params?: any[]) => (isEmpty(params) ? [] : map(params, (param) => param?.name));
 
 export const getClientConfigsV2 = (
   paths: { [pathName: string]: Path },
   basePath: string,
   register: ReturnType<typeof createRegister>,
+  backwardCompatible?: boolean,
 ): IClientConfig[] => {
   const schemaHandler = new Schema(register);
   const getRequestBody = (parameters?: Operation["parameters"]) => {
@@ -133,6 +134,7 @@ export const getClientConfigsV2 = (
     paths,
     basePath,
     register,
+    backwardCompatible,
     createOtherConfig: (operation, pathParams, queryParams) => {
       const requestTypesGetter = getRequestTypes(schemaHandler)(operation.operationId);
 

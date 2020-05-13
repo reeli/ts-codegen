@@ -15,7 +15,8 @@ enum DataType {
 }
 
 interface ScanOptions {
-  typeWithPrefix?: boolean;
+  typeWithPrefix?: boolean; // Will keep prefix('I' for interface, 'T' for type) in types when it sets true
+  backwardCompatible?: boolean; // Not recommend, only if you want backward capability. This option will help to keep operationId and method name as before when it sets true. This option is only worked with swagger version 2.0.
 }
 
 export const scan = (data: Spec | IOpenAPI, options?: ScanOptions) => {
@@ -34,7 +35,7 @@ export const scan = (data: Spec | IOpenAPI, options?: ScanOptions) => {
 
   let clientConfigs: IClientConfig[] =
     dataType === DataType.swagger
-      ? getClientConfigsV2(paths, basePath, register)
+      ? getClientConfigsV2(paths, basePath, register, options?.backwardCompatible)
       : getClientConfigsV3(paths, basePath, register);
 
   const decls = register.getDecls();
