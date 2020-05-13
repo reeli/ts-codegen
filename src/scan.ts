@@ -14,7 +14,11 @@ enum DataType {
   swagger,
 }
 
-export const scan = (data: Spec | IOpenAPI) => {
+interface ScanOptions {
+  typeWithPrefix?: boolean;
+}
+
+export const scan = (data: Spec | IOpenAPI, options?: ScanOptions) => {
   const register = createRegister();
   const schemaHandler = new Schema(register);
   const { dataType, basePath, paths, schemas, parameters, responses, requestBodies } = getInputs(data);
@@ -34,7 +38,9 @@ export const scan = (data: Spec | IOpenAPI) => {
       : getClientConfigsV3(paths, basePath, register);
 
   const decls = register.getDecls();
-  register.renameAllRefs((key) => decls[key].name);
+  if (options?.typeWithPrefix) {
+    register.renameAllRefs((key) => decls[key].name);
+  }
 
   return print(clientConfigs, decls);
 };
