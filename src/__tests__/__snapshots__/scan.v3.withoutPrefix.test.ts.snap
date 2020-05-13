@@ -1,0 +1,190 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`swagger v3 should handle basic schemas without prefix in type name 1`] = `
+"export const addPet = createRequestAction<
+  {
+    requestBody: NewPet;
+  },
+  Pet
+>(\\"addPet\\", ({ requestBody }) => ({
+  url: \`/api/v3/pets\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createItem = createRequestAction<
+  {
+    item?: Item;
+  },
+  Message
+>(\\"createItem\\", ({ item }) => ({
+  url: \`/api/v3/items\`,
+  method: \\"post\\",
+  params: {
+    item,
+  },
+}));
+
+export const deletePet = createRequestAction<{
+  id: number;
+}>(\\"deletePet\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"delete\\" }));
+
+export const findPetById = createRequestAction<
+  {
+    id: number;
+  },
+  Pet
+>(\\"findPetById\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"get\\" }));
+
+export const findPets = createRequestAction<
+  {
+    limit?: number;
+    status: keyof typeof FindPetsStatus[];
+    tags?: keyof typeof FindPetsTags[];
+  },
+  Pet[]
+>(\\"findPets\\", ({ tags, limit, status }) => ({
+  url: \`/api/v3/pets\`,
+  method: \\"get\\",
+  params: {
+    tags,
+    limit,
+    status,
+  },
+}));
+
+export const formMultipartWithFile = createRequestAction<{
+  requestBody: { data?: Pet; file: string; slice?: string[]; string?: string };
+}>(\\"formMultipartWithFile\\", ({ requestBody }) => ({
+  url: \`/api/v3/demo/forms/multipart\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const formMultipartWithFiles = createRequestAction<{
+  requestBody: { files: string[] };
+}>(\\"formMultipartWithFiles\\", ({ requestBody }) => ({
+  url: \`/api/v3/demo/forms/multipart-with-files\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const formUrlEncoded = createRequestAction<{
+  requestBody: RequestForm;
+}>(\\"formUrlEncoded\\", ({ requestBody }) => ({
+  url: \`/api/v3/demo/forms/url-encoded\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/x-www-form-urlencoded\\" },
+}));
+
+export const getItems = createRequestAction<
+  {
+    limit?: number;
+    page?: number;
+    sort?: string[];
+  },
+  Items
+>(\\"getItems\\", ({ page, limit, sort }) => ({
+  url: \`/api/v3/items\`,
+  method: \\"get\\",
+  params: {
+    page,
+    limit,
+    sort,
+  },
+}));
+
+export const postBody = createRequestAction<{
+  requestBody: Pet;
+}>(\\"postBody\\", ({ requestBody }) => ({
+  url: \`/api/v3/body\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const updatePet = createRequestAction<{
+  requestBody?: Cat | Dog;
+}>(\\"updatePet\\", ({ requestBody }) => ({
+  url: \`/api/v3/pets\`,
+  method: \\"patch\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export interface Cat extends Pet {
+  age?: number;
+  hunts?: boolean;
+}
+
+export interface Category {
+  id?: number;
+  name?: string;
+}
+
+export interface Dog extends Pet {
+  bark?: boolean;
+  breed?: keyof typeof DogBreed;
+}
+
+export enum DogBreed {
+  \\"Dingo\\" = \\"Dingo\\",
+  \\"Husky\\" = \\"Husky\\",
+  \\"Retriever\\" = \\"Retriever\\",
+  \\"Shepherd\\" = \\"Shepherd\\",
+}
+
+export interface Error {
+  code: number;
+  message: string;
+}
+
+export enum FindPetsStatus {
+  \\"available\\" = \\"available\\",
+  \\"pending\\" = \\"pending\\",
+  \\"sold\\" = \\"sold\\",
+}
+
+export enum FindPetsTags {
+  \\"z\\" = \\"z\\",
+  \\"b\\" = \\"b\\",
+  \\"c\\" = \\"c\\",
+  \\"a\\" = \\"a\\",
+}
+
+export interface Item {
+  color?: string;
+  id?: string;
+  name?: string;
+  price?: string;
+}
+
+export type Items = Item[];
+
+export interface Message {
+  message?: string;
+}
+
+export interface NewPet {
+  name: string;
+  tag?: string;
+}
+
+export interface Pet extends NewPet {
+  categories?: Category[];
+  id: number;
+}
+
+export type Pets = Pet[];
+
+export interface RequestForm {
+  data: Pet;
+  slice: string[];
+  string: string;
+}
+"
+`;

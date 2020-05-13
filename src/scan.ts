@@ -19,7 +19,7 @@ interface ScanOptions {
 }
 
 export const scan = (data: Spec | IOpenAPI, options?: ScanOptions) => {
-  const register = createRegister();
+  const register = createRegister(options?.typeWithPrefix);
   const schemaHandler = new Schema(register);
   const { dataType, basePath, paths, schemas, parameters, responses, requestBodies } = getInputs(data);
 

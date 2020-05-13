@@ -1,0 +1,604 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`swagger v2 should handle spec without prefix in type name 1`] = `
+"export const addPet = createRequestAction<{
+  requestBody: {
+    body: Pet;
+  };
+}>(\\"addPet\\", ({ requestBody }) => ({
+  url: \`/api/v2/pet\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createItem = createRequestAction<
+  {
+    requestBody: {
+      item?: Item;
+    };
+  },
+  Message
+>(\\"createItem\\", ({ requestBody }) => ({
+  url: \`/api/v2/items\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createUser = createRequestAction<{
+  requestBody: {
+    body: User;
+  };
+}>(\\"createUser\\", ({ requestBody }) => ({
+  url: \`/api/v2/user\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createUsersWithArrayInput = createRequestAction<{
+  requestBody: {
+    body: User[];
+  };
+}>(\\"createUsersWithArrayInput\\", ({ requestBody }) => ({
+  url: \`/api/v2/user/createWithArray\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createUsersWithListInput = createRequestAction<{
+  requestBody: {
+    body: User[];
+  };
+}>(\\"createUsersWithListInput\\", ({ requestBody }) => ({
+  url: \`/api/v2/user/createWithList\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const deleteAttachmentUsingDelete = createRequestAction<{
+  id: string;
+}>(\\"deleteAttachmentUsingDelete\\", ({ id }) => ({ url: \`/api/v2/\${id}\`, method: \\"delete\\" }));
+
+export const deleteOrder = createRequestAction<{
+  orderId: number;
+}>(\\"deleteOrder\\", ({ orderId }) => ({ url: \`/api/v2/store/order/\${orderId}\`, method: \\"delete\\" }));
+
+export const deletePet = createRequestAction<{
+  petId: number;
+}>(\\"deletePet\\", ({ petId }) => ({ url: \`/api/v2/pet/\${petId}\`, method: \\"delete\\" }));
+
+export const deleteUser = createRequestAction<{
+  username: string;
+}>(\\"deleteUser\\", ({ username }) => ({ url: \`/api/v2/user/\${username}\`, method: \\"delete\\" }));
+
+export const downloadUsingGet = createRequestAction<
+  {
+    id: string;
+  },
+  Resource
+>(\\"downloadUsingGet\\", ({ id }) => ({ url: \`/api/v2/\${id}\`, method: \\"get\\" }));
+
+export const findBookByIdUsingGet = createRequestAction<
+  {
+    id: string;
+  },
+  BookDetailVo
+>(\\"findBookByIdUsingGet\\", ({ id }) => ({ url: \`/api/v2/book/\${id}\`, method: \\"get\\" }));
+
+export const findPetsByStatus = createRequestAction<
+  {
+    status: keyof typeof FindPetsByStatusStatus[];
+  },
+  Pet[]
+>(\\"findPetsByStatus\\", ({ status }) => ({
+  url: \`/api/v2/pet/findByStatus\`,
+  method: \\"get\\",
+  params: {
+    status,
+  },
+}));
+
+/**
+ * @deprecated findPetsByTags
+ */
+
+export const findPetsByTags = createRequestAction<
+  {
+    tags: string[];
+  },
+  Pet[]
+>(\\"findPetsByTags\\", ({ tags }) => ({
+  url: \`/api/v2/pet/findByTags\`,
+  method: \\"get\\",
+  params: {
+    tags,
+  },
+}));
+
+export const getAgencyResponseListUsingGet = createRequestAction<
+  {
+    addressType: keyof typeof GetAgencyResponseListUsingGetAddressType;
+  },
+  Resource[]
+>(\\"getAgencyResponseListUsingGet\\", ({ addressType }) => ({
+  url: \`/api/v2/agency-responses\`,
+  method: \\"get\\",
+  params: {
+    addressType,
+  },
+}));
+
+export const getAgencyResponseUsingGet = createRequestAction<
+  {
+    addressType: keyof typeof GetAgencyResponseUsingGetAddressType;
+    responseDate: string;
+  },
+  Resource
+>(\\"getAgencyResponseUsingGet\\", ({ responseDate, addressType }) => ({
+  url: \`/api/v2/agency-response\`,
+  method: \\"get\\",
+  params: {
+    responseDate,
+    addressType,
+  },
+}));
+
+export const getDocumentByIdUsingGet = createRequestAction<
+  {
+    documentId: string;
+    from?: keyof typeof GetDocumentByIdUsingGetFrom;
+  },
+  DocumentVo
+>(\\"getDocumentByIdUsingGet\\", ({ documentId, from }) => ({
+  url: \`/api/v2/documents/\${documentId}/doc\`,
+  method: \\"get\\",
+  params: {
+    from,
+  },
+}));
+
+export const getHealthCheckUsingHead = createRequestAction<
+  {
+    flight_no: string;
+  },
+  DocumentVo
+>(\\"getHealthCheckUsingHead\\", ({ flight_no }) => ({ url: \`/api/v2/health-check/\${flight_no}\`, method: \\"head\\" }));
+
+export const getInventory = createRequestAction<{ [key: string]: any }>(\\"getInventory\\", () => ({
+  url: \`/api/v2/store/inventory\`,
+  method: \\"get\\",
+}));
+
+export const getItems = createRequestAction<
+  {
+    limit?: number;
+    page?: number;
+    sort?: string[];
+  },
+  Items
+>(\\"getItems\\", ({ page, limit, sort }) => ({
+  url: \`/api/v2/items\`,
+  method: \\"get\\",
+  params: {
+    page,
+    limit,
+    sort,
+  },
+}));
+
+export const getOrderById = createRequestAction<
+  {
+    orderId: number;
+  },
+  Order
+>(\\"getOrderById\\", ({ orderId }) => ({ url: \`/api/v2/store/order/\${orderId}\`, method: \\"get\\" }));
+
+export const getPetById = createRequestAction<
+  {
+    petId: number;
+  },
+  Pet
+>(\\"getPetById\\", ({ petId }) => ({ url: \`/api/v2/pet/\${petId}\`, method: \\"get\\" }));
+
+export const getScheduleDetailsByDateUsingGet = createRequestAction<
+  {
+    roleId?: string;
+    scheduleDate: number;
+  },
+  ScheduleVo[]
+>(\\"getScheduleDetailsByDateUsingGet\\", ({ scheduleDate, roleId }) => ({
+  url: \`/api/v2/schedules\`,
+  method: \\"get\\",
+  params: {
+    scheduleDate,
+    roleId,
+  },
+}));
+
+export const getTeamListByUsingGet = createRequestAction<{
+  limit?: number;
+  offset?: number;
+}>(\\"getTeamListByUsingGet\\", ({ offset, limit }) => ({
+  url: \`/api/v2/teams\`,
+  method: \\"get\\",
+  params: {
+    offset,
+    limit,
+  },
+}));
+
+export const getUserByName = createRequestAction<
+  {
+    username: string;
+  },
+  User
+>(\\"getUserByName\\", ({ username }) => ({ url: \`/api/v2/user/\${username}\`, method: \\"get\\" }));
+
+export const getUserListByUsingGet = createRequestAction<{
+  limit?: number;
+  offset?: number;
+}>(\\"getUserListByUsingGet\\", ({ offset, limit }) => ({
+  url: \`/api/v2/users\`,
+  method: \\"get\\",
+  params: {
+    offset,
+    limit,
+  },
+}));
+
+export const loginUser = createRequestAction<
+  {
+    password: string;
+    username: string;
+  },
+  string
+>(\\"loginUser\\", ({ username, password }) => ({
+  url: \`/api/v2/user/login\`,
+  method: \\"get\\",
+  params: {
+    username,
+    password,
+  },
+}));
+
+export const logoutUser = createRequestAction(\\"logoutUser\\", () => ({ url: \`/api/v2/user/logout\`, method: \\"get\\" }));
+
+export const placeOrder = createRequestAction<
+  {
+    requestBody: {
+      body: Order;
+    };
+  },
+  Order
+>(\\"placeOrder\\", ({ requestBody }) => ({
+  url: \`/api/v2/store/order\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const updateBookByIdUsingPut = createRequestAction<{
+  id: string;
+  requestBody: {
+    updateBookRequest: UpdateBookRequest;
+  };
+}>(\\"updateBookByIdUsingPut\\", ({ id, requestBody }) => ({
+  url: \`/api/v2/book/\${id}\`,
+  method: \\"put\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const updatePet = createRequestAction<{
+  requestBody: {
+    body: Pet;
+  };
+}>(\\"updatePet\\", ({ requestBody }) => ({
+  url: \`/api/v2/pet\`,
+  method: \\"put\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const updatePetWithForm = createRequestAction<{
+  petId: number;
+  requestBody: {
+    name?: string;
+    status?: string;
+  };
+}>(\\"updatePetWithForm\\", ({ petId, requestBody }) => ({
+  url: \`/api/v2/pet/\${petId}\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const updateUser = createRequestAction<{
+  requestBody: {
+    body: User;
+  };
+  username: string;
+}>(\\"updateUser\\", ({ username, requestBody }) => ({
+  url: \`/api/v2/user/\${username}\`,
+  method: \\"put\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const uploadAttachmentUsingPost = createRequestAction<
+  {
+    requestBody: {
+      attachment: File;
+    };
+  },
+  AttachmentBo
+>(\\"uploadAttachmentUsingPost\\", ({ requestBody }) => ({
+  url: \`/api/v2\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const uploadFile = createRequestAction<
+  {
+    petId: number;
+    requestBody: {
+      additionalMetadata?: string;
+      file?: File;
+    };
+  },
+  ApiResponse
+>(\\"uploadFile\\", ({ petId, requestBody }) => ({
+  url: \`/api/v2/pet/\${petId}/uploadImage\`,
+  method: \\"post\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export interface ApiResponse {
+  code?: number;
+  message?: string;
+  type?: string;
+}
+
+export interface AttachmentBo {
+  authorName?: string;
+  createdDate?: number;
+  fileName?: string;
+  id?: string;
+  mimeType?: string;
+  path?: string;
+}
+
+export interface BookDetailVo {
+  attachment?: ScheduleVo;
+  authorName?: string;
+  createdDate?: number;
+  fileName?: string;
+  id?: string;
+  mimeType?: string;
+  path?: string;
+}
+
+export interface BookVo {
+  address?: string;
+  price?: string;
+}
+
+export interface BookingResponse {
+  data: DocumentVo;
+  errors?: ErrorInfo[];
+}
+
+export interface Category {
+  id?: number;
+  name?: string;
+}
+
+export interface DocumentVo {
+  attachment?: BookDetailVo;
+  authorName?: string;
+  createdDate?: number;
+  id?: string;
+  note?: string;
+  title?: string;
+}
+
+export interface Error {
+  code?: number;
+  field?: string;
+  message?: string;
+}
+
+export interface ErrorInfo {
+  errorMessage?: string;
+}
+
+export type Errors = Error[];
+
+export interface File {
+  absolute?: boolean;
+  absoluteFile?: File;
+  absolutePath?: string;
+  canonicalFile?: File;
+  canonicalPath?: string;
+  directory?: boolean;
+  executable?: boolean;
+  file?: boolean;
+  freeSpace?: number;
+  hidden?: boolean;
+  lastModified?: number;
+  name?: string;
+  parent?: string;
+  parentFile?: File;
+  path?: string;
+  readable?: boolean;
+  totalSpace?: number;
+  usableSpace?: number;
+  writable?: boolean;
+}
+
+export enum FindPetsByStatusStatus {
+  \\"available\\" = \\"available\\",
+  \\"pending\\" = \\"pending\\",
+  \\"sold\\" = \\"sold\\",
+}
+
+export enum GetAgencyResponseListUsingGetAddressType {
+  \\"AAA\\" = \\"AAA\\",
+  \\"BBB\\" = \\"BBB\\",
+}
+
+export enum GetAgencyResponseUsingGetAddressType {
+  \\"AAA\\" = \\"AAA\\",
+  \\"BBB\\" = \\"BBB\\",
+}
+
+export enum GetDocumentByIdUsingGetFrom {
+  \\"AAA\\" = \\"AAA\\",
+  \\"BBB\\" = \\"BBB\\",
+}
+
+export interface InputStream {
+  [key: string]: any;
+}
+
+export interface Item {
+  color?: string;
+  id?: string;
+  name?: string;
+  price?: string;
+}
+
+export type Items = Item[];
+
+export interface Message {
+  message?: string;
+}
+
+export interface Order {
+  complete?: boolean;
+  id?: number;
+  petId?: number;
+  quantity?: number;
+  shipDate?: string;
+  status?: keyof typeof OrderStatus;
+}
+
+export enum OrderStatus {
+  \\"placed\\" = \\"placed\\",
+  \\"approved\\" = \\"approved\\",
+  \\"delivered\\" = \\"delivered\\",
+}
+
+export interface Pet {
+  category?: Category;
+  id?: number;
+  name: string;
+  photoUrls: string[];
+  status?: keyof typeof PetStatus;
+  tags?: Tag[];
+}
+
+export enum PetStatus {
+  \\"available\\" = \\"available\\",
+  \\"pending\\" = \\"pending\\",
+  \\"sold\\" = \\"sold\\",
+}
+
+export interface Resource {
+  description?: string;
+  file?: File;
+  filename?: string;
+  inputStream?: InputStream;
+  open?: boolean;
+  readable?: boolean;
+  uri?: Uri;
+  url?: Url;
+}
+
+export interface ScheduleVo {
+  schedules?: BookVo[][];
+  shiftId?: string;
+  team?: string;
+}
+
+export interface Tag {
+  id?: number;
+  name?: string;
+}
+
+export interface UpdateBookRequest {
+  birthCountry?: string;
+  citizenship?: string;
+  dateOfBirth?: number;
+  employmentStatus?: string;
+  ethnicity?: string;
+  gender?: string;
+  idNumber?: string;
+  idType?: string;
+  roleId?: string;
+  spokenLanguage?: string[];
+}
+
+export interface Uri {
+  absolute?: boolean;
+  authority?: string;
+  fragment?: string;
+  host?: string;
+  opaque?: boolean;
+  path?: string;
+  port?: number;
+  query?: string;
+  rawAuthority?: string;
+  rawFragment?: string;
+  rawPath?: string;
+  rawQuery?: string;
+  rawSchemeSpecificPart?: string;
+  rawUserInfo?: string;
+  scheme?: string;
+  schemeSpecificPart?: string;
+  userInfo?: string;
+}
+
+export interface Url {
+  authority?: string;
+  content?: { [key: string]: any };
+  defaultPort?: number;
+  deserializedFields?: UrlStreamHandler;
+  file?: string;
+  host?: string;
+  path?: string;
+  port?: number;
+  protocol?: string;
+  query?: string;
+  ref?: string;
+  serializedHashCode?: number;
+  userInfo?: string;
+}
+
+export interface UrlStreamHandler {
+  [key: string]: any;
+}
+
+export interface User {
+  email?: string;
+  firstName?: string;
+  id?: number;
+  lastName?: string;
+  password?: string;
+  phone?: string;
+  userStatus?: number;
+  username?: string;
+}
+
+export interface ValidationError {
+  errors?: Errors;
+  message?: string;
+}
+"
+`;

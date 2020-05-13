@@ -41,7 +41,7 @@ export interface IStore {
   };
 }
 
-export const createRegister = () => {
+export const createRegister = (typeWithPrefix: boolean = false) => {
   const store: IStore = {
     decls: {},
     refs: {},
@@ -59,7 +59,7 @@ export const createRegister = () => {
       store.decls[id] = {
         type,
         kind,
-        name: withPrefix(id, kind),
+        name: typeWithPrefix ? withPrefix(id, kind) : id,
       };
     },
 
