@@ -88,6 +88,7 @@ export const getItems = createRequestAction<
   },
 }));
 ```
+6. 向后兼容的问题，比如（requestBody，method, operationId, enum 等等）
 
 
 # Notice

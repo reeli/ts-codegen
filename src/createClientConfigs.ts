@@ -30,11 +30,6 @@ import {
 import { createRegister } from "src/createRegister";
 import { IOperation, IPaths, IRequestBody, IResponse } from "src/__types__/OpenAPI";
 
-// TODO: 解决向后兼容的问题，比如（requestBody，method, operationId, enum 等等）
-// TODO: 让 method 变成全大写，get -> GET
-// TODO: 1. 将 inline 的 requestParams 和 requestBody 抽成单独的 interface，方便外面使用
-// TODO: 2. query 不要全部 ...，而是以具体的 {[key]: value} 形式，避免外部应用一些不需要的 query
-
 const buildConfigs = <TOperation extends CustomOperation>({
   paths,
   basePath,
