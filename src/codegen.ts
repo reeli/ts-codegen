@@ -22,6 +22,7 @@ export const getCodegenConfig = () => {
         },
       };
 };
+
 export const codegen = () => {
   const { output, actionCreatorImport, timeout, data, clients, options } = getCodegenConfig();
 

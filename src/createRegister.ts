@@ -1,4 +1,3 @@
-// 利用闭包持有状态（私有变量）
 import { CustomType, Ref } from "src/Type";
 import { Parameter } from "swagger-schema-official";
 import { IReference, IRequestBody, IResponse } from "src/__types__/OpenAPI";

@@ -158,12 +158,7 @@ function generateTReq(TReq: IClientConfig["TReq"]) {
   return gen(TReq);
 }
 
-const toRequestParams = (data: string[]) =>
-  !isEmpty(data)
-    ? `{
-${data.join(",\n")}
-}`
-    : undefined;
+const toRequestParams = (data: string[]) => (!isEmpty(data) ? `{\n ${data.join(",\n")} \n}` : undefined);
 
 const getDeclarationType = (schema: CustomSchema) => {
   if (schema?.type === "object" || schema?.properties || (schema?.allOf && getUseExtends(schema?.allOf))) {
