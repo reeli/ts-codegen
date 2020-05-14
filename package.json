@@ -40,33 +40,30 @@
     "@types/axios": "0.14.x",
     "@types/jest": "25.2.x",
     "@types/lodash": "4.14.x",
-    "@types/node": "13.11.x",
+    "@types/node": "14.0.x",
     "@types/prettier": "2.0.x",
     "@types/rollup": "0.54.x",
     "axios": "0.19.x",
     "babel-core": "6.26.x",
-    "babel-jest": "25.3.x",
+    "babel-jest": "26.0.x",
     "babel-plugin-pure-calls-annotation": "0.3.x",
     "commander": "5.1.0",
-    "jest": "25.3.x",
+    "jest": "26.0.x",
     "lodash": "4.17.x",
-    "rollup": "2.6.x",
+    "rollup": "2.10.x",
     "rollup-plugin-babel": "4.4.x",
     "rollup-plugin-typescript": "1.0.x",
-    "ts-jest": "25.4.x",
-    "ts-node": "8.8.x",
+    "ts-jest": "25.5.x",
+    "ts-node": "8.10.x",
     "tsconfig-paths": "3.9.0",
-    "tslib": "1.10.x",
-    "typescript": "3.8.x"
+    "typescript": "3.9.x",
+    "@types/swagger-schema-official": "2.0.x"
   },
   "dependencies": {
-    "@types/swagger-schema-official": "2.0.x",
-    "prettier": "2.0.x",
-    "axios": "0.19.x"
-  },
-  "peerDependencies": {
-    "lodash": ">=4.17.15",
-    "tslib": ">=1.11.1"
+    "prettier": "^2.0.x",
+    "axios": "^0.19.x",
+    "lodash": "^4.17.15",
+    "tslib": "^2.0.x"
   },
   "jest": {
     "testEnvironment": "node",
