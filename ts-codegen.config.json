@@ -5,5 +5,9 @@
   "data": [
     "./examples/swagger.json",
     "./examples/openapi.json"
-  ]
+  ],
+  "options": {
+    "typeWithPrefix": true,
+    "backwardCompatible": true
+  }
 }

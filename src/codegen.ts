@@ -18,14 +18,18 @@ const codegen = () => {
           output: ".output",
           actionCreatorImport: "",
           clients: [],
+          options: {
+            typeWithPrefix: false,
+            backwardCompatible: false,
+          },
         };
-  const { output, actionCreatorImport, timeout, data, clients } = getCodegenConfig();
+  const { output, actionCreatorImport, timeout, data, clients, options } = getCodegenConfig();
 
   const writeSpecToFile = (spec: IOpenAPI | Spec) => {
     if (!spec) {
       return;
     }
-    const fileStr = `${actionCreatorImport} ${scan(spec)}`;
+    const fileStr = `${actionCreatorImport} ${scan(spec, options)}`;
     const { basePath } = getInputs(spec);
     write(output, getFilename(basePath), fileStr);
   };
