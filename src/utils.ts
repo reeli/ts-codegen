@@ -1,4 +1,4 @@
-import { camelCase, Dictionary, find, indexOf, map, takeRight, trimEnd } from "lodash";
+import { camelCase, Dictionary, find, indexOf, isEmpty, map, takeRight, trimEnd } from "lodash";
 import prettier from "prettier";
 import { CustomSchema } from "src/__types__/types";
 import { ERROR_MESSAGES } from "src/constants";
@@ -11,11 +11,7 @@ export const toCapitalCase = (str?: string): string => {
   return `${camelStr.charAt(0).toUpperCase()}${camelStr.slice(1)}`;
 };
 
-export const isArray = (data: any) => Object.prototype.toString.call(data) === "[object Array]";
-
-export const isNumberLike = (n: any) => {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-};
+export const isNumberLike = (n: any) => !isNaN(parseFloat(n)) && isFinite(n);
 
 export const prettifyCode = (code: string) =>
   prettier.format(code, {
@@ -25,8 +21,8 @@ export const prettifyCode = (code: string) =>
     parser: "typescript",
   });
 
-export const toTypes = (obj: Dictionary<any> | string) => {
-  if (!obj) {
+export const objToTypeStr = (obj: Dictionary<any>) => {
+  if (isEmpty(obj)) {
     return "";
   }
   const list = map<string, any>(obj, (v: any, k: string) => `${quoteKey(k)}: ${v};`);
@@ -60,10 +56,10 @@ export function testJSON(
   }
 }
 
-export const setDeprecated = (operationId: string = "") =>
+export const setDeprecated = (description: string = "") =>
   `
   /**
-  * @deprecated ${operationId}
+  * @deprecated ${description}
   */
   `;
 

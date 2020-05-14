@@ -2,7 +2,7 @@ import { IOpenAPI, IServer } from "src/__types__/OpenAPI";
 import { CustomType } from "src/Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { Schema } from "src/Schema";
-import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, toTypes } from "src/utils";
+import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, objToTypeStr } from "src/utils";
 import { Spec } from "swagger-schema-official";
 import { CustomReference, CustomSchema, IClientConfig, RequestType } from "src/__types__/types";
 import { createRegister, DeclKinds, IStore } from "src/createRegister";
@@ -145,7 +145,7 @@ function generateTReq(TReq: IClientConfig["TReq"]) {
   }
 
   function gen(obj: IClientConfig["TReq"]): string {
-    return toTypes(
+    return objToTypeStr(
       mapValues(obj, (v) => {
         if (!v.toType) {
           return gen(v as RequestType);

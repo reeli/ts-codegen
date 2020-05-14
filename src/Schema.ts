@@ -1,5 +1,5 @@
-import { getUseExtends, isArray, toCapitalCase } from "src/utils";
-import { forEach, isEmpty, map, reduce } from "lodash";
+import { getUseExtends, toCapitalCase } from "src/utils";
+import { forEach, isEmpty, map, reduce, isArray } from "lodash";
 import { IReference, ISchema } from "src/__types__/OpenAPI";
 import { CustomType, Type } from "src/Type";
 import { CustomSchema } from "src/__types__/types";
