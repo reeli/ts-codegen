@@ -81,6 +81,11 @@ export const formUrlEncoded = createRequestAction<{
   headers: { \\"Content-Type\\": \\"application/x-www-form-urlencoded\\" },
 }));
 
+export const generateFeedbackAndLeadReportUsingGet = createRequestAction<undefined, Resource>(
+  \\"generateFeedbackAndLeadReportUsingGet\\",
+  () => ({ url: \`/api/v3/demo/feedback\`, method: \\"GET\\" }),
+);
+
 export const getItems = createRequestAction<
   {
     limit?: number;
@@ -191,6 +196,13 @@ export interface RequestForm {
   data: Pet;
   slice: string[];
   string: string;
+}
+
+export interface Resource {
+  description?: string;
+  filename?: string;
+  open?: boolean;
+  readable?: boolean;
 }
 "
 `;

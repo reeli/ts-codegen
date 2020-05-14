@@ -95,8 +95,16 @@ function printRequest(clientConfigs: IClientConfig[]): string {
       };
       const toHeaders = () => (v.contentType ? `headers: {"Content-Type": '${v.contentType}'},` : "");
       const toGenerators = () => {
-        const types = compact([generateTReq(v.TReq), v.TResp?.toType(false)]).join(",");
-        return types ? `<${types}>` : "";
+        const TReq = generateTReq(v.TReq);
+        const TResp = v.TResp?.toType(false);
+
+        if (!TReq && !TResp) {
+          return "";
+        }
+        if (!TResp) {
+          return `<${TReq}>`;
+        }
+        return `<${TReq}, ${TResp}>`;
       };
       const toRequestInputs = () => {
         const getRequestBody = () => {
@@ -133,7 +141,7 @@ const printTypes = (decls: IStore["decls"]): string => {
 
 function generateTReq(TReq: IClientConfig["TReq"]) {
   if (isEmpty(TReq)) {
-    return "";
+    return;
   }
 
   function gen(obj: IClientConfig["TReq"]): string {

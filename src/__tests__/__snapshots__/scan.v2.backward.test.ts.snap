@@ -158,7 +158,7 @@ export const getHealthCheckUsingHEAD = createRequestAction<
   IDocumentVo
 >(\\"getHealthCheckUsingHEAD\\", ({ flight_no }) => ({ url: \`/api/v2/health-check/\${flight_no}\`, method: \\"head\\" }));
 
-export const getInventory = createRequestAction<{ [key: string]: any }>(\\"getInventory\\", () => ({
+export const getInventory = createRequestAction<undefined, { [key: string]: any }>(\\"getInventory\\", () => ({
   url: \`/api/v2/store/inventory\`,
   method: \\"get\\",
 }));

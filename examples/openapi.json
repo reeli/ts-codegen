@@ -56,7 +56,12 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["z", "b", "c", "a"]
+                "enum": [
+                  "z",
+                  "b",
+                  "c",
+                  "a"
+                ]
               }
             }
           },
@@ -311,7 +316,9 @@
     },
     "/demo/forms/multipart": {
       "post": {
-        "tags": ["routes"],
+        "tags": [
+          "routes"
+        ],
         "summary": "Form Multipart",
         "operationId": "FormMultipartWithFile",
         "requestBody": {
@@ -352,7 +359,9 @@
                     "x-go-name": "String"
                   }
                 },
-                "required": ["file"]
+                "required": [
+                  "file"
+                ]
               }
             }
           }
@@ -364,7 +373,9 @@
     },
     "/demo/forms/multipart-with-files": {
       "post": {
-        "tags": ["routes"],
+        "tags": [
+          "routes"
+        ],
         "summary": "Form Multipart With Files",
         "operationId": "FormMultipartWithFiles",
         "requestBody": {
@@ -385,7 +396,9 @@
                     "x-go-name": "Files"
                   }
                 },
-                "required": ["files"]
+                "required": [
+                  "files"
+                ]
               }
             }
           }
@@ -397,7 +410,9 @@
     },
     "/demo/forms/url-encoded": {
       "post": {
-        "tags": ["routes"],
+        "tags": [
+          "routes"
+        ],
         "summary": "Form URL Encoded",
         "operationId": "FormURLEncoded",
         "requestBody": {
@@ -417,6 +432,39 @@
         "responses": {
           "204": {}
         }
+      }
+    },
+    "/demo/feedback": {
+      "get": {
+        "description": "Should generate TRep with undefined value if it not exists, but TResp exist.",
+        "tags": [
+          "report-controller"
+        ],
+        "summary": "generateFeedbackAndLeadReport",
+        "operationId": "generateFeedbackAndLeadReportUsingGET",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resource"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
       }
     }
   },
@@ -466,12 +514,25 @@
           "contentType": {
             "description": "Should generate type instead of enum, when enum value is number like.",
             "type": "string",
-            "enum": ["01", "02", "03", "04", "05", "06"]
+            "enum": [
+              "01",
+              "02",
+              "03",
+              "04",
+              "05",
+              "06"
+            ]
           },
           "reason": {
             "description": "Should generate type instead of enum, when enum value is number like.",
             "type": "string",
-            "enum": ["1", "3", "4", "5", "6"]
+            "enum": [
+              "1",
+              "3",
+              "4",
+              "5",
+              "6"
+            ]
           }
         }
       },
@@ -613,7 +674,29 @@
             "x-go-name": "String"
           }
         },
-        "required": ["string", "slice", "data"]
+        "required": [
+          "string",
+          "slice",
+          "data"
+        ]
+      },
+      "Resource": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "open": {
+            "type": "boolean"
+          },
+          "readable": {
+            "type": "boolean"
+          }
+        },
+        "title": "Resource"
       }
     },
     "parameters": {

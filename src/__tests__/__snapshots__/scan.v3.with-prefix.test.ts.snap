@@ -81,6 +81,11 @@ export const formUrlEncoded = createRequestAction<{
   headers: { \\"Content-Type\\": \\"application/x-www-form-urlencoded\\" },
 }));
 
+export const generateFeedbackAndLeadReportUsingGet = createRequestAction<undefined, IResource>(
+  \\"generateFeedbackAndLeadReportUsingGet\\",
+  () => ({ url: \`/api/v3/demo/feedback\`, method: \\"GET\\" }),
+);
+
 export const getItems = createRequestAction<
   {
     limit?: number;
@@ -191,6 +196,13 @@ export interface IRequestForm {
   data: IPet;
   slice: string[];
   string: string;
+}
+
+export interface IResource {
+  description?: string;
+  filename?: string;
+  open?: boolean;
+  readable?: boolean;
 }
 "
 `;
