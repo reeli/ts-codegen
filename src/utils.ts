@@ -1,4 +1,4 @@
-import { camelCase, Dictionary, find, forEach, indexOf, map, replace, some, takeRight, trimEnd } from "lodash";
+import { camelCase, Dictionary, find, indexOf, map, takeRight, trimEnd } from "lodash";
 import prettier from "prettier";
 import { CustomSchema } from "src/__types__/types";
 import { ERROR_MESSAGES } from "src/constants";
@@ -11,22 +11,8 @@ export const toCapitalCase = (str?: string): string => {
   return `${camelStr.charAt(0).toUpperCase()}${camelStr.slice(1)}`;
 };
 
-export const addPrefix = (prefix: string) => (str: string = "") => `${prefix}${str}`;
-export const addSuffix = (suffix: string) => (str: string = "") => `${str}${suffix}`;
-
-export const addPrefixForInterface = addPrefix("I");
-export const addPrefixForType = addPrefix("T");
-
-export const arrayToObject = (arr: any[] = []) => {
-  let obj: any = {};
-  forEach(arr, (item) => {
-    obj[item] = item;
-  });
-  return obj;
-};
-
 export const isArray = (data: any) => Object.prototype.toString.call(data) === "[object Array]";
-export const isObject = (data: any) => Object.prototype.toString.call(data) === "[object Object]";
+
 export const isNumberLike = (n: any) => {
   return !isNaN(parseFloat(n)) && isFinite(n);
 };
@@ -39,13 +25,11 @@ export const prettifyCode = (code: string) =>
     parser: "typescript",
   });
 
-const ENUM_SUFFIX = `#EnumSuffix`;
-
 export const toTypes = (obj: Dictionary<any> | string) => {
   if (!obj) {
     return "";
   }
-  const list = map<string, any>(obj, (v: any, k: string) => `${quoteKey(k)}: ${replace(v, ENUM_SUFFIX, "")};`);
+  const list = map<string, any>(obj, (v: any, k: string) => `${quoteKey(k)}: ${v};`);
   return (
     obj &&
     `{
@@ -76,35 +60,6 @@ export function testJSON(
   }
 }
 
-export const toArrayType = (customType?: string) => (customType ? `${customType}[]` : "Array<any>");
-
-export const toType = (builtInType: string = ""): string => {
-  if (builtInType === "integer") {
-    return "number";
-  }
-
-  return builtInType;
-};
-
-export const generateEnumType = (p = "", k = "") => `${toCapitalCase(p)}${toCapitalCase(k)}${ENUM_SUFFIX}`;
-
-export const handleEnums = (enums: string[], enumName: string) => {
-  const hasNumber = some(enums, (v) => isNumberLike(v));
-  return hasNumber
-    ? `export type ${enumName} = ${enums.map((item: string | number) => JSON.stringify(item)).join("|")}`
-    : `export enum ${enumName} ${JSON.stringify(arrayToObject(enums)).replace(/:/gi, "=")}`;
-};
-
-export function generateEnums(data: Dictionary<any>, key: string) {
-  if (!data) {
-    return "";
-  }
-
-  const enums = data[key];
-  const enumName = replace(key, ENUM_SUFFIX, "");
-  return handleEnums(enums, enumName);
-}
-
 export const setDeprecated = (operationId: string = "") =>
   `
   /**
@@ -124,18 +79,6 @@ export const getRefId = (str?: string): string => {
 };
 
 export const withRequiredName = (name: string, required?: boolean) => `${name}${required ? "" : "?"}`;
-
-export const resolveRef = (str?: string) => {
-  if (!str) {
-    return {};
-  }
-  const list = str.replace(/^#\//, "").split("/");
-  // TODO: refactor code later
-  return {
-    type: list[list.length - 2],
-    name: list[list.length - 1],
-  };
-};
 
 export const getPathsFromRef = (str?: string): string[] => {
   if (!str) {
