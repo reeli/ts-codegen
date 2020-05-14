@@ -6,7 +6,7 @@
   "module": "module/index.js",
   "types": "src/index.ts",
   "bin": {
-    "ts-codegen": "bin/ts-codegen.js"
+    "ts-codegen": "bin/cli.js"
   },
   "files": [
     "dist",
@@ -47,6 +47,7 @@
     "babel-core": "6.26.x",
     "babel-jest": "25.3.x",
     "babel-plugin-pure-calls-annotation": "0.3.x",
+    "commander": "5.1.0",
     "jest": "25.3.x",
     "lodash": "4.17.x",
     "rollup": "2.6.x",

@@ -8,21 +8,21 @@ import { Spec } from "swagger-schema-official";
 import { getInputs, scan } from "src/scan";
 import { ERROR_MESSAGES } from "src/constants";
 
-const codegen = () => {
+export const getCodegenConfig = () => {
   const codegenConfigPath = path.resolve("ts-codegen.config.json");
-
-  const getCodegenConfig = () =>
-    fs.existsSync(codegenConfigPath)
-      ? require(codegenConfigPath)
-      : {
-          output: ".output",
-          actionCreatorImport: "",
-          clients: [],
-          options: {
-            typeWithPrefix: false,
-            backwardCompatible: false,
-          },
-        };
+  return fs.existsSync(codegenConfigPath)
+    ? require(codegenConfigPath)
+    : {
+        output: ".output",
+        actionCreatorImport: "",
+        clients: [],
+        options: {
+          typeWithPrefix: false,
+          backwardCompatible: false,
+        },
+      };
+};
+export const codegen = () => {
   const { output, actionCreatorImport, timeout, data, clients, options } = getCodegenConfig();
 
   const writeSpecToFile = (spec: IOpenAPI | Spec) => {
@@ -76,5 +76,3 @@ const fetchSwaggerJSON = (clients: string[] = [], timeout: number = 10 * 1000) =
     }),
   );
 };
-
-codegen();
