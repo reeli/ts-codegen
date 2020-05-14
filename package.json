@@ -76,7 +76,8 @@
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
       "!src/__types__/**",
-      "!src/__tests__/**"
+      "!src/bootstrap.ts",
+      "!src/index.ts"
     ],
     "transform": {
       "^.+\\.ts?$": "ts-jest",
