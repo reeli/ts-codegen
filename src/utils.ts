@@ -27,7 +27,7 @@ export const arrayToObject = (arr: any[] = []) => {
 
 export const isArray = (data: any) => Object.prototype.toString.call(data) === "[object Array]";
 export const isObject = (data: any) => Object.prototype.toString.call(data) === "[object Object]";
-export const isNumber = (n: any) => {
+export const isNumberLike = (n: any) => {
   return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
@@ -89,7 +89,7 @@ export const toType = (builtInType: string = ""): string => {
 export const generateEnumType = (p = "", k = "") => `${toCapitalCase(p)}${toCapitalCase(k)}${ENUM_SUFFIX}`;
 
 export const handleEnums = (enums: string[], enumName: string) => {
-  const hasNumber = some(enums, (v) => isNumber(v));
+  const hasNumber = some(enums, (v) => isNumberLike(v));
   return hasNumber
     ? `export type ${enumName} = ${enums.map((item: string | number) => JSON.stringify(item)).join("|")}`
     : `export enum ${enumName} ${JSON.stringify(arrayToObject(enums)).replace(/:/gi, "=")}`;

@@ -1,5 +1,5 @@
-import { isEmpty, keys, map, uniqueId } from "lodash";
-import { getRefId, isArray, quoteKey, toCapitalCase } from "src/utils";
+import { isEmpty, keys, map, some, uniqueId } from "lodash";
+import { getRefId, isArray, isNumberLike, quoteKey, toCapitalCase } from "src/utils";
 import { createRegister, DeclKinds } from "src/createRegister";
 
 export type CustomType = Ref | Obj | Arr | Enum | OneOf | BasicType;
@@ -23,12 +23,20 @@ class BasicType extends TypeFactory {
 }
 
 export class Enum extends TypeFactory {
-  constructor(private id: string, private value?: any[]) {
+  alias: string | undefined;
+  constructor(private id: string, private value?: any[], private kind?: DeclKinds) {
     super();
+  }
+
+  rename(alias: string) {
+    this.alias = alias;
   }
 
   toType(): string {
     if (this.value) {
+      if (this.kind === DeclKinds.type) {
+        return `${this.value.map((v) => `"${v}"`).join("|")}`;
+      }
       return `{
       ${this.value
         .map((v) => {
@@ -37,7 +45,7 @@ export class Enum extends TypeFactory {
         .join("\n")}
       }`;
     }
-    return `keyof typeof ${this.id}`;
+    return this.kind === DeclKinds.type ? this.alias || this.id : `keyof typeof ${this.id}`;
   }
 }
 
@@ -131,8 +139,13 @@ export class Type {
   constructor(private register: ReturnType<typeof createRegister>) {}
 
   enum(value: any[], id: string = uniqueId("Enum")) {
-    this.register.setDecl(id, new Enum(id, value), DeclKinds.enum);
-    return new Enum(id);
+    const hasNumber = (list: any[]) => some(list, (v) => isNumberLike(v));
+    const kind = hasNumber(value) ? DeclKinds.type : DeclKinds.enum;
+    this.register.setDecl(id, new Enum(id, value, kind), kind);
+    if (kind === DeclKinds.type) {
+      return this.register.setRef(id);
+    }
+    return new Enum(id, undefined, kind);
   }
 
   ref($ref: string) {
