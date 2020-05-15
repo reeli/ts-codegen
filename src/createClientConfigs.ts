@@ -14,7 +14,7 @@ import {
   upperCase,
   values,
 } from "lodash";
-import { getPathsFromRef, toCapitalCase, withRequiredName } from "src/utils";
+import { getPathsFromRef, toCapitalCase, withOptionalName } from "src/utils";
 import { CustomType } from "src/Type";
 import { Schema } from "src/Schema";
 import {
@@ -224,7 +224,7 @@ const getRequestTypes = (schemaHandler: Schema) => (operationId?: string) => (
   return params.reduce(
     (results, param) => ({
       ...results,
-      [withRequiredName(param.name, param.required)]: schemaHandler.convert(
+      [withOptionalName(param.name, param.required)]: schemaHandler.convert(
         get(param, "schema", param),
         `${toCapitalCase(operationId)}${toCapitalCase(param.name)}`,
       ),

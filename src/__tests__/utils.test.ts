@@ -1,4 +1,7 @@
 import {
+  getFilename,
+  getPathsFromRef,
+  getRefId,
   isNumberLike,
   objToTypeStr,
   prettifyCode,
@@ -7,6 +10,7 @@ import {
   shouldUseExtends,
   testJSON,
   toCapitalCase,
+  withOptionalName,
 } from "src/utils";
 
 describe("#toCapitalCase", () => {
@@ -209,5 +213,51 @@ describe("#shouldUseExtends", () => {
     ];
 
     expect(shouldUseExtends(input)).toEqual(false);
+  });
+});
+
+describe("#getRefId", () => {
+  it("should return empty string if the input string is not exists", () => {
+    expect(getRefId()).toEqual("");
+  });
+
+  it("should pick ref id from $ref", () => {
+    expect(getRefId("#/components/schemas/Cat")).toEqual("Cat");
+    expect(getRefId("#/definitions/Resource")).toEqual("Resource");
+  });
+});
+
+describe("#withOptionalName", () => {
+  it("should return name with optional tag if it is optional", () => {
+    expect(withOptionalName("test", false)).toEqual("test?");
+  });
+
+  it("should return name without optional tag if it is required", () => {
+    expect(withOptionalName("test", true)).toEqual("test");
+  });
+});
+
+describe("#getPathsFromRef", () => {
+  it("should return [] if input is not exists", () => {
+    expect(getPathsFromRef("")).toEqual([]);
+  });
+
+  it("should get the basic key path from ref", () => {
+    expect(getPathsFromRef("#/components/schemas/Dog")).toEqual(["schemas", "Dog"]);
+    expect(getPathsFromRef("#/components/requestBodies/PetBody")).toEqual(["requestBodies", "PetBody"]);
+
+    expect(getPathsFromRef("#/definitions/Dog")).toEqual(["definitions", "Dog"]);
+    expect(getPathsFromRef("#/requestBodies/PetBody")).toEqual(["requestBodies", "PetBody"]);
+  });
+});
+
+describe("#getFilename", () => {
+  it("should return default name if basePath not exists", () => {
+    expect(getFilename("")).toEqual("api.client");
+  });
+
+  it("should pick file name from basePath", () => {
+    expect(getFilename("/v2")).toEqual("v2");
+    expect(getFilename("/api/web")).toEqual("api.web");
   });
 });

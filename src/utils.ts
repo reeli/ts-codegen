@@ -74,7 +74,7 @@ export const getRefId = (str?: string): string => {
   return list[list.length - 1];
 };
 
-export const withRequiredName = (name: string, required?: boolean) => `${name}${required ? "" : "?"}`;
+export const withOptionalName = (name: string, required?: boolean) => `${name}${required ? "" : "?"}`;
 
 export const getPathsFromRef = (str?: string): string[] => {
   if (!str) {
@@ -86,4 +86,4 @@ export const getPathsFromRef = (str?: string): string[] => {
 };
 
 export const getFilename = (basePath?: string) =>
-  basePath ? `./${basePath.split("/").join(".").slice(1)}` : "./api.client";
+  basePath ? `${basePath.split("/").join(".").slice(1)}` : "api.client";

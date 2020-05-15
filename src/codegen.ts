@@ -32,7 +32,7 @@ export const codegen = () => {
     }
     const fileStr = `${actionCreatorImport} ${scan(spec, options)}`;
     const { basePath } = getInputs(spec);
-    write(output, getFilename(basePath), fileStr);
+    write(output, `./${getFilename(basePath)}`, fileStr);
   };
 
   if (!isEmpty(data)) {
