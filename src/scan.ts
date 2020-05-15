@@ -2,7 +2,7 @@ import { IOpenAPI, IServer } from "src/__types__/OpenAPI";
 import { CustomType } from "src/Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { Schema } from "src/Schema";
-import { getUseExtends, prettifyCode, setDeprecated, toCapitalCase, objToTypeStr } from "src/utils";
+import { shouldUseExtends, prettifyCode, setDeprecated, toCapitalCase, objToTypeStr } from "src/utils";
 import { Spec } from "swagger-schema-official";
 import { CustomReference, CustomSchema, IClientConfig, RequestType } from "src/__types__/types";
 import { createRegister, DeclKinds, IStore } from "src/createRegister";
@@ -161,7 +161,7 @@ function generateTReq(TReq: IClientConfig["TReq"]) {
 const toRequestParams = (data: string[]) => (!isEmpty(data) ? `{\n ${data.join(",\n")} \n}` : undefined);
 
 const getDeclarationType = (schema: CustomSchema) => {
-  if (schema?.type === "object" || schema?.properties || (schema?.allOf && getUseExtends(schema?.allOf))) {
+  if (schema?.type === "object" || schema?.properties || (schema?.allOf && shouldUseExtends(schema?.allOf))) {
     return DeclKinds.interface;
   }
   return DeclKinds.type;

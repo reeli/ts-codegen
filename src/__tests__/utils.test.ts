@@ -1,4 +1,13 @@
-import { isNumberLike, objToTypeStr, prettifyCode, quoteKey, setDeprecated, testJSON, toCapitalCase } from "src/utils";
+import {
+  isNumberLike,
+  objToTypeStr,
+  prettifyCode,
+  quoteKey,
+  setDeprecated,
+  shouldUseExtends,
+  testJSON,
+  toCapitalCase,
+} from "src/utils";
 
 describe("#toCapitalCase", () => {
   it("when word is undefined, should return empty string", () => {
@@ -116,5 +125,76 @@ describe("#setDeprecated", () => {
   * @deprecated findPet
   */
   `);
+  });
+});
+
+describe("#shouldUseExtends", () => {
+  it("should return true if the `allOf` schema has ref and contains at least one object", () => {
+    const input = [
+      {
+        $ref: "#/components/schemas/Pet",
+      },
+      {
+        type: "object",
+        properties: {
+          bark: {
+            type: "boolean",
+          },
+          breed: {
+            type: "string",
+            enum: ["Dingo", "Husky", "Retriever", "Shepherd"],
+          },
+        },
+      },
+    ];
+
+    expect(shouldUseExtends(input)).toEqual(true);
+  });
+
+  it("should return true if the `allOf` schema has ref and contains at least one object(without type=object)", () => {
+    const input = [
+      {
+        $ref: "#/components/schemas/Pet",
+      },
+      {
+        properties: {
+          bark: {
+            type: "boolean",
+          },
+        },
+      },
+    ];
+
+    expect(shouldUseExtends(input)).toEqual(true);
+  });
+
+  it("should return false if the `allOf` schema has ref and basic type", () => {
+    const input = [
+      {
+        $ref: "#/components/schemas/Pet",
+      },
+      {
+        $ref: "#/components/schemas/Dog",
+      },
+      {
+        type: "string",
+      },
+    ];
+
+    expect(shouldUseExtends(input)).toEqual(false);
+  });
+
+  it("should return false if the `allOf` schema has only one ref", () => {
+    const input = [
+      {
+        $ref: "#/components/schemas/Pet",
+      },
+      {
+        $ref: "#/components/schemas/Dog",
+      },
+      {},
+    ];
+
+    expect(shouldUseExtends(input)).toEqual(false);
   });
 });

@@ -1,5 +1,5 @@
-import { getUseExtends, toCapitalCase } from "src/utils";
-import { forEach, isEmpty, map, reduce, isArray } from "lodash";
+import { shouldUseExtends, toCapitalCase } from "src/utils";
+import { filter, isArray, isEmpty, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/__types__/OpenAPI";
 import { CustomType, Type } from "src/Type";
 import { CustomSchema } from "src/__types__/types";
@@ -61,22 +61,28 @@ export class Schema {
   }
 
   private handleAllOf(schemas: Array<CustomSchema>, name?: string) {
-    const refs: any[] = [];
-    let props: any = {};
-    let useExtends = getUseExtends(schemas);
+    const getRefs = (): any[] => {
+      const $refs: any[] = filter(schemas, (schema) => schema.$ref);
+      return isEmpty($refs) ? [] : $refs.map((v) => this.convert(v, name));
+    };
 
-    forEach(schemas, (schema) => {
-      if (schema.$ref) {
-        refs.push(this.convert(schema, name));
-      } else if (!isEmpty(schema)) {
-        props = this.convert(schema, name);
-      }
-    });
+    const getProps = () => {
+      const objs: any[] = filter(schemas, (schema) => schema.type === "object" || schema.properties);
+      const obj = reduce(objs, (res, item) => ({
+        ...res,
+        properties: {
+          ...res.properties,
+          ...item.properties,
+        },
+      }));
+
+      return isEmpty(objs) ? {} : this.convert(obj, name);
+    };
 
     return {
-      refs,
-      props,
-      useExtends,
+      refs: getRefs(),
+      props: getProps(),
+      useExtends: shouldUseExtends(schemas),
     };
   }
 
