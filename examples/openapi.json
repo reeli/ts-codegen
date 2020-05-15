@@ -615,6 +615,85 @@
           }
         ]
       },
+      "Cat1": {
+        "allOf": [
+          {
+            "description": "`allOf` contains two objects",
+            "type": "object",
+            "properties": {
+              "country": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "Red Cat",
+                  "Blue Cat"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Cat2": {
+        "allOf": [
+          {
+            "description": "in `allOf`, the object without properties",
+            "type": "object"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "boolean"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "Red Cat",
+                  "Blue Cat"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Cat3": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Cat"
+          },
+          {
+            "description": "in `allOf`, contains ref and basic type(string)",
+            "type": "string"
+          }
+        ]
+      },
+      "Cat4": {
+        "allOf": [
+          {
+            "description": "in `allOf`, contains basic type and `oneOf`",
+            "type": "string"
+          },
+          {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Cat"
+              },
+              {
+                "$ref": "#/components/schemas/Dog"
+              }
+            ]
+          }
+        ]
+      },
       "Message": {
         "type": "object",
         "properties": {

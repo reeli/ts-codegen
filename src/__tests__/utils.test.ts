@@ -168,6 +168,19 @@ describe("#shouldUseExtends", () => {
     expect(shouldUseExtends(input)).toEqual(true);
   });
 
+  it("should return false if the `allOf` schema has ref and the object without properties", () => {
+    const input = [
+      {
+        $ref: "#/components/schemas/Pet",
+      },
+      {
+        type: "object",
+      },
+    ];
+
+    expect(shouldUseExtends(input)).toEqual(false);
+  });
+
   it("should return false if the `allOf` schema has ref and basic type", () => {
     const input = [
       {

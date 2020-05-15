@@ -2,7 +2,7 @@ import { isArray, isEmpty, keys, map, some, uniqueId } from "lodash";
 import { getRefId, isNumberLike, quoteKey, toCapitalCase } from "src/utils";
 import { createRegister, DeclKinds } from "src/createRegister";
 
-export type CustomType = Ref | Obj | Arr | Enum | OneOf | BasicType;
+export type CustomType = Ref | Obj | Arr | Enum | OneOf | AllOf | BasicType;
 
 interface TypeFactory {
   toType: () => string;
@@ -38,7 +38,15 @@ class OneOf implements TypeFactory {
   constructor(private types: CustomType[]) {}
 
   toType(): string {
-    return `${map(this.types, (type) => type.toType()).join("|")}`;
+    return `(${map(this.types, (type) => type.toType()).join("|")})`;
+  }
+}
+
+class AllOf implements TypeFactory {
+  constructor(private types: CustomType[]) {}
+
+  toType(): string {
+    return `${map(this.types, (type) => type.toType()).join("&")}`;
   }
 }
 
@@ -136,6 +144,10 @@ export class Type {
 
   oneOf(types: CustomType[]) {
     return new OneOf(types);
+  }
+
+  allOf(types: CustomType[]) {
+    return new AllOf(types);
   }
 
   object(props: { [key: string]: CustomType } | string, refs?: Ref[], useExtends?: boolean) {

@@ -21,8 +21,7 @@ export class Schema {
 
     const allOf = (schema as ISchema).allOf;
     if (allOf) {
-      const { props, refs, useExtends } = this.handleAllOf(allOf, name);
-      return this.type.object(props, refs, useExtends);
+      return this.handleAllOf(allOf, name);
     }
 
     if (schema.items) {
@@ -79,11 +78,19 @@ export class Schema {
       return isEmpty(objs) ? {} : this.convert(obj, name);
     };
 
-    return {
-      refs: getRefs(),
-      props: getProps(),
-      useExtends: shouldUseExtends(schemas),
-    };
+    const schemaWithoutObject = filter(
+      schemas,
+      (schema) => !(schema.properties || schema.type === "object") && !schema.$ref && !isEmpty(schema),
+    );
+    if (!isEmpty(schemaWithoutObject)) {
+      const types = filter(
+        schemas,
+        (schema) => !(schema.type === "object" || schema.properties) || schema.$ref,
+      ).map((v) => this.convert(v as CustomSchema, name));
+      return this.type.allOf(types);
+    }
+
+    return this.type.object(getProps(), getRefs(), shouldUseExtends(schemas));
   }
 
   private handleItems(items: CustomSchema | IReference | CustomSchema[], name?: string): CustomType | CustomType[] {

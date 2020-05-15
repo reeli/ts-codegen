@@ -24,7 +24,7 @@ describe("Schema Converter", () => {
         )
         .toType();
 
-      expect(res).toEqual("Cat|Dog");
+      expect(res).toEqual("(Cat|Dog)");
     });
 
     it("should handle basic type in oneOf", () => {
@@ -44,7 +44,7 @@ describe("Schema Converter", () => {
         )
         .toType();
 
-      expect(res).toEqual("string|boolean");
+      expect(res).toEqual("(string|boolean)");
     });
 
     it("should handle both refs and basic type in oneOf", () => {
@@ -64,7 +64,7 @@ describe("Schema Converter", () => {
         )
         .toType();
 
-      expect(res).toEqual("Cat|number");
+      expect(res).toEqual("(Cat|number)");
     });
   });
 
@@ -86,7 +86,7 @@ describe("Schema Converter", () => {
         )
         .toType();
 
-      expect(res).toEqual("Cat|Dog");
+      expect(res).toEqual("(Cat|Dog)");
     });
 
     it("should handle basic type in anyOf", () => {
@@ -106,7 +106,7 @@ describe("Schema Converter", () => {
         )
         .toType();
 
-      expect(res).toEqual("string|boolean");
+      expect(res).toEqual("(string|boolean)");
     });
 
     it("should handle both refs and basic type in anyOf", () => {
@@ -126,7 +126,7 @@ describe("Schema Converter", () => {
         )
         .toType();
 
-      expect(res).toEqual("Cat|number");
+      expect(res).toEqual("(Cat|number)");
     });
   });
 
@@ -294,6 +294,33 @@ describe("Schema Converter", () => {
         .toType();
 
       expect(res).toEqual("extends Pet {'bark'?: boolean;'breed'?: keyof typeof DogBreed;}");
+    });
+
+    it("should handle `oneOf` in `allOf`", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            allOf: [
+              {
+                $ref: "#/components/schemas/NewPet",
+              },
+              {
+                oneOf: [
+                  {
+                    $ref: "#/components/schemas/Cat",
+                  },
+                  {
+                    $ref: "#/components/schemas/Dog",
+                  },
+                ],
+              },
+            ],
+          },
+          "Pet",
+        )
+        .toType();
+
+      expect(res).toEqual("NewPet&(Cat|Dog)");
     });
   });
 

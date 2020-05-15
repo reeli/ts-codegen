@@ -126,6 +126,24 @@ export interface Cat extends Pet {
   hunts?: boolean;
 }
 
+export type Cat1 = { country?: string; kind?: keyof typeof Cat1Kind };
+
+export enum Cat1Kind {
+  \\"Red Cat\\" = \\"Red Cat\\",
+  \\"Blue Cat\\" = \\"Blue Cat\\",
+}
+
+export type Cat2 = { age?: boolean; kind?: keyof typeof Cat2Kind; name?: string };
+
+export enum Cat2Kind {
+  \\"Red Cat\\" = \\"Red Cat\\",
+  \\"Blue Cat\\" = \\"Blue Cat\\",
+}
+
+export type Cat3 = Cat & string;
+
+export type Cat4 = string & (Cat | Dog);
+
 export interface Category {
   id?: number;
   name?: string;

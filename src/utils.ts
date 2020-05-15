@@ -64,10 +64,7 @@ export const setDeprecated = (description: string = "") =>
   `;
 
 export const shouldUseExtends = (schemas: CustomSchema): boolean =>
-  !!find(schemas, (schema) => schema.$ref) &&
-  !!find(schemas, (schema) => {
-    return schema.type == "object" || !isEmpty(schema.properties);
-  });
+  !!find(schemas, (schema) => schema.$ref) && !!find(schemas, (schema) => !isEmpty(schema.properties));
 
 export const getRefId = (str?: string): string => {
   if (!str) {

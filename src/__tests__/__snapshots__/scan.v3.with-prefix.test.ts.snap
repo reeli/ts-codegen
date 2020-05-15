@@ -126,6 +126,24 @@ export interface ICat extends IPet {
   hunts?: boolean;
 }
 
+export type TCat1 = { country?: string; kind?: keyof typeof Cat1Kind };
+
+export enum Cat1Kind {
+  \\"Red Cat\\" = \\"Red Cat\\",
+  \\"Blue Cat\\" = \\"Blue Cat\\",
+}
+
+export type TCat2 = { age?: boolean; kind?: keyof typeof Cat2Kind; name?: string };
+
+export enum Cat2Kind {
+  \\"Red Cat\\" = \\"Red Cat\\",
+  \\"Blue Cat\\" = \\"Blue Cat\\",
+}
+
+export type TCat3 = ICat & string;
+
+export type TCat4 = string & (ICat | IDog);
+
 export interface ICategory {
   id?: number;
   name?: string;
