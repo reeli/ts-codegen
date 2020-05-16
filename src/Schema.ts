@@ -36,8 +36,10 @@ export class Schema {
       return this.type.enum(schema.enum, name);
     }
 
-    if (schema.type === "object" || schema.properties) {
-      return schema.properties ? this.type.object(this.handleObject(schema, name)) : this.type.object("object");
+    if (isObj(schema)) {
+      return schema.properties || schema.additionalProperties
+        ? this.type.object(...this.handleObject(schema, name))
+        : this.type.object("object");
     }
 
     if (schema.type === "string") {
@@ -92,8 +94,8 @@ export class Schema {
     return this.convert(items, name);
   }
 
-  private handleObject(schema: CustomSchema, name?: string): { [key: string]: CustomType } {
-    return reduce(
+  private handleObject(schema: CustomSchema, name?: string) {
+    const properties = reduce(
       schema.properties,
       (res, v, k) => {
         const isRequired = (v as CustomSchema)?.required || schema.required?.includes(k);
@@ -104,5 +106,17 @@ export class Schema {
       },
       {},
     );
+
+    const getAdditionalProperties = () => {
+      if (!schema.additionalProperties) {
+        return;
+      }
+      if (schema.additionalProperties === true) {
+        return this.type.any();
+      }
+      return this.convert(schema.additionalProperties as CustomSchema, name);
+    };
+
+    return [properties, getAdditionalProperties()] as const;
   }
 }

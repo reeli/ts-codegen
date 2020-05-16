@@ -366,9 +366,7 @@
             }
           }
         },
-        "responses": {
-          "204": {}
-        }
+        "responses": {}
       }
     },
     "/demo/forms/multipart-with-files": {
@@ -404,7 +402,6 @@
           }
         },
         "responses": {
-          "204": {}
         }
       }
     },
@@ -430,7 +427,6 @@
           }
         },
         "responses": {
-          "204": {}
         }
       }
     },
@@ -809,6 +805,79 @@
           }
         },
         "title": "Resource"
+      },
+      "Dictionary": {
+        "type": "object",
+        "properties": {
+          "dictionary": {
+            "type": "object",
+            "description": "Object only contains additional properties",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "dictionary1": {
+            "type": "object",
+            "description": "Object contains both properties and additional properties",
+            "required": ["name","age"],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": {
+              "oneOf": [{
+                "type": "string"
+              },{
+                "type": "number"
+              }]
+            }
+          },
+          "dictionary2": {
+            "type": "object",
+            "description": "Additional properties is not an object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "dictionary3": {
+            "type": "object",
+            "description": "Additional properties is a boolean",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": true
+          },
+          "dictionary4": {
+            "type": "object",
+            "description": "Additional properties is a boolean and without properties",
+            "additionalProperties": true
+          }
+        }
       }
     },
     "parameters": {

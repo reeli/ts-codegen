@@ -85,26 +85,27 @@ export class Ref implements TypeFactory {
 }
 
 export class Obj implements TypeFactory {
-  constructor(private props: { [key: string]: CustomType } | string) {}
+  constructor(private props: { [key: string]: CustomType } | string, private additionalProps?: CustomType) {}
 
   toType(): string {
     if (this.props === "object") {
       return "{[key:string]:any}";
     }
 
-    const handler = (props: { [key: string]: CustomType } | CustomType): string => {
+    const handler = (props: { [key: string]: CustomType } | CustomType, additionalProps?: CustomType): string => {
       if (props?.toType) {
         return (props as CustomType).toType();
       }
 
       const data = keys(props)
         .sort()
-        .map((k) => `${quoteKey(k)}: ${(props as { [key: string]: CustomType })[k].toType()};`);
+        .map((k) => `${quoteKey(k)}: ${(props as { [key: string]: CustomType })[k].toType()};`)
+        .join("");
 
-      return `{${data.join("")}}`;
+      return additionalProps ? `{${data}[key:string]: ${additionalProps.toType()}}` : `{${data}}`;
     };
 
-    return handler(this.props as { [key: string]: CustomType });
+    return handler(this.props as { [key: string]: CustomType }, this.additionalProps);
   }
 }
 
@@ -141,8 +142,8 @@ export class Type {
     return new AllOf(obj, otherTypes, useExtends);
   }
 
-  object(props: { [key: string]: CustomType } | string) {
-    return new Obj(props);
+  object(props: { [key: string]: CustomType } | string, additionalProps?: CustomType) {
+    return new Obj(props, additionalProps);
   }
 
   boolean() {
@@ -163,5 +164,9 @@ export class Type {
 
   file() {
     return BasicType.type("File");
+  }
+
+  any() {
+    return BasicType.type("any");
   }
 }

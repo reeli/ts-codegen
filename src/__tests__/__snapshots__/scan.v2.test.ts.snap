@@ -168,7 +168,7 @@ export const getHealthCheckUsingHead = createRequestAction<
   DocumentVo
 >(\\"getHealthCheckUsingHead\\", ({ flight_no }) => ({ url: \`/api/v2/health-check/\${flight_no}\`, method: \\"HEAD\\" }));
 
-export const getInventory = createRequestAction<undefined, { [key: string]: any }>(\\"getInventory\\", () => ({
+export const getInventory = createRequestAction<undefined, { [key: string]: number }>(\\"getInventory\\", () => ({
   url: \`/api/v2/store/inventory\`,
   method: \\"GET\\",
 }));
@@ -397,6 +397,26 @@ export interface BookingResponse {
 export interface Category {
   id?: number;
   name?: string;
+}
+
+export interface Dictionary {
+  category?: Category;
+  dictionary1?: { age?: number; name?: string; [key: string]: { code?: number; text?: string } };
+  dictionary2?: { age?: number; name?: string; [key: string]: string };
+  dictionary3?: { age?: number; name?: string; [key: string]: any };
+  dictionary4?: { [key: string]: any };
+  dictionary?: { [key: string]: { code?: number; text?: string } };
+  id?: number;
+  name: string;
+  photoUrls: string[];
+  status?: keyof typeof DictionaryStatus;
+  tags?: Tag[];
+}
+
+export enum DictionaryStatus {
+  \\"available\\" = \\"available\\",
+  \\"pending\\" = \\"pending\\",
+  \\"sold\\" = \\"sold\\",
 }
 
 export interface DocumentVo {

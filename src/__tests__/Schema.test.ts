@@ -539,6 +539,146 @@ describe("Schema Converter", () => {
 
       expect(res).toEqual("{'id': string;'name': string;'visitsCount'?: number;}");
     });
+
+    it("should get correct type when object only contains `additionalProperties`", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            type: "object",
+            additionalProperties: {
+              type: "object",
+              required: ["code"],
+              properties: {
+                code: {
+                  type: "integer",
+                },
+                text: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          "test",
+        )
+        .toType();
+      expect(res).toEqual("{[key:string]: {'code': number;'text'?: string;}}");
+    });
+
+    it("should get correct type when object contains both `properties` and `additionalProperties`", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            type: "object",
+            required: ["age", "name"],
+            properties: {
+              age: {
+                type: "number",
+              },
+              name: {
+                type: "string",
+              },
+            },
+            additionalProperties: {
+              required: ["code"],
+              oneOf: [
+                {
+                  type: "number",
+                },
+                { type: "string" },
+              ],
+            },
+          },
+          "test",
+        )
+        .toType();
+
+      expect(res).toEqual("{'age': number;'name': string;[key:string]: (number|string)}");
+    });
+
+    it("should get correct type when `additionalProperties` is true", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            type: "object",
+            required: ["age", "name"],
+            properties: {
+              age: {
+                type: "number",
+              },
+              name: {
+                type: "string",
+              },
+            },
+            additionalProperties: true,
+          },
+          "test",
+        )
+        .toType();
+
+      expect(res).toEqual("{'age': number;'name': string;[key:string]: any}");
+    });
+
+    it("should get correct type when `additionalProperties` is not an object", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            type: "object",
+            required: ["age", "name"],
+            properties: {
+              age: {
+                type: "string",
+              },
+              name: {
+                type: "string",
+              },
+            },
+            additionalProperties: {
+              type: "string",
+            },
+          },
+          "test",
+        )
+        .toType();
+
+      expect(res).toEqual("{'age': string;'name': string;[key:string]: string}");
+    });
+
+    it("should get correct type when `additionalProperties` is true and without properties", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            type: "object",
+            additionalProperties: true,
+          },
+          "test",
+        )
+        .toType();
+
+      expect(res).toEqual("{[key:string]: any}");
+    });
+
+    it("should get correct type when `additionalProperties` is false and with properties", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            type: "object",
+            required: ["age"],
+            properties: {
+              age: {
+                type: "string",
+              },
+              name: {
+                type: "string",
+              },
+            },
+            additionalProperties: false,
+          },
+          "test",
+        )
+        .toType();
+
+      expect(res).toEqual("{'age': string;'name'?: string;}");
+    });
   });
 
   describe.each([

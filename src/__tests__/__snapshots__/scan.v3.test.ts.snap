@@ -153,6 +153,14 @@ export interface Category {
   name?: string;
 }
 
+export interface Dictionary {
+  dictionary1: { age: number; name: string; [key: string]: string | number };
+  dictionary2?: { age?: string; name?: string; [key: string]: string };
+  dictionary3?: { age?: number; name?: string; [key: string]: any };
+  dictionary4?: { [key: string]: any };
+  dictionary?: { [key: string]: { code?: number; text?: string } };
+}
+
 export interface Dog extends Pet {
   bark?: boolean;
   breed?: keyof typeof DogBreed;
