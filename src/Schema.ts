@@ -98,7 +98,7 @@ export class Schema {
     const properties = reduce(
       schema.properties,
       (res, v, k) => {
-        const isRequired = (v as CustomSchema)?.required || schema.required?.includes(k);
+        const isRequired = schema.required && schema.required.includes(k);
         return {
           ...res,
           [`${k}${isRequired ? "" : "?"}`]: this.convert(v, `${name}${toCapitalCase(k)}`),

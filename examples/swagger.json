@@ -2257,6 +2257,7 @@
         "dictionary1": {
           "type": "object",
           "description": "Object contains both properties and additional properties",
+          "required": ["name", "age"],
           "properties": {
             "name": {
               "type": "string"
@@ -2266,26 +2267,26 @@
             }
           },
           "additionalProperties": {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "integer"
-              },
-              "text": {
+            "oneOf": [
+              {
                 "type": "string"
+              },
+              {
+                "type": "number"
               }
-            }
+            ]
           }
         },
         "dictionary2": {
           "type": "object",
           "description": "Additional properties is not an object",
+          "required": ["name", "age"],
           "properties": {
             "name": {
               "type": "string"
             },
             "age": {
-              "type": "number"
+              "type": "string"
             }
           },
           "additionalProperties": {

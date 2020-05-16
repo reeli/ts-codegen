@@ -28,10 +28,7 @@
           "description": "this value is assigned by the service provider, in this example `gigantic-server.com`"
         },
         "port": {
-          "enum": [
-            "8443",
-            "443"
-          ],
+          "enum": ["8443", "443"],
           "default": "8443"
         },
         "basePath": {
@@ -56,12 +53,26 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": [
-                  "z",
-                  "b",
-                  "c",
-                  "a"
-                ]
+                "enum": ["z", "b", "c", "a"]
+              }
+            }
+          },
+          {
+            "name": "fee",
+            "in": "query",
+            "description": "Required prop with object type",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "object",
+              "required": ["text"],
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "age": {
+                  "type": "number"
+                }
               }
             }
           },
@@ -84,11 +95,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": [
-                  "available",
-                  "pending",
-                  "sold"
-                ],
+                "enum": ["available", "pending", "sold"],
                 "default": "available"
               }
             }
@@ -316,9 +323,7 @@
     },
     "/demo/forms/multipart": {
       "post": {
-        "tags": [
-          "routes"
-        ],
+        "tags": ["routes"],
         "summary": "Form Multipart",
         "operationId": "FormMultipartWithFile",
         "requestBody": {
@@ -359,9 +364,7 @@
                     "x-go-name": "String"
                   }
                 },
-                "required": [
-                  "file"
-                ]
+                "required": ["file"]
               }
             }
           }
@@ -371,9 +374,7 @@
     },
     "/demo/forms/multipart-with-files": {
       "post": {
-        "tags": [
-          "routes"
-        ],
+        "tags": ["routes"],
         "summary": "Form Multipart With Files",
         "operationId": "FormMultipartWithFiles",
         "requestBody": {
@@ -394,22 +395,17 @@
                     "x-go-name": "Files"
                   }
                 },
-                "required": [
-                  "files"
-                ]
+                "required": ["files"]
               }
             }
           }
         },
-        "responses": {
-        }
+        "responses": {}
       }
     },
     "/demo/forms/url-encoded": {
       "post": {
-        "tags": [
-          "routes"
-        ],
+        "tags": ["routes"],
         "summary": "Form URL Encoded",
         "operationId": "FormURLEncoded",
         "requestBody": {
@@ -426,16 +422,13 @@
             }
           }
         },
-        "responses": {
-        }
+        "responses": {}
       }
     },
     "/demo/feedback": {
       "get": {
         "description": "Should generate TRep with undefined value if it not exists, but TResp exist.",
-        "tags": [
-          "report-controller"
-        ],
+        "tags": ["report-controller"],
         "summary": "generateFeedbackAndLeadReport",
         "operationId": "generateFeedbackAndLeadReportUsingGET",
         "parameters": [],
@@ -473,9 +466,7 @@
           },
           {
             "type": "object",
-            "required": [
-              "id"
-            ],
+            "required": ["id"],
             "properties": {
               "id": {
                 "type": "integer",
@@ -497,9 +488,7 @@
       },
       "NewPet": {
         "description": "Without type=object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -510,34 +499,18 @@
           "contentType": {
             "description": "Should generate type instead of enum, when enum value is number like.",
             "type": "string",
-            "enum": [
-              "01",
-              "02",
-              "03",
-              "04",
-              "05",
-              "06"
-            ]
+            "enum": ["01", "02", "03", "04", "05", "06"]
           },
           "reason": {
             "description": "Should generate type instead of enum, when enum value is number like.",
             "type": "string",
-            "enum": [
-              "1",
-              "3",
-              "4",
-              "5",
-              "6"
-            ]
+            "enum": ["1", "3", "4", "5", "6"]
           }
         }
       },
       "Error": {
         "type": "object",
-        "required": [
-          "code",
-          "message"
-        ],
+        "required": ["code", "message"],
         "properties": {
           "code": {
             "type": "integer",
@@ -582,12 +555,7 @@
               },
               "breed": {
                 "type": "string",
-                "enum": [
-                  "Dingo",
-                  "Husky",
-                  "Retriever",
-                  "Shepherd"
-                ]
+                "enum": ["Dingo", "Husky", "Retriever", "Shepherd"]
               }
             }
           }
@@ -626,10 +594,7 @@
             "type": "object",
             "properties": {
               "kind": {
-                "enum": [
-                  "Red Cat",
-                  "Blue Cat"
-                ]
+                "enum": ["Red Cat", "Blue Cat"]
               }
             }
           }
@@ -652,10 +617,7 @@
               },
               "kind": {
                 "type": "string",
-                "enum": [
-                  "Red Cat",
-                  "Blue Cat"
-                ]
+                "enum": ["Red Cat", "Blue Cat"]
               }
             }
           }
@@ -782,11 +744,7 @@
             "x-go-name": "String"
           }
         },
-        "required": [
-          "string",
-          "slice",
-          "data"
-        ]
+        "required": ["string", "slice", "data"]
       },
       "Resource": {
         "type": "object",
@@ -827,7 +785,7 @@
           "dictionary1": {
             "type": "object",
             "description": "Object contains both properties and additional properties",
-            "required": ["name","age"],
+            "required": ["name", "age"],
             "properties": {
               "name": {
                 "type": "string"
@@ -837,16 +795,20 @@
               }
             },
             "additionalProperties": {
-              "oneOf": [{
-                "type": "string"
-              },{
-                "type": "number"
-              }]
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "dictionary2": {
             "type": "object",
             "description": "Additional properties is not an object",
+            "required": ["name", "age"],
             "properties": {
               "name": {
                 "type": "string"

@@ -515,7 +515,7 @@ describe("Schema Converter", () => {
       expect(res).toEqual("{'visitsCount'?: keyof typeof TestVisitsCount[];}");
     });
 
-    it("should handle required prop in schema", () => {
+    it("should handle required array in schema", () => {
       const res = new Schema(register)
         .convert(
           {
@@ -538,6 +538,63 @@ describe("Schema Converter", () => {
         .toType();
 
       expect(res).toEqual("{'id': string;'name': string;'visitsCount'?: number;}");
+    });
+
+    it("should handle empty required array in nested schema", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            type: "object",
+            properties: {
+              dictionary: {
+                type: "object",
+                description: "Object contains both properties and additional properties",
+                required: ["name", "age"],
+                properties: {
+                  name: {
+                    type: "string",
+                  },
+                  age: {
+                    type: "number",
+                  },
+                },
+              },
+            },
+          },
+          "test",
+        )
+        .toType();
+
+      expect(res).toEqual("{'dictionary'?: {'age': number;'name': string;};}");
+    });
+
+    it("should handle required array in nested schema", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            type: "object",
+            required: ["dictionary"],
+            properties: {
+              dictionary: {
+                type: "object",
+                description: "Object contains both properties and additional properties",
+                required: ["name", "age"],
+                properties: {
+                  name: {
+                    type: "string",
+                  },
+                  age: {
+                    type: "number",
+                  },
+                },
+              },
+            },
+          },
+          "test",
+        )
+        .toType();
+
+      expect(res).toEqual("{'dictionary': {'age': number;'name': string;};}");
     });
 
     it("should get correct type when object only contains `additionalProperties`", () => {

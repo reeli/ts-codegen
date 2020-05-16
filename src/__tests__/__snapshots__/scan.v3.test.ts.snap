@@ -39,16 +39,18 @@ export const findPetById = createRequestAction<
 
 export const findPets = createRequestAction<
   {
+    fee: { age?: number; text: string };
     limit?: number;
     status: keyof typeof FindPetsStatus[];
     tags?: keyof typeof FindPetsTags[];
   },
   Pet[]
->(\\"findPets\\", ({ tags, limit, status }) => ({
+>(\\"findPets\\", ({ tags, fee, limit, status }) => ({
   url: \`/api/v3/pets\`,
   method: \\"GET\\",
   params: {
     tags,
+    fee,
     limit,
     status,
   },
@@ -154,8 +156,8 @@ export interface Category {
 }
 
 export interface Dictionary {
-  dictionary1: { age: number; name: string; [key: string]: string | number };
-  dictionary2?: { age?: string; name?: string; [key: string]: string };
+  dictionary1?: { age: number; name: string; [key: string]: string | number };
+  dictionary2?: { age: string; name: string; [key: string]: string };
   dictionary3?: { age?: number; name?: string; [key: string]: any };
   dictionary4?: { [key: string]: any };
   dictionary?: { [key: string]: { code?: number; text?: string } };
