@@ -144,6 +144,10 @@ export type Cat3 = Cat & string;
 
 export type Cat4 = string & (Cat | Dog);
 
+export type Cat5 = { country?: string };
+
+export type Cat6 = Cat[] & Item[];
+
 export interface Category {
   id?: number;
   name?: string;

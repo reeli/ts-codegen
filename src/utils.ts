@@ -87,3 +87,5 @@ export const getPathsFromRef = (str?: string): string[] => {
 
 export const getFilename = (basePath?: string) =>
   basePath ? `${basePath.split("/").join(".").slice(1)}` : "api.client";
+
+export const isObj = (s: CustomSchema) => s.type === "object" || s.properties;

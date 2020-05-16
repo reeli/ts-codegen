@@ -1,5 +1,5 @@
-import { shouldUseExtends, toCapitalCase } from "src/utils";
-import { filter, isArray, isEmpty, map, compact, reduce } from "lodash";
+import { isObj, shouldUseExtends, toCapitalCase } from "src/utils";
+import { compact, filter, isArray, isEmpty, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/__types__/OpenAPI";
 import { CustomType, Type } from "src/Type";
 import { CustomSchema } from "src/__types__/types";
@@ -61,31 +61,28 @@ export class Schema {
 
   private handleAllOf(schemas: Array<CustomSchema>, name?: string) {
     const getObjType = () => {
-      const objs: any[] = filter(schemas, (schema) => schema.properties);
+      const objs: any[] = filter(schemas, (s) => isObj(s));
       if (isEmpty(objs)) {
         return;
       }
 
-      const obj = reduce(objs, (res, item) => ({
-        ...res,
-        properties: {
-          ...res.properties,
-          ...item.properties,
-        },
-      }));
-
-      return this.convert(obj, name);
+      return this.convert(
+        reduce(objs, (res, item) => ({
+          ...res,
+          properties: {
+            ...res.properties,
+            ...item.properties,
+          },
+        })),
+        name,
+      );
     };
 
-    const otherTypes: any[] = filter(schemas, (s) => !(s.type === "object" || s.properties)).map((v) => {
-      if (isEmpty(v)) {
-        return;
-      }
-      return this.convert(v, name);
-    });
+    const otherTypes: any[] = filter(schemas, (s) => !isObj(s)).map((v) =>
+      !isEmpty(v) ? this.convert(v, name) : undefined,
+    );
 
-    const useExtends = shouldUseExtends(schemas);
-    return this.type.allOf(compact([getObjType(), ...otherTypes]), useExtends);
+    return this.type.allOf(compact([getObjType(), ...otherTypes]), shouldUseExtends(schemas));
   }
 
   private handleItems(items: CustomSchema | IReference | CustomSchema[], name?: string): CustomType | CustomType[] {

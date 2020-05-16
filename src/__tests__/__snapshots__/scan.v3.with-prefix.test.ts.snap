@@ -144,6 +144,10 @@ export type TCat3 = ICat & string;
 
 export type TCat4 = string & (ICat | IDog);
 
+export type TCat5 = { country?: string };
+
+export type TCat6 = ICat[] & IItem[];
+
 export interface ICategory {
   id?: number;
   name?: string;

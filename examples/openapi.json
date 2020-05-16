@@ -694,6 +694,39 @@
           }
         ]
       },
+      "Cat5": {
+        "allOf": [
+          {
+            "description": "`allOf` contains two objects, but one is not contain properties",
+            "type": "object",
+            "properties": {
+              "country": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object"
+          }
+        ]
+      },
+      "Cat6": {
+        "allOf": [
+          {
+            "type": "array",
+            "description": "in `allOf` contains two array",
+            "items": {
+              "$ref": "#/components/schemas/Cat"
+            }
+          },
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Item"
+            }
+          }
+        ]
+      },
       "Message": {
         "type": "object",
         "properties": {
