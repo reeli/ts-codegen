@@ -263,7 +263,34 @@ describe("Schema Converter", () => {
         )
         .toType(false);
 
-      expect(res).toEqual("NewPet&Dog&{'bark'?: boolean;}");
+      expect(res).toEqual("{'bark'?: boolean;}&NewPet&Dog");
+    });
+
+    it("should handle multiple refs and object in `allOf` by using extends ", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            allOf: [
+              {
+                $ref: "#/components/schemas/NewPet",
+              },
+              {
+                $ref: "#/components/schemas/Dog",
+              },
+              {
+                properties: {
+                  bark: {
+                    type: "boolean",
+                  },
+                },
+              },
+            ],
+          },
+          "Pet",
+        )
+        .toType(true);
+
+      expect(res).toEqual("extends NewPet,Dog {'bark'?: boolean;}");
     });
 
     it("should handle enum in `allOf`", () => {

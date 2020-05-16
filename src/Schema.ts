@@ -1,5 +1,5 @@
 import { shouldUseExtends, toCapitalCase } from "src/utils";
-import { filter, isArray, isEmpty, map, reduce } from "lodash";
+import { filter, isArray, isEmpty, map, compact, reduce } from "lodash";
 import { IReference, ISchema } from "src/__types__/OpenAPI";
 import { CustomType, Type } from "src/Type";
 import { CustomSchema } from "src/__types__/types";
@@ -60,13 +60,12 @@ export class Schema {
   }
 
   private handleAllOf(schemas: Array<CustomSchema>, name?: string) {
-    const getRefs = (): any[] => {
-      const $refs: any[] = filter(schemas, (schema) => schema.$ref);
-      return isEmpty($refs) ? [] : $refs.map((v) => this.convert(v, name));
-    };
+    const getObjType = () => {
+      const objs: any[] = filter(schemas, (schema) => schema.properties);
+      if (isEmpty(objs)) {
+        return;
+      }
 
-    const getProps = () => {
-      const objs: any[] = filter(schemas, (schema) => schema.type === "object" || schema.properties);
       const obj = reduce(objs, (res, item) => ({
         ...res,
         properties: {
@@ -75,22 +74,18 @@ export class Schema {
         },
       }));
 
-      return isEmpty(objs) ? {} : this.convert(obj, name);
+      return this.convert(obj, name);
     };
 
-    const schemaWithoutObject = filter(
-      schemas,
-      (schema) => !(schema.properties || schema.type === "object") && !schema.$ref && !isEmpty(schema),
-    );
-    if (!isEmpty(schemaWithoutObject)) {
-      const types = filter(
-        schemas,
-        (schema) => !(schema.type === "object" || schema.properties) || schema.$ref,
-      ).map((v) => this.convert(v as CustomSchema, name));
-      return this.type.allOf(types);
-    }
+    const otherTypes: any[] = filter(schemas, (s) => !(s.type === "object" || s.properties)).map((v) => {
+      if (isEmpty(v)) {
+        return;
+      }
+      return this.convert(v, name);
+    });
 
-    return this.type.object(getProps(), getRefs(), shouldUseExtends(schemas));
+    const useExtends = shouldUseExtends(schemas);
+    return this.type.allOf(compact([getObjType(), ...otherTypes]), useExtends);
   }
 
   private handleItems(items: CustomSchema | IReference | CustomSchema[], name?: string): CustomType | CustomType[] {

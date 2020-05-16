@@ -1,4 +1,4 @@
-import { isArray, isEmpty, keys, map, some, uniqueId } from "lodash";
+import { filter, isArray, keys, map, some, uniqueId } from "lodash";
 import { getRefId, isNumberLike, quoteKey, toCapitalCase } from "src/utils";
 import { createRegister, DeclKinds } from "src/createRegister";
 
@@ -43,9 +43,18 @@ class OneOf implements TypeFactory {
 }
 
 class AllOf implements TypeFactory {
-  constructor(private types: CustomType[]) {}
+  constructor(private types: CustomType[], private useExtends?: boolean) {}
 
-  toType(): string {
+  toType(useExtends: boolean | undefined = this.useExtends): string {
+    if (useExtends) {
+      const parents = filter(this.types, (t) => t instanceof Ref)
+        .map((v) => v.toType())
+        .join(",");
+      const obj = filter(this.types, (t) => t instanceof Obj)
+        .map((v) => v.toType())
+        .join("");
+      return `extends ${parents} ${obj}`;
+    }
     return `${map(this.types, (type) => type.toType()).join("&")}`;
   }
 }
@@ -76,13 +85,9 @@ export class Ref implements TypeFactory {
 }
 
 export class Obj implements TypeFactory {
-  constructor(
-    private props: { [key: string]: CustomType } | string,
-    private refs?: Ref[],
-    private useExtends?: boolean,
-  ) {}
+  constructor(private props: { [key: string]: CustomType } | string) {}
 
-  toType(useExtends = this.useExtends): string {
+  toType(): string {
     if (this.props === "object") {
       return "{[key:string]:any}";
     }
@@ -98,20 +103,6 @@ export class Obj implements TypeFactory {
 
       return `{${data.join("")}}`;
     };
-
-    if (!isEmpty(this.refs)) {
-      if (isEmpty(this.props)) {
-        if (!useExtends) {
-          return map(this.refs, (v) => v.toType()).join("&");
-        }
-        return `extends ${map(this.refs, (v) => v.toType()).join(",")} {}`;
-      }
-      return useExtends
-        ? `extends ${map(this.refs, (v) => v.toType()).join(",")} ${handler(
-            this.props as { [key: string]: CustomType },
-          )}`
-        : `${map(this.refs, (v) => v.toType()).join("&")}&${handler(this.props as { [key: string]: CustomType })}`;
-    }
 
     return handler(this.props as { [key: string]: CustomType });
   }
@@ -146,12 +137,12 @@ export class Type {
     return new OneOf(types);
   }
 
-  allOf(types: CustomType[]) {
-    return new AllOf(types);
+  allOf(types: CustomType[], useExtends?: boolean) {
+    return new AllOf(types, useExtends);
   }
 
-  object(props: { [key: string]: CustomType } | string, refs?: Ref[], useExtends?: boolean) {
-    return new Obj(props, refs, useExtends);
+  object(props: { [key: string]: CustomType } | string) {
+    return new Obj(props);
   }
 
   boolean() {
