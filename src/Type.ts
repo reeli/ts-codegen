@@ -1,4 +1,4 @@
-import { filter, isArray, keys, map, some, uniqueId } from "lodash";
+import { compact, isArray, keys, map, some, uniqueId } from "lodash";
 import { getRefId, isNumberLike, quoteKey, toCapitalCase } from "src/utils";
 import { createRegister, DeclKinds } from "src/createRegister";
 
@@ -43,19 +43,19 @@ class OneOf implements TypeFactory {
 }
 
 class AllOf implements TypeFactory {
-  constructor(private types: CustomType[], private useExtends?: boolean) {}
+  constructor(
+    private obj: Obj | undefined,
+    private otherTypes: Omit<CustomType, "Obj">[],
+    private useExtends?: boolean,
+  ) {}
 
   toType(useExtends: boolean | undefined = this.useExtends): string {
     if (useExtends) {
-      const parents = filter(this.types, (t) => t instanceof Ref)
+      return `extends ${compact(this.otherTypes)
         .map((v) => v.toType())
-        .join(",");
-      const obj = filter(this.types, (t) => t instanceof Obj)
-        .map((v) => v.toType())
-        .join("");
-      return `extends ${parents} ${obj}`;
+        .join(",")} ${this.obj?.toType()}`;
     }
-    return `${map(this.types, (type) => type.toType()).join("&")}`;
+    return `${map(compact([this.obj, ...this.otherTypes]), (type) => type.toType()).join("&")}`;
   }
 }
 
@@ -137,8 +137,8 @@ export class Type {
     return new OneOf(types);
   }
 
-  allOf(types: CustomType[], useExtends?: boolean) {
-    return new AllOf(types, useExtends);
+  allOf(obj: Obj | undefined, otherTypes: Omit<CustomType, "Obj">[], useExtends?: boolean) {
+    return new AllOf(obj, otherTypes, useExtends);
   }
 
   object(props: { [key: string]: CustomType } | string) {

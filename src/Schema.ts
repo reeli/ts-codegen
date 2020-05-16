@@ -1,7 +1,7 @@
 import { isObj, shouldUseExtends, toCapitalCase } from "src/utils";
-import { compact, filter, isArray, isEmpty, map, reduce } from "lodash";
+import { filter, isArray, isEmpty, map, reduce } from "lodash";
 import { IReference, ISchema } from "src/__types__/OpenAPI";
-import { CustomType, Type } from "src/Type";
+import { CustomType, Obj, Type } from "src/Type";
 import { CustomSchema } from "src/__types__/types";
 import { createRegister } from "src/createRegister";
 
@@ -60,7 +60,7 @@ export class Schema {
   }
 
   private handleAllOf(schemas: Array<CustomSchema>, name?: string) {
-    const getObjType = () => {
+    const getObj = (): Obj | undefined => {
       const objs: any[] = filter(schemas, (s) => isObj(s));
       if (isEmpty(objs)) {
         return;
@@ -75,14 +75,14 @@ export class Schema {
           },
         })),
         name,
-      );
+      ) as Obj;
     };
 
     const otherTypes: any[] = filter(schemas, (s) => !isObj(s)).map((v) =>
       !isEmpty(v) ? this.convert(v, name) : undefined,
     );
 
-    return this.type.allOf(compact([getObjType(), ...otherTypes]), shouldUseExtends(schemas));
+    return this.type.allOf(getObj(), otherTypes, shouldUseExtends(schemas));
   }
 
   private handleItems(items: CustomSchema | IReference | CustomSchema[], name?: string): CustomType | CustomType[] {
