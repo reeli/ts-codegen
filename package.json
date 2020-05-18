@@ -53,7 +53,7 @@
     "rollup": "2.10.x",
     "rollup-plugin-babel": "4.4.x",
     "rollup-plugin-typescript": "1.0.x",
-    "ts-jest": "25.5.x",
+    "ts-jest": "26.0.x",
     "ts-node": "8.10.x",
     "tsconfig-paths": "3.9.0",
     "typescript": "3.9.x",
