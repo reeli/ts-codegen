@@ -579,7 +579,7 @@
           }
         ]
       },
-      "Cat1": {
+      "CatA": {
         "allOf": [
           {
             "description": "`allOf` contains two objects",
@@ -587,20 +587,16 @@
             "properties": {
               "country": {
                 "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "properties": {
+              },
               "kind": {
+                "type": "string",
                 "enum": ["Red Cat", "Blue Cat"]
               }
             }
           }
         ]
       },
-      "Cat2": {
+      "CatB": {
         "allOf": [
           {
             "description": "in `allOf`, the object without properties",
@@ -623,7 +619,7 @@
           }
         ]
       },
-      "Cat3": {
+      "CatC": {
         "allOf": [
           {
             "$ref": "#/components/schemas/Cat"
@@ -634,7 +630,7 @@
           }
         ]
       },
-      "Cat4": {
+      "CatD": {
         "allOf": [
           {
             "description": "in `allOf`, contains basic type and `oneOf`",
@@ -652,7 +648,7 @@
           }
         ]
       },
-      "Cat5": {
+      "CatE": {
         "allOf": [
           {
             "description": "`allOf` contains two objects, but one is not contain properties",
@@ -668,7 +664,7 @@
           }
         ]
       },
-      "Cat6": {
+      "CatF": {
         "allOf": [
           {
             "type": "array",
@@ -782,7 +778,7 @@
               }
             }
           },
-          "dictionary1": {
+          "dictionaryA": {
             "type": "object",
             "description": "Object contains both properties and additional properties",
             "required": ["name", "age"],
@@ -805,7 +801,7 @@
               ]
             }
           },
-          "dictionary2": {
+          "dictionaryB": {
             "type": "object",
             "description": "Additional properties is not an object",
             "required": ["name", "age"],
@@ -821,7 +817,7 @@
               "type": "string"
             }
           },
-          "dictionary3": {
+          "dictionaryC": {
             "type": "object",
             "description": "Additional properties is a boolean",
             "properties": {
@@ -834,7 +830,7 @@
             },
             "additionalProperties": true
           },
-          "dictionary4": {
+          "dictionaryD": {
             "type": "object",
             "description": "Additional properties is a boolean and without properties",
             "additionalProperties": true

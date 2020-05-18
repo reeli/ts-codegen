@@ -293,6 +293,37 @@ describe("Schema Converter", () => {
       expect(res).toEqual("extends NewPet,Dog {'bark'?: boolean;}");
     });
 
+    it("should handle multiple objects in `allOf`", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            allOf: [
+              {
+                description: "`allOf` contains two objects",
+                type: "object",
+                properties: {
+                  country: {
+                    type: "string",
+                  },
+                },
+              },
+              {
+                type: "object",
+                properties: {
+                  kind: {
+                    enum: ["Red Cat", "Blue Cat"],
+                  },
+                },
+              },
+            ],
+          },
+          "Pet",
+        )
+        .toType(true);
+
+      expect(res).toEqual("extends  {'country'?: string;'kind'?: keyof typeof PetKind;}");
+    });
+
     it("should handle enum in `allOf`", () => {
       const res = new Schema(register)
         .convert(

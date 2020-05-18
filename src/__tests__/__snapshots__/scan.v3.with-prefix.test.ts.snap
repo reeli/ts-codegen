@@ -128,27 +128,27 @@ export interface ICat extends IPet {
   hunts?: boolean;
 }
 
-export type TCat1 = { country?: string; kind?: keyof typeof Cat1Kind };
+export type TCatA = { country?: string; kind?: keyof typeof CatAKind };
 
-export enum Cat1Kind {
+export enum CatAKind {
   \\"Red Cat\\" = \\"Red Cat\\",
   \\"Blue Cat\\" = \\"Blue Cat\\",
 }
 
-export type TCat2 = { age?: boolean; kind?: keyof typeof Cat2Kind; name?: string };
+export type TCatB = { age?: boolean; kind?: keyof typeof CatBKind; name?: string };
 
-export enum Cat2Kind {
+export enum CatBKind {
   \\"Red Cat\\" = \\"Red Cat\\",
   \\"Blue Cat\\" = \\"Blue Cat\\",
 }
 
-export type TCat3 = ICat & string;
+export type TCatC = ICat & string;
 
-export type TCat4 = string & (ICat | IDog);
+export type TCatD = string & (ICat | IDog);
 
-export type TCat5 = { country?: string };
+export type TCatE = { country?: string };
 
-export type TCat6 = ICat[] & IItem[];
+export type TCatF = ICat[] & IItem[];
 
 export interface ICategory {
   id?: number;
@@ -156,11 +156,11 @@ export interface ICategory {
 }
 
 export interface IDictionary {
-  dictionary1?: { age: number; name: string; [key: string]: string | number };
-  dictionary2?: { age: string; name: string; [key: string]: string };
-  dictionary3?: { age?: number; name?: string; [key: string]: any };
-  dictionary4?: { [key: string]: any };
   dictionary?: { [key: string]: { code?: number; text?: string } };
+  dictionaryA?: { age: number; name: string; [key: string]: string | number };
+  dictionaryB?: { age: string; name: string; [key: string]: string };
+  dictionaryC?: { age?: number; name?: string; [key: string]: any };
+  dictionaryD?: { [key: string]: any };
 }
 
 export interface IDog extends IPet {
