@@ -1,9 +1,17 @@
 {
   "name": "@ts-tool/ts-codegen",
+  "private": true,
+  "workspaces": [
+    "packages/**"
+  ],
   "description": "Typescript code generator, which is able to convert swagger to ts code.",
   "scripts": {
     "test": "tsc && jest",
-    "release": "lerna run release"
+    "clean": "rm -rf dist",
+    "build:types": "tsc --build ./tsconfig.declarations.json",
+    "rollup": "lerna exec 'rollup -c ../../rollup.config.ts'",
+    "release": "npm run clean && npm run build:types && npm run rollup && npm test",
+    "prepare": "npm run release"
   },
   "repository": {
     "type": "git",
@@ -37,7 +45,9 @@
     "ts-jest": "26.0.x",
     "ts-node": "8.10.x",
     "tsconfig-paths": "3.9.0",
-    "typescript": "3.9.x"
+    "typescript": "3.9.x",
+    "@types/prettier": "2.0.x",
+    "prettier": "^2.0.x"
   },
   "dependencies": {
     "tslib": "^2.0.x"
@@ -47,6 +57,9 @@
     "modulePaths": [
       "<rootDir>"
     ],
+    "moduleNameMapper": {
+        "^@ts-tool/([^/]+)$": "<rootDir>/packages/$1/src/index.ts"
+    },
     "coverageDirectory": "coverage",
     "testRegex": ".*/__tests__/.+\\.(generator|test|spec)\\.(ts|tsx)$",
     "collectCoverage": true,
@@ -57,7 +70,6 @@
       "!src/index.ts"
     ],
     "transform": {
-      "^.+\\.ts?$": "ts-jest",
       "^.+\\.tsx?$": "ts-jest"
     }
   }

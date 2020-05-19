@@ -1,6 +1,6 @@
-import { CustomType } from "src/Type";
+import { CustomType } from "../Type";
 import { Operation, Parameter, Path, Schema, Spec } from "swagger-schema-official";
-import { IComponents, IOpenAPI, IOperation, IPathItem, ISchema, TParameter } from "src/__types__/OpenAPI";
+import { IComponents, IOpenAPI, IOperation, IPathItem, ISchema, TParameter } from "../__types__/OpenAPI";
 
 export type RequestType = { [key: string]: CustomType };
 

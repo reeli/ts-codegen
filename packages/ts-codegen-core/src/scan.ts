@@ -1,13 +1,13 @@
-import { IOpenAPI, IServer } from "src/__types__/OpenAPI";
-import { CustomType } from "src/Type";
+import { IOpenAPI, IServer } from "./__types__/OpenAPI";
+import { CustomType } from "./Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
-import { Schema } from "src/Schema";
-import { shouldUseExtends, prettifyCode, setDeprecated, toCapitalCase, objToTypeStr } from "src/utils";
+import { Schema } from "./Schema";
+import { shouldUseExtends, prettifyCode, setDeprecated, toCapitalCase, objToTypeStr } from "./utils";
 import { Spec } from "swagger-schema-official";
-import { CustomReference, CustomSchema, IClientConfig, RequestType } from "src/__types__/types";
-import { createRegister, DeclKinds, IStore } from "src/createRegister";
+import { CustomReference, CustomSchema, IClientConfig, RequestType } from "./__types__/types";
+import { createRegister, DeclKinds, IStore } from "./createRegister";
 import { parse } from "url";
-import { getClientConfigsV2, getClientConfigsV3 } from "src/createClientConfigs";
+import { getClientConfigsV2, getClientConfigsV3 } from "./createClientConfigs";
 
 enum DataType {
   openapi,

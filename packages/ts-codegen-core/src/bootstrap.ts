@@ -1,3 +1,3 @@
-import { codegen } from "src/codegen";
+import { codegen } from "./codegen";
 
 codegen();

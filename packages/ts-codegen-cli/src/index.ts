@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import prettier from "prettier";
 import { program } from "commander";
-import { codegen, getCodegenConfig } from "packages/ts-codegen-core";
+import { codegen, getCodegenConfig } from "@ts-tool/ts-codegen-core";
 
 program
   .version("0.7.8", "-v, --version")

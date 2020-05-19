@@ -12,6 +12,9 @@
     "esModuleInterop": true,
     "outDir": "dist",
     "baseUrl": ".",
+    "paths": {
+      "@ts-tool/*": ["packages/*/src", "@ts-tool/*"]
+    },
     "rootDir": ".",
     "resolveJsonModule": true
   },

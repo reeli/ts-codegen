@@ -11,7 +11,7 @@ import {
   testJSON,
   toCapitalCase,
   withOptionalName,
-} from "src/utils";
+} from "@ts-tool/ts-codegen-core";
 
 describe("#toCapitalCase", () => {
   it("when word is undefined, should return empty string", () => {

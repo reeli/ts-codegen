@@ -1,12 +1,12 @@
-import { getFilename, testJSON } from "src/utils";
+import { getFilename, testJSON } from "./utils";
 import axios from "axios";
 import { isEmpty, map } from "lodash";
 import * as fs from "fs";
 import * as path from "path";
-import { IOpenAPI } from "src/__types__/OpenAPI";
+import { IOpenAPI } from "./__types__/OpenAPI";
 import { Spec } from "swagger-schema-official";
-import { getInputs, scan } from "src/scan";
-import { ERROR_MESSAGES } from "src/constants";
+import { getInputs, scan } from "./scan";
+import { ERROR_MESSAGES } from "./constants";
 
 export const getCodegenConfig = () => {
   const codegenConfigPath = path.resolve("ts-codegen.config.json");

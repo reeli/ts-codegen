@@ -1,6 +1,6 @@
 import { compact, isArray, keys, map, some, uniqueId } from "lodash";
-import { getRefId, isNumberLike, quoteKey, toCapitalCase } from "src/utils";
-import { createRegister, DeclKinds } from "src/createRegister";
+import { getRefId, isNumberLike, quoteKey, toCapitalCase } from "./utils";
+import { createRegister, DeclKinds } from "./createRegister";
 
 export type CustomType = Ref | Obj | Arr | Enum | OneOf | AllOf | BasicType;
 

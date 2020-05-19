@@ -1,6 +1,6 @@
-import { CustomType, Ref } from "src/Type";
+import { CustomType, Ref } from "./Type";
 import { Parameter } from "swagger-schema-official";
-import { IReference, IRequestBody, IResponse } from "src/__types__/OpenAPI";
+import { IReference, IRequestBody, IResponse } from "./__types__/OpenAPI";
 import { get, set } from "lodash";
 
 export enum DeclKinds {
