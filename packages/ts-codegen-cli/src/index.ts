@@ -1,10 +1,8 @@
-#!/usr/bin/env node
-
-const fs = require("fs");
-const path = require("path");
-const prettier = require("prettier");
-const { program } = require("commander");
-const { codegen, getCodegenConfig } = require("../lib");
+import fs from "fs";
+import path from "path";
+import prettier from "prettier";
+import { program } from "commander";
+import { codegen, getCodegenConfig } from "packages/ts-codegen-core";
 
 program
   .version("0.7.8", "-v, --version")
@@ -19,7 +17,7 @@ program
   .command("init")
   .description("create ts-codegen.config.json file")
   .action(() => {
-    const file = path.resolve(process.env.PWD, `./codegen.config.json`);
+    const file = path.resolve(process.cwd(), `./codegen.config.json`);
     const defaultTemplate = {
       output: ".output",
       actionCreatorImport: "",

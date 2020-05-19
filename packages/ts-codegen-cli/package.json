@@ -1,0 +1,19 @@
+{
+  "name": "@ts-tool/ts-codegen-cli",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "release": "rm -rf dist/ && rollup -c rollup.config.ts"
+  },
+  "bin": {
+    "ts-codegen": "bin/cli.js"
+  },
+  "files": [
+    "dist/"
+  ],
+  "dependencies": {
+    "commander": "^5.1.0",
+    "prettier": "^2.0.x",
+    "@ts-tool/ts-codegen": "^1.0.0"
+  }
+}

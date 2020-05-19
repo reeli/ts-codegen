@@ -1,0 +1,27 @@
+{
+  "name": "@ts-tool/ts-codegen-core",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "module": "module/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist",
+    "lib",
+    "module",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "ts-node -r tsconfig-paths/register src/bootstrap.ts",
+    "build": "rm -rf dist && tsc --build ./tsconfig.json",
+    "release": "rm -rf lib/ && rm -rf module/ && rollup -c rollup.config.ts",
+    "prepare": "npm run build && npm run release"
+  },
+  "devDependencies": {
+    "@types/prettier": "2.0.x",
+    "prettier": "^2.0.x"
+  },
+  "dependencies": {
+    "axios": "^0.19.x",
+    "lodash": "^4.17.15"
+  }
+}

@@ -1,27 +1,9 @@
 {
   "name": "@ts-tool/ts-codegen",
-  "version": "0.7.8",
   "description": "Typescript code generator, which is able to convert swagger to ts code.",
-  "main": "lib/index.js",
-  "module": "module/index.js",
-  "types": "src/index.ts",
-  "bin": {
-    "ts-codegen": "bin/cli.js"
-  },
-  "files": [
-    "dist",
-    "bin",
-    "lib",
-    "module",
-    "src",
-    "README.md"
-  ],
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register src/bootstrap.ts",
     "test": "tsc && jest",
-    "build": "rm -rf dist && tsc",
-    "release": "rm -rf lib/ && rm -rf module/ && rollup -c rollup.config.ts",
-    "prepare": "npm run build && npm run release && npm test"
+    "release": "lerna run release"
   },
   "repository": {
     "type": "git",
@@ -41,13 +23,13 @@
     "@types/jest": "25.2.x",
     "@types/lodash": "4.14.x",
     "@types/node": "14.0.x",
-    "@types/prettier": "2.0.x",
     "@types/rollup": "0.54.x",
-    "axios": "0.19.x",
+    "@types/swagger-schema-official": "2.0.x",
     "babel-core": "6.26.x",
     "babel-jest": "26.0.x",
     "babel-plugin-pure-calls-annotation": "0.3.x",
     "jest": "26.0.x",
+    "lerna": "^3.21.0",
     "lodash": "4.17.x",
     "rollup": "2.10.x",
     "rollup-plugin-babel": "4.4.x",
@@ -55,15 +37,10 @@
     "ts-jest": "26.0.x",
     "ts-node": "8.10.x",
     "tsconfig-paths": "3.9.0",
-    "typescript": "3.9.x",
-    "@types/swagger-schema-official": "2.0.x"
+    "typescript": "3.9.x"
   },
   "dependencies": {
-    "prettier": "^2.0.x",
-    "axios": "^0.19.x",
-    "lodash": "^4.17.15",
-    "tslib": "^2.0.x",
-    "commander": "^5.1.0"
+    "tslib": "^2.0.x"
   },
   "jest": {
     "testEnvironment": "node",
