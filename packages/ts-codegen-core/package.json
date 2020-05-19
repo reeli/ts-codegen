@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "lib/index.js",
   "module": "module/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "types/index.d.ts",
   "files": [
-    "dist",
-    "lib",
-    "module",
+    "dist/lib",
+    "dist/modules",
+    "dist/types",
     "README.md"
   ],
   "scripts": {

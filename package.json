@@ -8,9 +8,10 @@
   "scripts": {
     "test": "tsc && jest",
     "clean": "rm -rf dist",
+    "copy": "ts-node scripts/copy.ts",
     "build:types": "tsc --build ./tsconfig.declarations.json",
     "rollup": "lerna exec 'rollup -c ../../rollup.config.ts'",
-    "release": "npm run clean && npm run build:types && npm run rollup && npm test",
+    "release": "npm run clean && npm run build:types && npm run copy && npm run rollup && npm test",
     "prepare": "npm run release"
   },
   "repository": {
