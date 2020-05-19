@@ -1,4 +1,4 @@
-import { getFilename, prettifyCode, testJSON } from "src/utils";
+import { getFilename, testJSON } from "src/utils";
 import axios from "axios";
 import { isEmpty, map } from "lodash";
 import * as fs from "fs";
@@ -58,7 +58,7 @@ const write = (output: string, filename: string, str: string) => {
     fs.mkdirSync(output);
   }
 
-  fs.writeFileSync(path.resolve(output, `./${filename}.ts`), prettifyCode(str), "utf-8");
+  fs.writeFileSync(path.resolve(output, `./${filename}.ts`), str, "utf-8");
 };
 
 const fetchSwaggerJSON = (clients: string[] = [], timeout: number = 10 * 1000) => {
