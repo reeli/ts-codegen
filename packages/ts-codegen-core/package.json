@@ -16,5 +16,8 @@
   "dependencies": {
     "axios": "^0.19.x",
     "lodash": "^4.17.15"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
