@@ -6,5 +6,6 @@
     "outDir": "dist",
     "baseUrl": ".",
     "rootDir": "."
-  }
+  },
+  "exclude": ["**/__tests__/**"]
 }

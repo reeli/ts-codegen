@@ -7,11 +7,11 @@
   "description": "Typescript code generator, which is able to convert swagger to ts code.",
   "scripts": {
     "test": "tsc && jest",
-    "clean": "rm -rf dist",
-    "copy": "ts-node scripts/copy.ts",
+    "clean": "rm -rf dist && lerna exec 'rm -rf dist'",
+    "copy": "npm run clean && npm run build:types && ts-node scripts/copy.ts",
     "build:types": "tsc --build ./tsconfig.declarations.json",
     "rollup": "lerna exec 'rollup -c ../../rollup.config.ts'",
-    "release": "npm run clean && npm run build:types && npm run copy && npm run rollup && npm test",
+    "release": "npm test && npm run copy && npm run rollup",
     "prepare": "npm run release"
   },
   "repository": {
