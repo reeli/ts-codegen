@@ -17,7 +17,7 @@ program
   .command("init")
   .description("create ts-codegen.config.json file")
   .action(() => {
-    const file = path.resolve(process.cwd(), `./codegen.config.json`);
+    const file = path.resolve(process.cwd(), `./ts-codegen.config.json`);
     const defaultTemplate = {
       output: ".output",
       actionCreatorImport: "",
