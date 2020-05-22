@@ -1,12 +1,12 @@
 {
   "name": "@ts-tool/ts-codegen-cli",
   "version": "1.0.0",
-  "main": "lib/index.js",
+  "main": "dist/lib/index.js",
   "bin": {
     "ts-codegen": "bin/cli.js"
   },
   "files": [
-    "dist/lib",
+    "dist",
     "bin"
   ],
   "dependencies": {
@@ -16,5 +16,11 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "author": "reeli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reeli/ts-codegen/issues"
+  },
+  "homepage": "https://github.com/reeli/ts-codegen#readme"
 }

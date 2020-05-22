@@ -1,13 +1,11 @@
 {
   "name": "@ts-tool/ts-codegen-core",
   "version": "1.0.0",
-  "main": "lib/index.js",
-  "module": "module/index.js",
+  "main": "dist/lib/index.js",
+  "module": "dist/module/index.js",
   "types": "types/index.d.ts",
   "files": [
-    "dist/lib",
-    "dist/modules",
-    "dist/types",
+    "dist",
     "README.md"
   ],
   "scripts": {
@@ -19,5 +17,11 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "author": "reeli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reeli/ts-codegen/issues"
+  },
+  "homepage": "https://github.com/reeli/ts-codegen#readme"
 }
