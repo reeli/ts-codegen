@@ -1,6 +1,6 @@
 {
   "name": "@ts-tool/ts-codegen-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/lib/index.js",
   "bin": {
     "ts-codegen": "bin/cli.js"
