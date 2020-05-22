@@ -4,17 +4,17 @@ import rollupBabel from "rollup-plugin-babel";
 // @ts-ignore
 import rollupTypeScript from "rollup-plugin-typescript";
 
-const pkg = require(path.join(__dirname, "package.json"));
+const pkg = require(path.join(process.cwd(), "package.json"));
 
 module.exports = {
-  input: pkg.types,
+  input: "src/index.ts",
   output: [
     {
-      file: pkg.main,
+      dir: "dist/lib",
       format: "cjs",
     },
     {
-      file: pkg.module,
+      dir: "dist/module",
       format: "es",
     },
   ],

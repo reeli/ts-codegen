@@ -1,0 +1,27 @@
+{
+  "name": "@ts-tool/ts-codegen-core",
+  "version": "1.0.2",
+  "main": "dist/lib/index.js",
+  "module": "dist/module/index.js",
+  "types": "types/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "ts-node -r tsconfig-paths/register src/bootstrap.ts"
+  },
+  "dependencies": {
+    "axios": "^0.19.x",
+    "lodash": "^4.17.15"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "reeli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reeli/ts-codegen/issues"
+  },
+  "homepage": "https://github.com/reeli/ts-codegen#readme"
+}

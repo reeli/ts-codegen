@@ -1,0 +1,920 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Swagger Petstore",
+    "description": "A sample API that uses a petstore as an example to demonstrate features in the OpenAPI 3.0 specification",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "name": "Swagger API Team",
+      "email": "apiteam@swagger.io",
+      "url": "http://swagger.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://petstore.swagger.io/api/v3"
+    },
+    {
+      "url": "https://{username}.gigantic-server.com:{port}/{basePath}",
+      "description": "The production API server",
+      "variables": {
+        "username": {
+          "default": "demo",
+          "description": "this value is assigned by the service provider, in this example `gigantic-server.com`"
+        },
+        "port": {
+          "enum": ["8443", "443"],
+          "default": "8443"
+        },
+        "basePath": {
+          "default": "api"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/pets": {
+      "get": {
+        "description": "Returns all pets from the system that the user has access to\nNam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo. In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittis libero sed lacinia.\n\nSed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.\n",
+        "operationId": "findPets",
+        "parameters": [
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "tags to filter by",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["z", "b", "c", "a"]
+              }
+            }
+          },
+          {
+            "name": "fee",
+            "in": "query",
+            "description": "Required prop with object type",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "object",
+              "required": ["text"],
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "age": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "maximum number of results to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Status values that need to be considered for filter",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["available", "pending", "sold"],
+                "default": "available"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "pet response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Pet"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Creates a new pet in the store. Duplicates are allowed",
+        "operationId": "addPet",
+        "requestBody": {
+          "description": "Pet to add to the store",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "pet response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update a new pet in the store. Duplicates are allowed",
+        "operationId": "updatePet",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Cat"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Dog"
+                  }
+                ],
+                "discriminator": {
+                  "propertyName": "pet_type"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated"
+          }
+        }
+      }
+    },
+    "/pets/{id}": {
+      "get": {
+        "description": "Returns a user based on a single ID, if the user does not have access to the pet",
+        "operationId": "find pet by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of pet to fetch",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "pet response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "deletes a single pet based on the ID supplied",
+        "operationId": "deletePet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of pet to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "pet deleted"
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items": {
+      "x-swagger-router-controller": "ItemController",
+      "get": {
+        "summary": "Returns a list of items",
+        "operationId": "getItems",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/sort"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Items"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Creates a new item",
+        "operationId": "createItem",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/item"
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/SuccessMessage"
+          }
+        }
+      }
+    },
+    "/body": {
+      "post": {
+        "operationId": "postBody",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PetBody"
+        },
+        "responses": {
+          "201": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/demo/forms/multipart": {
+      "post": {
+        "tags": ["routes"],
+        "summary": "Form Multipart",
+        "operationId": "FormMultipartWithFile",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/Pet"
+                      },
+                      {}
+                    ],
+                    "x-go-json": "data",
+                    "x-go-name": "Pet"
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "x-go-json": "file",
+                    "x-go-name": "File",
+                    "x-pointer": 1
+                  },
+                  "slice": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "x-go-json": "slice",
+                    "x-go-name": "Slice"
+                  },
+                  "string": {
+                    "type": "string",
+                    "x-go-json": "string",
+                    "x-go-name": "String"
+                  }
+                },
+                "required": ["file"]
+              }
+            }
+          }
+        },
+        "responses": {}
+      }
+    },
+    "/demo/forms/multipart-with-files": {
+      "post": {
+        "tags": ["routes"],
+        "summary": "Form Multipart With Files",
+        "operationId": "FormMultipartWithFiles",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary",
+                      "x-pointer": 1
+                    },
+                    "x-go-json": "files",
+                    "x-go-name": "Files"
+                  }
+                },
+                "required": ["files"]
+              }
+            }
+          }
+        },
+        "responses": {}
+      }
+    },
+    "/demo/forms/url-encoded": {
+      "post": {
+        "tags": ["routes"],
+        "summary": "Form URL Encoded",
+        "operationId": "FormURLEncoded",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RequestForm"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {}
+      }
+    },
+    "/demo/feedback": {
+      "get": {
+        "description": "Should generate TRep with undefined value if it not exists, but TResp exist.",
+        "tags": ["report-controller"],
+        "summary": "generateFeedbackAndLeadReport",
+        "operationId": "generateFeedbackAndLeadReportUsingGET",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resource"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Pet": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NewPet"
+          },
+          {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "categories": {
+                "type": "array",
+                "xml": {
+                  "name": "categories",
+                  "wrapped": true
+                },
+                "items": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "NewPet": {
+        "description": "Without type=object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "contentType": {
+            "description": "Should generate type instead of enum, when enum value is number like.",
+            "type": "string",
+            "enum": ["01", "02", "03", "04", "05", "06"]
+          },
+          "reason": {
+            "description": "Should generate type instead of enum, when enum value is number like.",
+            "type": "string",
+            "enum": ["1", "3", "4", "5", "6"]
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Pets": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Pet"
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "Category"
+        }
+      },
+      "Dog": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Pet"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "bark": {
+                "type": "boolean"
+              },
+              "breed": {
+                "type": "string",
+                "enum": ["Dingo", "Husky", "Retriever", "Shepherd"]
+              }
+            }
+          }
+        ]
+      },
+      "Cat": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Pet"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "hunts": {
+                "type": "boolean"
+              },
+              "age": {
+                "type": "integer"
+              }
+            }
+          }
+        ]
+      },
+      "CatA": {
+        "allOf": [
+          {
+            "description": "`allOf` contains two objects",
+            "type": "object",
+            "properties": {
+              "country": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": ["Red Cat", "Blue Cat"]
+              }
+            }
+          }
+        ]
+      },
+      "CatB": {
+        "allOf": [
+          {
+            "description": "in `allOf`, the object without properties",
+            "type": "object"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "boolean"
+              },
+              "kind": {
+                "type": "string",
+                "enum": ["Red Cat", "Blue Cat"]
+              }
+            }
+          }
+        ]
+      },
+      "CatC": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Cat"
+          },
+          {
+            "description": "in `allOf`, contains ref and basic type(string)",
+            "type": "string"
+          }
+        ]
+      },
+      "CatD": {
+        "allOf": [
+          {
+            "description": "in `allOf`, contains basic type and `oneOf`",
+            "type": "string"
+          },
+          {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Cat"
+              },
+              {
+                "$ref": "#/components/schemas/Dog"
+              }
+            ]
+          }
+        ]
+      },
+      "CatE": {
+        "allOf": [
+          {
+            "description": "`allOf` contains two objects, but one is not contain properties",
+            "type": "object",
+            "properties": {
+              "country": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object"
+          }
+        ]
+      },
+      "CatF": {
+        "allOf": [
+          {
+            "type": "array",
+            "description": "in `allOf` contains two array",
+            "items": {
+              "$ref": "#/components/schemas/Cat"
+            }
+          },
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Item"
+            }
+          }
+        ]
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Item": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        }
+      },
+      "Items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Item"
+        }
+      },
+      "RequestForm": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Pet"
+              },
+              {}
+            ],
+            "x-go-json": "data",
+            "x-go-name": "Pet"
+          },
+          "slice": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-go-json": "slice",
+            "x-go-name": "Slice"
+          },
+          "string": {
+            "type": "string",
+            "x-go-json": "string",
+            "x-go-name": "String"
+          }
+        },
+        "required": ["string", "slice", "data"]
+      },
+      "Resource": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "open": {
+            "type": "boolean"
+          },
+          "readable": {
+            "type": "boolean"
+          }
+        },
+        "title": "Resource"
+      },
+      "Dictionary": {
+        "type": "object",
+        "properties": {
+          "dictionary": {
+            "type": "object",
+            "description": "Object only contains additional properties",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "dictionaryA": {
+            "type": "object",
+            "description": "Object contains both properties and additional properties",
+            "required": ["name", "age"],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          "dictionaryB": {
+            "type": "object",
+            "description": "Additional properties is not an object",
+            "required": ["name", "age"],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "dictionaryC": {
+            "type": "object",
+            "description": "Additional properties is a boolean",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": true
+          },
+          "dictionaryD": {
+            "type": "object",
+            "description": "Additional properties is a boolean and without properties",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "parameters": {
+      "item": {
+        "name": "item",
+        "in": "query",
+        "description": "An item",
+        "schema": {
+          "$ref": "#/components/schemas/Item"
+        }
+      },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "description": "Current page number",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "default": 1,
+          "minimum": 1
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "in": "query",
+        "description": "Limits the number of returned items",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "default": 10,
+          "minimum": 10,
+          "maximum": 100,
+          "multipleOf": 10
+        }
+      },
+      "sort": {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "description": "Sorting order of items",
+        "schema": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "pattern": "([+-]\\w*){1}(\\|[+-]\\w*){0,5}",
+            "default": "+name"
+          }
+        }
+      }
+    },
+    "responses": {
+      "SuccessMessage": {
+        "description": "Success",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Message"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "PetBody": {
+        "description": "A JSON object containing pet information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Pet"
+            }
+          }
+        }
+      }
+    }
+  }
+}

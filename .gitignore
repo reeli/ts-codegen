@@ -9,9 +9,9 @@ coverage/
 .DS_Store
 .idea/
 .code/
-yarn.lock
 wsEndpoint
 .output/
 dist/
 lib/
 module/
+package-lock.json

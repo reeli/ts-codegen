@@ -1,0 +1,240 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`swagger v3 should handle basic schemas correctly 1`] = `
+"export const addPet = createRequestAction<
+  {
+    requestBody: NewPet;
+  },
+  Pet
+>(\\"addPet\\", ({ requestBody }) => ({
+  url: \`/api/v3/pets\`,
+  method: \\"POST\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const createItem = createRequestAction<
+  {
+    item?: Item;
+  },
+  Message
+>(\\"createItem\\", ({ item }) => ({
+  url: \`/api/v3/items\`,
+  method: \\"POST\\",
+  params: {
+    item,
+  },
+}));
+
+export const deletePet = createRequestAction<{
+  id: number;
+}>(\\"deletePet\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"DELETE\\" }));
+
+export const findPetById = createRequestAction<
+  {
+    id: number;
+  },
+  Pet
+>(\\"findPetById\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"GET\\" }));
+
+export const findPets = createRequestAction<
+  {
+    fee: { age?: number; text: string };
+    limit?: number;
+    status: keyof typeof FindPetsStatus[];
+    tags?: keyof typeof FindPetsTags[];
+  },
+  Pet[]
+>(\\"findPets\\", ({ tags, fee, limit, status }) => ({
+  url: \`/api/v3/pets\`,
+  method: \\"GET\\",
+  params: {
+    tags,
+    fee,
+    limit,
+    status,
+  },
+}));
+
+export const formMultipartWithFile = createRequestAction<{
+  requestBody: { data?: Pet; file: string; slice?: string[]; string?: string };
+}>(\\"formMultipartWithFile\\", ({ requestBody }) => ({
+  url: \`/api/v3/demo/forms/multipart\`,
+  method: \\"POST\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const formMultipartWithFiles = createRequestAction<{
+  requestBody: { files: string[] };
+}>(\\"formMultipartWithFiles\\", ({ requestBody }) => ({
+  url: \`/api/v3/demo/forms/multipart-with-files\`,
+  method: \\"POST\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
+}));
+
+export const formUrlEncoded = createRequestAction<{
+  requestBody: RequestForm;
+}>(\\"formUrlEncoded\\", ({ requestBody }) => ({
+  url: \`/api/v3/demo/forms/url-encoded\`,
+  method: \\"POST\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/x-www-form-urlencoded\\" },
+}));
+
+export const generateFeedbackAndLeadReportUsingGet = createRequestAction<undefined, Resource>(
+  \\"generateFeedbackAndLeadReportUsingGet\\",
+  () => ({ url: \`/api/v3/demo/feedback\`, method: \\"GET\\" }),
+);
+
+export const getItems = createRequestAction<
+  {
+    limit?: number;
+    page?: number;
+    sort?: string[];
+  },
+  Items
+>(\\"getItems\\", ({ page, limit, sort }) => ({
+  url: \`/api/v3/items\`,
+  method: \\"GET\\",
+  params: {
+    page,
+    limit,
+    sort,
+  },
+}));
+
+export const postBody = createRequestAction<{
+  requestBody: Pet;
+}>(\\"postBody\\", ({ requestBody }) => ({
+  url: \`/api/v3/body\`,
+  method: \\"POST\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export const updatePet = createRequestAction<{
+  requestBody?: Cat | Dog;
+}>(\\"updatePet\\", ({ requestBody }) => ({
+  url: \`/api/v3/pets\`,
+  method: \\"PATCH\\",
+  data: requestBody,
+  headers: { \\"Content-Type\\": \\"application/json\\" },
+}));
+
+export interface Cat extends Pet {
+  age?: number;
+  hunts?: boolean;
+}
+
+export type CatA = { country?: string; kind?: keyof typeof CatAKind };
+
+export enum CatAKind {
+  \\"Red Cat\\" = \\"Red Cat\\",
+  \\"Blue Cat\\" = \\"Blue Cat\\",
+}
+
+export type CatB = { age?: boolean; kind?: keyof typeof CatBKind; name?: string };
+
+export enum CatBKind {
+  \\"Red Cat\\" = \\"Red Cat\\",
+  \\"Blue Cat\\" = \\"Blue Cat\\",
+}
+
+export type CatC = Cat & string;
+
+export type CatD = string & (Cat | Dog);
+
+export type CatE = { country?: string };
+
+export type CatF = Cat[] & Item[];
+
+export interface Category {
+  id?: number;
+  name?: string;
+}
+
+export interface Dictionary {
+  dictionary?: { [key: string]: { code?: number; text?: string } };
+  dictionaryA?: { age: number; name: string; [key: string]: string | number };
+  dictionaryB?: { age: string; name: string; [key: string]: string };
+  dictionaryC?: { age?: number; name?: string; [key: string]: any };
+  dictionaryD?: { [key: string]: any };
+}
+
+export interface Dog extends Pet {
+  bark?: boolean;
+  breed?: keyof typeof DogBreed;
+}
+
+export enum DogBreed {
+  \\"Dingo\\" = \\"Dingo\\",
+  \\"Husky\\" = \\"Husky\\",
+  \\"Retriever\\" = \\"Retriever\\",
+  \\"Shepherd\\" = \\"Shepherd\\",
+}
+
+export interface Error {
+  code: number;
+  message: string;
+}
+
+export enum FindPetsStatus {
+  \\"available\\" = \\"available\\",
+  \\"pending\\" = \\"pending\\",
+  \\"sold\\" = \\"sold\\",
+}
+
+export enum FindPetsTags {
+  \\"z\\" = \\"z\\",
+  \\"b\\" = \\"b\\",
+  \\"c\\" = \\"c\\",
+  \\"a\\" = \\"a\\",
+}
+
+export interface Item {
+  color?: string;
+  id?: string;
+  name?: string;
+  price?: string;
+}
+
+export type Items = Item[];
+
+export interface Message {
+  message?: string;
+}
+
+export interface NewPet {
+  contentType?: NewPetContentType;
+  name: string;
+  reason?: NewPetReason;
+  tag?: string;
+}
+
+export type NewPetContentType = \\"01\\" | \\"02\\" | \\"03\\" | \\"04\\" | \\"05\\" | \\"06\\";
+
+export type NewPetReason = \\"1\\" | \\"3\\" | \\"4\\" | \\"5\\" | \\"6\\";
+
+export interface Pet extends NewPet {
+  categories?: Category[];
+  id: number;
+}
+
+export type Pets = Pet[];
+
+export interface RequestForm {
+  data: Pet;
+  slice: string[];
+  string: string;
+}
+
+export interface Resource {
+  description?: string;
+  filename?: string;
+  open?: boolean;
+  readable?: boolean;
+}
+"
+`;

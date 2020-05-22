@@ -1,0 +1,2449 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Api Documentation",
+    "version": "1.0",
+    "title": "Api Documentation",
+    "termsOfService": "urn:tos",
+    "contact": {},
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "host": "0.0.0.0:8080",
+  "basePath": "/api/v2",
+  "tags": [
+    {
+      "name": "attachment-controller",
+      "description": "Test Controller"
+    },
+    {
+      "name": "attachment-controller-2",
+      "description": "Test Controller 2"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "tags": [
+          "mock-controller"
+        ],
+        "summary": "uploadAttachment",
+        "operationId": "uploadAttachmentUsingPOST",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "Authorities",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "a_officer"
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "abc123456789"
+          },
+          {
+            "name": "User-Name",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "John Hopkins"
+          },
+          {
+            "name": "attachment",
+            "in": "formData",
+            "description": "attachment",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/AttachmentBO"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/{id}": {
+      "get": {
+        "tags": [
+          "attachment-controller"
+        ],
+        "summary": "download",
+        "operationId": "downloadUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "Authorities",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "a_officer"
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "abc123456789"
+          },
+          {
+            "name": "User-Name",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "John Hopkins"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Resource"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      },
+      "delete": {
+        "tags": [
+          "attachment-controller"
+        ],
+        "summary": "delete attachment by id",
+        "operationId": "deleteAttachmentUsingDELETE",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "Authorities",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "a_officer"
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "abc123456789"
+          },
+          {
+            "name": "User-Name",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "John Hopkins"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Can not find attachment with specific id: {id}"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/book/{id}": {
+      "get": {
+        "tags": [
+          "book-controller"
+        ],
+        "summary": "get book by id",
+        "operationId": "findBookByIdUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "Authorities",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "a_officer"
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "abc123456789"
+          },
+          {
+            "name": "User-Name",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "John Hopkins"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "request param for find book",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/BookDetailVo"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      },
+      "put": {
+        "tags": [
+          "book-controller"
+        ],
+        "summary": "update book by given id",
+        "operationId": "updateBookByIdUsingPUT",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "Authorities",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "a_officer"
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "abc123456789"
+          },
+          {
+            "name": "User-Name",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "John Hopkins"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "given book id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "updateBookRequest",
+            "description": "update request body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateBookRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/schedules": {
+      "get": {
+        "tags": [
+          "schedule-controller"
+        ],
+        "summary": "getScheduleDetailsByDate",
+        "operationId": "getScheduleDetailsByDateUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "Authorities",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "a_officer"
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "abc123456789"
+          },
+          {
+            "name": "User-Name",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "John Hopkins"
+          },
+          {
+            "name": "scheduleDate",
+            "in": "query",
+            "description": "scheduleDate",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "roleId",
+            "in": "query",
+            "description": "roleId",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false,
+            "x-example": "111111111"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ScheduleVO"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/documents/{documentId}/doc": {
+      "get": {
+        "tags": [
+          "documents-controller"
+        ],
+        "summary": "getDocument",
+        "operationId": "getDocumentByIdUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "Authorities",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "a_officer"
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "abc123456789"
+          },
+          {
+            "name": "User-Name",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "John Hopkins"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "from",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "AAA",
+              "BBB"
+            ]
+          },
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "documentId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "206": {
+            "description": "partial content",
+            "schema": {
+              "$ref": "#/definitions/DocumentVO"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/health-check/{flight_no}": {
+      "head": {
+        "operationId": "getHealthCheckUsingHEAD",
+        "description": "show flight exist or not.",
+        "parameters": [
+          {
+            "name": "flight_no",
+            "in": "path",
+            "type": "string",
+            "description": "Flight_no",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "flight exist",
+            "schema": {
+              "$ref": "#/definitions/DocumentVO"
+            }
+          },
+          "404": {
+            "description": "flight does not exist"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "Gets a list of users.",
+        "operationId": "getUserListByUsingGET",
+        "parameters": [
+          {
+            "$ref": "#/parameters/offsetParam"
+          },
+          {
+            "$ref": "#/parameters/limitParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/teams": {
+      "get": {
+        "summary": "Gets a list of teams.",
+        "operationId": "getTeamListByUsingGET",
+        "parameters": [
+          {
+            "$ref": "#/parameters/offsetParam"
+          },
+          {
+            "$ref": "#/parameters/limitParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/items": {
+      "x-swagger-router-controller": "ItemController",
+      "get": {
+        "summary": "Returns a list of items",
+        "operationId": "getItems",
+        "parameters": [
+          {
+            "$ref": "#/parameters/page"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/sort"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Items"
+            },
+            "headers": {
+              "Pagination-Count": {
+                "description": "Total number of items",
+                "type": "integer"
+              },
+              "Pagination-Page": {
+                "description": "Current page number",
+                "type": "integer"
+              },
+              "Pagination-Limit": {
+                "description": "Number of returned items",
+                "type": "integer"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/401Unauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/403Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/404NotFound"
+          },
+          "429": {
+            "$ref": "#/responses/429TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/responses/500InternalServerError"
+          },
+          "503": {
+            "$ref": "#/responses/503ServiceUnavailable"
+          }
+        }
+      },
+      "post": {
+        "summary": "Creates a new item",
+        "operationId": "createItem",
+        "parameters": [
+          {
+            "$ref": "#/parameters/item"
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/SuccessMessage"
+          },
+          "400": {
+            "$ref": "#/responses/400BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/401Unauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/403Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/404NotFound"
+          },
+          "409": {
+            "$ref": "#/responses/409Conflict"
+          },
+          "429": {
+            "$ref": "#/responses/429TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/responses/500InternalServerError"
+          },
+          "503": {
+            "$ref": "#/responses/503ServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/pet": {
+      "post": {
+        "tags": [
+          "pet"
+        ],
+        "summary": "Add a new pet to the store",
+        "description": "",
+        "operationId": "addPet",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Pet object that needs to be added to the store",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Pet"
+            }
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "security": []
+      },
+      "put": {
+        "tags": [
+          "pet"
+        ],
+        "summary": "Update an existing pet",
+        "description": "",
+        "operationId": "updatePet",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Pet object that needs to be added to the store",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Pet"
+            }
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Validation exception"
+          },
+          "404": {
+            "description": "Pet not found"
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          }
+        },
+        "security": [
+        ]
+      }
+    },
+    "/pet/findByStatus": {
+      "get": {
+        "tags": [
+          "pet"
+        ],
+        "summary": "Finds Pets by status",
+        "description": "Multiple status values can be provided with comma separated strings",
+        "operationId": "findPetsByStatus",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Status values that need to be considered for filter",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "available",
+                "pending",
+                "sold"
+              ],
+              "default": "available"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Pet"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        },
+        "security": [
+        ]
+      }
+    },
+    "/pet/findByTags": {
+      "get": {
+        "tags": [
+          "pet"
+        ],
+        "summary": "Finds Pets by tags",
+        "description": "Test deprecated request",
+        "operationId": "findPetsByTags",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Tags to filter by",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Pet"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid tag value"
+          }
+        },
+        "security": [
+        ],
+        "deprecated": true
+      }
+    },
+    "/pet/{petId}": {
+      "get": {
+        "tags": [
+          "pet"
+        ],
+        "summary": "Find pet by ID",
+        "description": "Returns a pet when ID < 10.  ID > 10 or nonintegers will simulate API error conditions",
+        "operationId": "getPetById",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "path",
+            "description": "ID of pet that needs to be fetched",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Pet not found"
+          },
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Pet"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          }
+        },
+        "security": [
+        ]
+      },
+      "post": {
+        "tags": [
+          "pet"
+        ],
+        "summary": "Updates a pet in the store with form data",
+        "description": "",
+        "operationId": "updatePetWithForm",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "path",
+            "description": "ID of pet that needs to be updated",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "name",
+            "in": "formData",
+            "description": "Updated name of the pet",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "formData",
+            "description": "Updated status of the pet",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+        ]
+      },
+      "delete": {
+        "tags": [
+          "pet"
+        ],
+        "summary": "Deletes a pet",
+        "description": "",
+        "operationId": "deletePet",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "api_key",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "petId",
+            "in": "path",
+            "description": "Pet id to delete",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid pet value"
+          }
+        },
+        "security": [
+        ]
+      }
+    },
+    "/pet/{petId}/uploadImage": {
+      "post": {
+        "tags": [
+          "pet"
+        ],
+        "summary": "uploads an image",
+        "description": "",
+        "operationId": "uploadFile",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "path",
+            "description": "ID of pet to update",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "additionalMetadata",
+            "in": "formData",
+            "description": "Additional data to pass to server",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "file to upload",
+            "required": false,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        },
+        "security": [
+        ]
+      }
+    },
+    "/store/inventory": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Returns pet inventories by status",
+        "description": "Returns a map of status codes to quantities",
+        "operationId": "getInventory",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "security": [
+        ]
+      }
+    },
+    "/store/order": {
+      "post": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Place an order for a pet",
+        "description": "",
+        "operationId": "placeOrder",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "order placed for purchasing the pet",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Order"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Order"
+            }
+          },
+          "400": {
+            "description": "Invalid Order"
+          }
+        }
+      }
+    },
+    "/store/order/{orderId}": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Find purchase order by ID",
+        "description": "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions",
+        "operationId": "getOrderById",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "ID of pet that needs to be fetched",
+            "required": true,
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Order not found"
+          },
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Order"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Delete purchase order by ID",
+        "description": "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors",
+        "operationId": "deleteOrder",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "description": "ID of the order that needs to be deleted",
+            "required": true,
+            "type": "integer",
+            "minimum": 1.0,
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Order not found"
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          }
+        }
+      }
+    },
+    "/user": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Create user",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "createUser",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Created user object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/user/createWithArray": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Creates list of users with given input array",
+        "description": "",
+        "operationId": "createUsersWithArrayInput",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "List of user object",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/user/createWithList": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Creates list of users with given input array",
+        "description": "",
+        "operationId": "createUsersWithListInput",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "List of user object",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Logs user into the system",
+        "description": "",
+        "operationId": "loginUser",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "The user name for login",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "The password for login in clear text",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            },
+            "headers": {
+              "X-Rate-Limit": {
+                "type": "integer",
+                "format": "int32",
+                "description": "calls per hour allowed by the user"
+              },
+              "X-Expires-After": {
+                "type": "string",
+                "format": "date-time",
+                "description": "date in UTC when token expires"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username/password supplied"
+          }
+        }
+      }
+    },
+    "/user/logout": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Logs out current logged in user session",
+        "description": "",
+        "operationId": "logoutUser",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/user/{username}": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get user by user name",
+        "description": "",
+        "operationId": "getUserByName",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "The name that needs to be fetched. Use user1 for testing. ",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "User not found"
+          },
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            },
+            "examples": {
+              "application/json": {
+                "id": 1,
+                "username": "johnp",
+                "firstName": "John",
+                "lastName": "Public",
+                "email": "johnp@swagger.io",
+                "password": "-secret-",
+                "phone": "0123456789",
+                "userStatus": 0
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username supplied"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Updated user",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "updateUser",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "name that need to be deleted",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Updated user object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "User not found"
+          },
+          "400": {
+            "description": "Invalid user supplied"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Delete user",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "deleteUser",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "The name that needs to be deleted",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "User not found"
+          },
+          "400": {
+            "description": "Invalid username supplied"
+          }
+        }
+      }
+    },
+    "/agency-response": {
+      "get": {
+        "tags": [
+          "controller"
+        ],
+        "summary": "getAgencyResponse",
+        "operationId": "getAgencyResponseUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "Authorities",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "a_officer"
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "123"
+          },
+          {
+            "name": "User-Name",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "John"
+          },
+          {
+            "name": "responseDate",
+            "in": "query",
+            "description": "responseDate",
+            "required": true,
+            "type": "string",
+            "format": "date"
+          },
+          {
+            "name": "addressType",
+            "in": "query",
+            "description": "addressType",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "AAA",
+              "BBB"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Resource"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/agency-responses": {
+      "get": {
+        "tags": [
+          "controller"
+        ],
+        "summary": "getAgencyResponseList",
+        "operationId": "getAgencyResponseListUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "Authorities",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "a_officer"
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "123"
+          },
+          {
+            "name": "User-Name",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "John"
+          },
+          {
+            "name": "addressType",
+            "in": "query",
+            "description": "addressType",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "AAA",
+              "BBB"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Resource"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "definitions": {
+    "BookDetailVo": {
+      "type": "object",
+      "properties": {
+        "authorName": {
+          "type": "string",
+          "example": "Tony"
+        },
+        "createdDate": {
+          "type": "integer",
+          "format": "int64",
+          "example": 19920010
+        },
+        "fileName": {
+          "type": "string",
+          "example": "aaa"
+        },
+        "id": {
+          "type": "string",
+          "example": "001"
+        },
+        "mimeType": {
+          "type": "string",
+          "example": ".png"
+        },
+        "path": {
+          "type": "string",
+          "example": "/home"
+        },
+        "attachment": {
+          "$ref": "#/definitions/ScheduleVO"
+        }
+      },
+      "title": "BookDetailVo"
+    },
+    "ScheduleVO": {
+      "type": "object",
+      "properties": {
+        "team": {
+          "type": "string"
+        },
+        "contentType": {
+          "description": "Should generate type instead of enum, when enum value is number like.",
+          "type": "string",
+          "enum": ["01", "02", "03", "04", "05", "06"]
+        },
+        "reason": {
+          "description": "Should generate type instead of enum, when enum value is number like.",
+          "type": "string",
+          "enum": ["1", "3", "4", "5", "6"]
+        },
+        "schedules": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/BookVO"
+            }
+          }
+        },
+        "shiftId": {
+          "type": "string"
+        }
+      },
+      "title": "ScheduleVO"
+    },
+    "BookVO": {
+      "type": "object",
+      "properties": {
+        "price": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        }
+      },
+      "title": "BookVO"
+    },
+    "InputStream": {
+      "type": "object",
+      "title": "InputStream"
+    },
+    "Resource": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "file": {
+          "$ref": "#/definitions/File"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "inputStream": {
+          "$ref": "#/definitions/InputStream"
+        },
+        "open": {
+          "type": "boolean"
+        },
+        "readable": {
+          "type": "boolean"
+        },
+        "uri": {
+          "$ref": "#/definitions/URI"
+        },
+        "url": {
+          "$ref": "#/definitions/URL"
+        }
+      },
+      "title": "Resource"
+    },
+    "URI": {
+      "type": "object",
+      "properties": {
+        "absolute": {
+          "type": "boolean"
+        },
+        "authority": {
+          "type": "string"
+        },
+        "fragment": {
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        },
+        "opaque": {
+          "type": "boolean"
+        },
+        "path": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "query": {
+          "type": "string"
+        },
+        "rawAuthority": {
+          "type": "string"
+        },
+        "rawFragment": {
+          "type": "string"
+        },
+        "rawPath": {
+          "type": "string"
+        },
+        "rawQuery": {
+          "type": "string"
+        },
+        "rawSchemeSpecificPart": {
+          "type": "string"
+        },
+        "rawUserInfo": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "string"
+        },
+        "schemeSpecificPart": {
+          "type": "string"
+        },
+        "userInfo": {
+          "type": "string"
+        }
+      },
+      "title": "URI"
+    },
+    "URL": {
+      "type": "object",
+      "properties": {
+        "authority": {
+          "type": "string"
+        },
+        "content": {
+          "type": "object"
+        },
+        "defaultPort": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "deserializedFields": {
+          "$ref": "#/definitions/URLStreamHandler"
+        },
+        "file": {
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "string"
+        },
+        "serializedHashCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "userInfo": {
+          "type": "string"
+        }
+      },
+      "title": "URL"
+    },
+    "URLStreamHandler": {
+      "type": "object",
+      "title": "URLStreamHandler"
+    },
+    "UpdateBookRequest": {
+      "type": "object",
+      "properties": {
+        "birthCountry": {
+          "type": "string",
+          "example": "CN"
+        },
+        "citizenship": {
+          "type": "string",
+          "example": "A"
+        },
+        "roleId": {
+          "type": "string"
+        },
+        "dateOfBirth": {
+          "type": "integer",
+          "format": "int64",
+          "example": "1992-10-10"
+        },
+        "employmentStatus": {
+          "type": "string",
+          "example": "EMP001"
+        },
+        "ethnicity": {
+          "type": "string",
+          "example": "CN"
+        },
+        "gender": {
+          "type": "string",
+          "example": "F"
+        },
+        "idNumber": {
+          "type": "string",
+          "example": "S6362682T"
+        },
+        "idType": {
+          "type": "string",
+          "example": "FD"
+        },
+        "spokenLanguage": {
+          "type": "array",
+          "example": [
+            "AH",
+            "AK"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "title": "UpdateBookRequest"
+    },
+    "DocumentVO": {
+      "type": "object",
+      "properties": {
+        "attachment": {
+          "$ref": "#/definitions/BookDetailVo"
+        },
+        "authorName": {
+          "type": "string"
+        },
+        "createdDate": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "title": "DocumentVO"
+    },
+    "AttachmentBO": {
+      "type": "object",
+      "properties": {
+        "authorName": {
+          "type": "string"
+        },
+        "createdDate": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "fileName": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "title": "AttachmentBO"
+    },
+    "File": {
+      "type": "object",
+      "properties": {
+        "absolute": {
+          "type": "boolean"
+        },
+        "absoluteFile": {
+          "$ref": "#/definitions/File"
+        },
+        "absolutePath": {
+          "type": "string"
+        },
+        "canonicalFile": {
+          "$ref": "#/definitions/File"
+        },
+        "canonicalPath": {
+          "type": "string"
+        },
+        "directory": {
+          "type": "boolean"
+        },
+        "executable": {
+          "type": "boolean"
+        },
+        "file": {
+          "type": "boolean"
+        },
+        "freeSpace": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "lastModified": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "parentFile": {
+          "$ref": "#/definitions/File"
+        },
+        "path": {
+          "type": "string"
+        },
+        "readable": {
+          "type": "boolean"
+        },
+        "totalSpace": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "usableSpace": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "writable": {
+          "type": "boolean"
+        }
+      },
+      "title": "File"
+    },
+    "BookingResponse": {
+      "type": "object",
+      "required": [
+        "data"
+      ],
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/DocumentVO"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ErrorInfo"
+          }
+        }
+      },
+      "title": "BookingResponse"
+    },
+    "ErrorInfo": {
+      "type": "object",
+      "properties": {
+        "errorMessage": {
+          "type": "string"
+        }
+      },
+      "title": "ErrorInfo"
+    },
+    "Item": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        }
+      }
+    },
+    "Items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Item"
+      }
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        }
+      }
+    },
+    "Errors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Error"
+      }
+    },
+    "ValidationError": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "errors": {
+          "$ref": "#/definitions/Errors"
+        }
+      }
+    },
+    "User": {
+      "description": "Without type=object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "username": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "userStatus": {
+          "type": "integer",
+          "format": "int32",
+          "description": "User Status"
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    },
+    "Category": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Category"
+      }
+    },
+    "Pet": {
+      "required": [
+        "name",
+        "photoUrls"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "category": {
+          "$ref": "#/definitions/Category"
+        },
+        "name": {
+          "type": "string",
+          "example": "doggie"
+        },
+        "photoUrls": {
+          "type": "array",
+          "xml": {
+            "name": "photoUrl",
+            "wrapped": true
+          },
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "xml": {
+            "name": "tag",
+            "wrapped": true
+          },
+          "items": {
+            "$ref": "#/definitions/Tag"
+          }
+        },
+        "status": {
+          "type": "string",
+          "description": "pet status in the store",
+          "enum": [
+            "available",
+            "pending",
+            "sold"
+          ]
+        }
+      },
+      "xml": {
+        "name": "Pet"
+      }
+    },
+    "Tag": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Tag"
+      }
+    },
+    "Order": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "petId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shipDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "Order Status",
+          "enum": [
+            "placed",
+            "approved",
+            "delivered"
+          ]
+        },
+        "complete": {
+          "type": "boolean"
+        }
+      },
+      "xml": {
+        "name": "Order"
+      }
+    },
+    "ApiResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "Dictionary": {
+      "type": "object",
+      "required": [
+        "name",
+        "photoUrls"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "category": {
+          "$ref": "#/definitions/Category"
+        },
+        "name": {
+          "type": "string",
+          "example": "doggie"
+        },
+        "photoUrls": {
+          "type": "array",
+          "xml": {
+            "name": "photoUrl",
+            "wrapped": true
+          },
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "xml": {
+            "name": "tag",
+            "wrapped": true
+          },
+          "items": {
+            "$ref": "#/definitions/Tag"
+          }
+        },
+        "status": {
+          "type": "string",
+          "description": "pet status in the store",
+          "enum": [
+            "available",
+            "pending",
+            "sold"
+          ]
+        },
+        "dictionary": {
+          "type": "object",
+          "description": "Object only contains additional properties",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "dictionary1": {
+          "type": "object",
+          "description": "Object contains both properties and additional properties",
+          "required": ["name", "age"],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "age": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        },
+        "dictionary2": {
+          "type": "object",
+          "description": "Additional properties is not an object",
+          "required": ["name", "age"],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "age": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "dictionary3": {
+          "type": "object",
+          "description": "Additional properties is a boolean",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "age": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": true
+        },
+        "dictionary4": {
+          "type": "object",
+          "description": "Additional properties is a boolean and without properties",
+          "additionalProperties": true
+        }
+      },
+      "xml": {
+        "name": "Pet"
+      }
+    }
+  },
+  "parameters": {
+    "offsetParam": {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "type": "integer",
+      "minimum": 0,
+      "description": "The number of items to skip before starting to collect the result set."
+    },
+    "limitParam": {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "default": 20,
+      "description": "The numbers of items to return."
+    },
+    "id": {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "Item id",
+      "type": "string"
+    },
+    "page": {
+      "name": "page",
+      "in": "query",
+      "description": "Current page number",
+      "required": false,
+      "type": "integer",
+      "format": "int32",
+      "default": 1,
+      "minimum": 1
+    },
+    "limit": {
+      "name": "limit",
+      "in": "query",
+      "description": "Limits the number of returned items",
+      "required": false,
+      "type": "integer",
+      "format": "int32",
+      "default": 10,
+      "minimum": 10,
+      "maximum": 100,
+      "multipleOf": 10
+    },
+    "sort": {
+      "name": "sort",
+      "in": "query",
+      "type": "array",
+      "required": false,
+      "description": "Sorting order of items",
+      "uniqueItems": true,
+      "minItems": 1,
+      "maxItems": 6,
+      "collectionFormat": "pipes",
+      "items": {
+        "type": "string",
+        "pattern": "([+-]\\w*){1}(\\|[+-]\\w*){0,5}",
+        "default": "+name"
+      }
+    },
+    "item": {
+      "name": "item",
+      "in": "body",
+      "description": "An item",
+      "schema": {
+        "$ref": "#/definitions/Item"
+      }
+    }
+  },
+  "responses": {
+    "SuccessMessage": {
+      "description": "Success",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "400BadRequest": {
+      "description": "The request was invalid or cannot be otherwise served.",
+      "schema": {
+        "$ref": "#/definitions/ValidationError"
+      }
+    },
+    "401Unauthorized": {
+      "description": "Authentication credentials were missing or incorrect.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "403Forbidden": {
+      "description": "The request is understood, but it has been refused or access is not allowed.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "404NotFound": {
+      "description": "The URI requested is invalid or the resource requested does not exists.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "409Conflict": {
+      "description": "Any message which should help the user to resolve the conflict.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "429TooManyRequests": {
+      "description": "The request cannot be served due to the application’s rate limit having been exhausted for the resource.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "500InternalServerError": {
+      "description": "Something is broken.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "503ServiceUnavailable": {
+      "description": "The server is up, but overloaded with requests. Try again later.",
+      "schema": {
+        "$ref": "#/definitions/Message"
+      }
+    }
+  }
+}
