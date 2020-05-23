@@ -44,6 +44,10 @@ TS Codegen 是一个用于生成「前端接口层代码」以及对应「TypeSc
 
 - 提供的 Swagger/Openapi json 中，必须保证每个 API 请求都包含属性 `operationId`。
 
+## TS Codegen Core
+
+如果您想自己编写命令行工具，可以使用 `npm intall @ts-tool/ts-codegen-core` 安装核心依赖包，然后根据核心依赖包提供的方法进行二次封装。
+
 ## 从 0.7.x 版本迁移到 1.0.x 
 
 1. 修改 package.json。将原来的 `@ts-tool/ts-codegen` 拆分成了两个包：`@ts-tool/ts-codegen-core` 和 `ts-tool/ts-codegen-cli`，因此需要修改 package.json。
