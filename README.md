@@ -22,29 +22,31 @@ TS Codegen 是一个用于生成「前端接口层代码」以及对应「TypeSc
 
 根据自己的需求修改文件 ts-codegen.config.json，其配置项如下：
 
-- `output`: string 类型，必填项。
+- **`output`: String [必填项]**
 
-    用于输出生成代码。
+    目录名，用于输出生成代码。
 
-- `actionCreatorImport`: string 类型，必填项。
+- **`actionCreatorImport`: String [必填项]**
 
     用于导入 `createRequestAction` 方法。 你可以自定义 `createRequestAction` 方法，也可以参考示例（examples/utils/requestActionCreators.ts）。
 
-- `clients`: array 类型，可选项。
+- **`clients`: Array [可选项]**
 
     配置你项目的 swagger/openapi json 的 url 地址。 通过这个选项，你可以从远端 url 生成代码。
 
-- `data`: array 类型，可选项。
+- **`data`: Array [可选项]**
 
     和 clients 一样，也是用于配置 swagger/openapi json 的地址，不过这个地址是你本地 swagger/openapi 所在的路径。通过这个选项，你可以从本地文件生成代码。
 
-- `options`: 可选项，用于一些额外配置。
+- **`options`: Object [可选项]**
 
-    - `typeWithPrefix`: boolean 类型，可选项，默认为 false。
+    用于一些额外配置。
+
+    - **`typeWithPrefix`: Boolean [可选项]，默认值: false**
     
         如果设置为 true，会为所有的生成的 interface 和 type 加上前缀，其中 interface 加上 `I` 前缀，type 加上 `T` 前缀。
     
-    - `backwardCompatible`: boolean 类型，可选项，默认为 false。
+    - **`backwardCompatible`: Boolean [可选项]，默认值: false**
     
         用于兼容老版本，一般不推荐设置为 true。如果你使用了之前的版本，并且希望尽可能兼容以前的老版本，可以将其设置为 true。
 
