@@ -10,7 +10,7 @@ TS Codegen 是一个用于生成「前端接口层代码」以及对应「TypeSc
 
 可以通过下面的命令进行快速尝试：
 
-```shell script
+```bash
 git clone https://github.com/reeli/ts-codegen-examples
 cd  ts-codegen-examples
 npm install
