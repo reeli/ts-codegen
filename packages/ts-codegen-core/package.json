@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "axios": "^0.19.x",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "tslib": "^2.0.x"
   },
   "publishConfig": {
     "access": "public"
