@@ -6,6 +6,10 @@
 
 TS Codegen 是一个用于生成「前端接口层代码」以及对应「TypeScript 定义」的工具。你只需要提供一个 Swagger 或 Openapi 的 JSON 文件，它就可以为您生成相应的代码。
 
+## Try it
+
+可以通过这个 repo 进行快速尝试 [https://github.com/reeli/ts-codegen-examples](https://github.com/reeli/ts-codegen-examples)
+
 ## 开始
 
 ### 1. 安装
