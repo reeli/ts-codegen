@@ -16,7 +16,7 @@ cd  ts-codegen-examples
 npm install
 npx ts-codegen
 ```
-然后我们就可以在 `.output` 目录下看到生成的结果，并开始使用。
+然后我们就可以在 `clients` 目录下看到生成的结果，并开始使用。
 
 ## 开始
 
