@@ -22,27 +22,35 @@ TS Codegen 是一个用于生成「前端接口层代码」以及对应「TypeSc
 
 根据自己的需求修改文件 ts-codegen.config.json，其配置项如下：
 
-- `output`: string 类型，必填项。
-用于输出生成代码。
+- `requestCreateMethod`: string 类型，必填项。
+表示方法或函数名，用于创建请求。 你可以自己实现 `requestCreateMethod` 方法，也可以参考示例（examples/utils/requestActionCreators.ts）。
 
-- `actionCreatorImport`: string 类型，必填项。
-用于导入 `createRequestAction` 方法。 你可以自定义 `createRequestAction` 方法，也可以参考示例（examples/utils/requestActionCreators.ts）。
+- `requestCreateLib`: string 类型，必填项。
+`requestCreateMethod` 所在的文件路径。用于导入 `requestCreateMethod` 方法。
 
-- `clients`: array 类型，可选项。
-配置你项目的 swagger/openapi json 的 url 地址。 通过这个选项，你可以从远端 url 生成代码。
+- `apiSpecsPaths`: array 类型，必填项。
+表示项目 swagger/openapi json 所在的地址。 这个地址既可以是远端 url，也可以是本地 swagger/openapi 所在的文件路径。CLI 工具会根据你的配置，自动读取远端或者本地文件，生成对应代码。
 
-- `data`: array 类型，可选项。
-和 clients 一样，也是用于配置 swagger/openapi json 的地址，不过这个地址是你本地 swagger/openapi 所在的路径。通过这个选项，你可以从本地文件生成代码。
+- `outputFolder`: string 类型，可选项。
+表示输出生成代码的目录名称。默认值为 clients。
 
-- `options`: 可选项，用于一些额外配置。
-    - `typeWithPrefix`: boolean 类型，可选项，默认为 false。
+- `options`: 表示一些额外配置，可选项。
+    - `typeWithPrefix`: boolean 类型，可选项，默认值为 false。
     如果设置为 true，会为所有的生成的 interface 和 type 加上前缀，其中 interface 加上 `I` 前缀，type 加上 `T` 前缀。
-    - `backwardCompatible`: boolean 类型，可选项，默认为 false。
+    - `backwardCompatible`: boolean 类型，可选项，默认值为 false。
     用于兼容老版本，一般不推荐设置为 true。如果你使用了之前的版本，并且希望尽可能兼容以前的老版本，可以将其设置为 true。
 
 ## 注意事项
 
 - 提供的 Swagger/Openapi json 中，必须保证每个 API 请求都包含属性 `operationId`。
+
+## 从 1.0.x 版本迁移到 2.0.x
+
+这个大版本的升级主要包含 ts-codegen.config.json 中配置参数的更改：
+
+1. 移除 `actionCreatorImport`，增加 `requestCreateMethod` 和 `requestCreateLib`
+2. 用 `outputFolder` 替换掉原来的 `output` 
+3. 移除 `clients` 和 `data`，用 `apiSpecsPaths` 替代，现在这个字段能同时支持通过远程和本地获取数据。
 
 ## 从 0.7.x 版本迁移到 1.0.x 
 
