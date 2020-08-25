@@ -5,6 +5,6 @@ export const ERROR_MESSAGES = {
 
 export const DEFAULT_CONFIG = {
   requestCreateMethod: "createRequestAction",
-  timeout: 10 * 1000,
+  timeout: 3 * 60 * 1000,
   outputFolder: ".output",
 };
