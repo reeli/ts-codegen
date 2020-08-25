@@ -1,6 +1,6 @@
 import { getFilename, testJSON } from "./utils";
 import axios from "axios";
-import { isEmpty, map } from "lodash";
+import { isEmpty } from "lodash";
 import * as fs from "fs";
 import * as path from "path";
 import { IOpenAPI } from "./__types__/OpenAPI";
@@ -57,21 +57,24 @@ export const codegen = () => {
     write(outputFolder || DEFAULT_CONFIG.outputFolder, `./${getFilename(basePath)}`, fileStr);
   };
 
-  if (!isEmpty(localApiSpecs)) {
-    localApiSpecs.map((file: string) => {
-      const specStr = fs.readFileSync(file, "utf8");
-      const spec = testJSON(specStr, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
+  function handleLocalApiSpec(filePath: string) {
+    const specStr = fs.readFileSync(filePath, "utf8");
+    const spec = testJSON(specStr, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
 
-      writeSpecToFile(spec);
-    });
+    writeSpecToFile(spec);
+  }
+
+  async function handleRemoteApiSpec(url: string) {
+    const apiSpec = await fetchApiSpec(url);
+    writeSpecToFile(apiSpec);
+  }
+
+  if (!isEmpty(localApiSpecs)) {
+    localApiSpecs.map(handleLocalApiSpec);
   }
 
   if (!isEmpty(remoteApiSpecs)) {
-    fetchSwaggerJSON(remoteApiSpecs).then((results: any[]) => {
-      results.forEach((spec: IOpenAPI | Spec) => {
-        writeSpecToFile(spec);
-      });
-    });
+    remoteApiSpecs.map(handleRemoteApiSpec);
   }
 };
 
@@ -83,17 +86,13 @@ const write = (output: string, filename: string, str: string) => {
   fs.writeFileSync(path.resolve(output, `./${filename}.ts`), str, "utf-8");
 };
 
-const fetchSwaggerJSON = (clients: string[] = [], timeout: number = DEFAULT_CONFIG.timeout) => {
+const fetchApiSpec = (url: string, timeout: number = DEFAULT_CONFIG.timeout) => {
   const instance = axios.create({ timeout });
 
-  return Promise.all(
-    map(clients, (client) => {
-      instance
-        .get(client)
-        .then((response) => response.data)
-        .catch((error) => {
-          console.error(`${error.code}: ${ERROR_MESSAGES.FETCH_CLIENT_FAILED_ERROR}`);
-        });
-    }),
-  );
+  return instance
+    .get(url)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error(`${error.code}: ${ERROR_MESSAGES.FETCH_CLIENT_FAILED_ERROR}`);
+    });
 };
