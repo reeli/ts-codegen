@@ -62,6 +62,16 @@ npx ts-codegen
     
         用于兼容老版本，一般不推荐设置为 true。如果你使用了之前的版本，并且希望尽可能兼容以前的老版本，可以将其设置为 true。
 
+### 4. 执行命令
+
+cd 到你项目的根目录下，执行如下命令：
+
+```bash
+npx ts-codegen
+```
+
+然后就可以在配置的 `clients` 目录下看到生成的结果，并开始使用。
+
 ## 注意事项
 
 - 提供的 Swagger/Openapi json 中，必须保证每个 API 请求都包含属性 `operationId`。
