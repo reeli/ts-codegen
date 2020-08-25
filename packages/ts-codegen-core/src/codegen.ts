@@ -6,7 +6,7 @@ import * as path from "path";
 import { IOpenAPI } from "./__types__/OpenAPI";
 import { Spec } from "swagger-schema-official";
 import { getInputs, scan } from "./scan";
-import { ERROR_MESSAGES } from "./constants";
+import { ERROR_MESSAGES, DEFAULT_CONFIG } from "./constants";
 
 interface CodegenConfig {
   requestCreateLib: string;
@@ -38,7 +38,14 @@ export const getCodegenConfig = (): CodegenConfig => {
 };
 
 export const codegen = () => {
-  const { outputFolder, requestCreateLib, requestCreateMethod, localApiSpecs, remoteApiSpecs, options } = getCodegenConfig();
+  const {
+    outputFolder,
+    requestCreateLib,
+    requestCreateMethod,
+    localApiSpecs,
+    remoteApiSpecs,
+    options,
+  } = getCodegenConfig();
 
   const writeSpecToFile = (spec: IOpenAPI | Spec) => {
     if (!spec) {
@@ -47,7 +54,7 @@ export const codegen = () => {
     const importLib = `import { ${requestCreateMethod} } from '${requestCreateLib}';\n\n`;
     const fileStr = `${importLib} ${scan(spec, options, requestCreateMethod)}`;
     const { basePath } = getInputs(spec);
-    write(outputFolder || ".output", `./${getFilename(basePath)}`, fileStr);
+    write(outputFolder || DEFAULT_CONFIG.outputFolder, `./${getFilename(basePath)}`, fileStr);
   };
 
   if (!isEmpty(localApiSpecs)) {
@@ -76,10 +83,8 @@ const write = (output: string, filename: string, str: string) => {
   fs.writeFileSync(path.resolve(output, `./${filename}.ts`), str, "utf-8");
 };
 
-const fetchSwaggerJSON = (clients: string[] = [], timeout: number = 10 * 1000) => {
-  const instance = axios.create({
-    timeout,
-  });
+const fetchSwaggerJSON = (clients: string[] = [], timeout: number = DEFAULT_CONFIG.timeout) => {
+  const instance = axios.create({ timeout });
 
   return Promise.all(
     map(clients, (client) => {

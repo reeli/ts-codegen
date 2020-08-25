@@ -8,6 +8,7 @@ import { CustomReference, CustomSchema, IClientConfig, RequestType } from "./__t
 import { createRegister, DeclKinds, IStore } from "./createRegister";
 import { parse } from "url";
 import { getClientConfigsV2, getClientConfigsV3 } from "./createClientConfigs";
+import { DEFAULT_CONFIG } from "./constants";
 
 enum DataType {
   openapi,
@@ -19,7 +20,7 @@ interface ScanOptions {
   backwardCompatible?: boolean; // Not recommend, only if you want backward capability. This option will help to keep operationId and method name as before when it sets true. This option is only worked with swagger version 2.0.
 }
 
-export const scan = (data: Spec | IOpenAPI, options?: ScanOptions, requestCreator?: string) => {
+export const scan = (data: Spec | IOpenAPI, options?: ScanOptions, requestCreateMethod?: string) => {
   const register = createRegister(options?.typeWithPrefix);
   const schemaHandler = new Schema(register);
   const { dataType, basePath, paths, schemas, parameters, responses, requestBodies } = getInputs(data);
@@ -43,7 +44,7 @@ export const scan = (data: Spec | IOpenAPI, options?: ScanOptions, requestCreato
     register.renameAllRefs((key) => decls[key].name);
   }
 
-  return print(clientConfigs, decls, requestCreator);
+  return print(clientConfigs, decls, requestCreateMethod);
 };
 
 const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
@@ -71,11 +72,14 @@ export const getInputs = (data: Spec | IOpenAPI) => {
   };
 };
 
-const print = (clientConfigs: IClientConfig[], decls: IStore["decls"], requestCreator?: string) => {
-  return prettifyCode(`${printRequest(clientConfigs, requestCreator)} \n\n ${printTypes(decls)}`);
+const print = (clientConfigs: IClientConfig[], decls: IStore["decls"], requestCreateMethod?: string) => {
+  return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod)} \n\n ${printTypes(decls)}`);
 };
 
-function printRequest(clientConfigs: IClientConfig[], requestCreator = "createRequestAction"): string {
+function printRequest(
+  clientConfigs: IClientConfig[],
+  requestCreateMethod = DEFAULT_CONFIG.requestCreateMethod,
+): string {
   const configs = sortBy(clientConfigs, (o) => o.operationId);
 
   return configs
@@ -119,7 +123,7 @@ function printRequest(clientConfigs: IClientConfig[], requestCreator = "createRe
 
       return `
 ${v.deprecated ? setDeprecated(v.operationId) : ""}
-export const ${v.operationId} = ${requestCreator}${toGenerators()}("${
+export const ${v.operationId} = ${requestCreateMethod}${toGenerators()}("${
         v.operationId
       }", (${toRequestInputs()}) => ({${toUrl()}${toMethod()}${toRequestBody()}${toQueryParams()}${toHeaders()}})
 );
