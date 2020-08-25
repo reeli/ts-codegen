@@ -1,4 +1,4 @@
-import { getFilename, testJSON } from "./utils";
+import { getFilename, testJSON, hasHttpOrHttps } from "./utils";
 import axios from "axios";
 import { isEmpty } from "lodash";
 import * as fs from "fs";
@@ -11,8 +11,7 @@ import { ERROR_MESSAGES, DEFAULT_CONFIG } from "./constants";
 interface CodegenConfig {
   requestCreateLib: string;
   requestCreateMethod: string;
-  remoteApiSpecs: [];
-  localApiSpecs: [];
+  apiSpecsPaths: string[];
   outputFolder?: string;
   options?: {
     typeWithPrefix?: boolean;
@@ -22,30 +21,11 @@ interface CodegenConfig {
 
 export const getCodegenConfig = (): CodegenConfig => {
   const codegenConfigPath = path.resolve("ts-codegen.config.json");
-  return fs.existsSync(codegenConfigPath)
-    ? require(codegenConfigPath)
-    : {
-        outputFolder: "",
-        requestCreateLib: "",
-        requestCreateMethod: "",
-        localApiSpecs: [],
-        remoteApiSpecs: [],
-        options: {
-          typeWithPrefix: false,
-          backwardCompatible: false,
-        },
-      };
+  return fs.existsSync(codegenConfigPath) ? require(codegenConfigPath) : DEFAULT_CONFIG;
 };
 
 export const codegen = () => {
-  const {
-    outputFolder,
-    requestCreateLib,
-    requestCreateMethod,
-    localApiSpecs,
-    remoteApiSpecs,
-    options,
-  } = getCodegenConfig();
+  const { outputFolder, requestCreateLib, requestCreateMethod, apiSpecsPaths, options } = getCodegenConfig();
 
   const writeSpecToFile = (spec: IOpenAPI | Spec) => {
     if (!spec) {
@@ -69,13 +49,14 @@ export const codegen = () => {
     writeSpecToFile(apiSpec);
   }
 
-  if (!isEmpty(localApiSpecs)) {
-    localApiSpecs.map(handleLocalApiSpec);
+  if (isEmpty(apiSpecsPaths)) {
+    console.error(ERROR_MESSAGES.EMPTY_API_SPECS_PATHS);
+    return;
   }
 
-  if (!isEmpty(remoteApiSpecs)) {
-    remoteApiSpecs.map(handleRemoteApiSpec);
-  }
+  apiSpecsPaths.forEach((apiSpecsPath) => {
+    hasHttpOrHttps(apiSpecsPath) ? handleRemoteApiSpec(apiSpecsPath) : handleLocalApiSpec(apiSpecsPath);
+  });
 };
 
 const write = (output: string, filename: string, str: string) => {

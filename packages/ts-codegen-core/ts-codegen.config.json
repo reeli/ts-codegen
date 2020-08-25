@@ -1,9 +1,12 @@
 {
-  "outputFolder": ".output",
+  "outputFolder": "clients",
   "requestCreateLib": "../examples/utils/requestActionCreators",
   "requestCreateMethod": "createRequestAction",
-  "remoteApiSpecs": [],
-  "localApiSpecs": ["./examples/swagger.json", "./examples/openapi.json"],
+  "apiSpecsPaths": [
+    "https://petstore.swagger.io/v2/swagger.json",
+    "./examples/swagger.json",
+    "./examples/openapi.json"
+  ],
   "options": {
     "typeWithPrefix": true,
     "backwardCompatible": true

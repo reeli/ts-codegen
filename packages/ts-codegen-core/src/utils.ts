@@ -2,6 +2,7 @@ import { camelCase, Dictionary, find, indexOf, isEmpty, map, takeRight, trimEnd 
 import prettier from "prettier";
 import { CustomSchema } from "./__types__/types";
 import { ERROR_MESSAGES } from "./constants";
+import url from "url";
 
 export const toCapitalCase = (str?: string): string => {
   if (!str) {
@@ -89,3 +90,8 @@ export const getFilename = (basePath?: string) =>
   basePath ? `${basePath.split("/").join(".").slice(1)}` : "api.client";
 
 export const isObj = (s: CustomSchema) => s.type === "object" || s.properties;
+
+export const hasHttpOrHttps = (path: string) => {
+  const { protocol } = url.parse(path);
+  return protocol && /https?:/.test(protocol);
+};
