@@ -8,14 +8,28 @@ import { Spec } from "swagger-schema-official";
 import { getInputs, scan } from "./scan";
 import { ERROR_MESSAGES } from "./constants";
 
-export const getCodegenConfig = () => {
+interface CodegenConfig {
+  requestCreateLib: string;
+  requestCreateMethod: string;
+  remoteApiSpecs: [];
+  localApiSpecs: [];
+  outputFolder?: string;
+  options?: {
+    typeWithPrefix?: boolean;
+    backwardCompatible?: boolean;
+  };
+}
+
+export const getCodegenConfig = (): CodegenConfig => {
   const codegenConfigPath = path.resolve("ts-codegen.config.json");
   return fs.existsSync(codegenConfigPath)
     ? require(codegenConfigPath)
     : {
-        output: ".output",
-        actionCreatorImport: "",
-        clients: [],
+        outputFolder: "",
+        requestCreateLib: "",
+        requestCreateMethod: "",
+        localApiSpecs: [],
+        remoteApiSpecs: [],
         options: {
           typeWithPrefix: false,
           backwardCompatible: false,
@@ -24,19 +38,20 @@ export const getCodegenConfig = () => {
 };
 
 export const codegen = () => {
-  const { output, actionCreatorImport, timeout, data, clients, options } = getCodegenConfig();
+  const { outputFolder, requestCreateLib, requestCreateMethod, localApiSpecs, remoteApiSpecs, options } = getCodegenConfig();
 
   const writeSpecToFile = (spec: IOpenAPI | Spec) => {
     if (!spec) {
       return;
     }
-    const fileStr = `${actionCreatorImport} ${scan(spec, options)}`;
+    const importLib = `import { ${requestCreateMethod} } from '${requestCreateLib}';\n\n`;
+    const fileStr = `${importLib} ${scan(spec, options, requestCreateMethod)}`;
     const { basePath } = getInputs(spec);
-    write(output, `./${getFilename(basePath)}`, fileStr);
+    write(outputFolder || ".output", `./${getFilename(basePath)}`, fileStr);
   };
 
-  if (!isEmpty(data)) {
-    data.map((file: string) => {
+  if (!isEmpty(localApiSpecs)) {
+    localApiSpecs.map((file: string) => {
       const specStr = fs.readFileSync(file, "utf8");
       const spec = testJSON(specStr, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
 
@@ -44,8 +59,8 @@ export const codegen = () => {
     });
   }
 
-  if (!isEmpty(clients)) {
-    fetchSwaggerJSON(clients, timeout).then((results: any[]) => {
+  if (!isEmpty(remoteApiSpecs)) {
+    fetchSwaggerJSON(remoteApiSpecs).then((results: any[]) => {
       results.forEach((spec: IOpenAPI | Spec) => {
         writeSpecToFile(spec);
       });

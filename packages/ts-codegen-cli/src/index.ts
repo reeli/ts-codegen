@@ -8,8 +8,8 @@ program
   .version("0.7.8", "-v, --version")
   .description("generate code")
   .action(() => {
-    const { output } = getCodegenConfig();
-    console.log(`Generate code to folder ${output} successfully!`);
+    const { outputFolder } = getCodegenConfig();
+    console.log(`Generate code to folder ${outputFolder} successfully!`);
     codegen();
   });
 

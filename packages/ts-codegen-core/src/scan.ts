@@ -19,7 +19,7 @@ interface ScanOptions {
   backwardCompatible?: boolean; // Not recommend, only if you want backward capability. This option will help to keep operationId and method name as before when it sets true. This option is only worked with swagger version 2.0.
 }
 
-export const scan = (data: Spec | IOpenAPI, options?: ScanOptions) => {
+export const scan = (data: Spec | IOpenAPI, options?: ScanOptions, requestCreator?: string) => {
   const register = createRegister(options?.typeWithPrefix);
   const schemaHandler = new Schema(register);
   const { dataType, basePath, paths, schemas, parameters, responses, requestBodies } = getInputs(data);
@@ -43,7 +43,7 @@ export const scan = (data: Spec | IOpenAPI, options?: ScanOptions) => {
     register.renameAllRefs((key) => decls[key].name);
   }
 
-  return print(clientConfigs, decls);
+  return print(clientConfigs, decls, requestCreator);
 };
 
 const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
@@ -71,11 +71,11 @@ export const getInputs = (data: Spec | IOpenAPI) => {
   };
 };
 
-const print = (clientConfigs: IClientConfig[], decls: IStore["decls"]) => {
-  return prettifyCode(`${printRequest(clientConfigs)} \n\n ${printTypes(decls)}`);
+const print = (clientConfigs: IClientConfig[], decls: IStore["decls"], requestCreator?: string) => {
+  return prettifyCode(`${printRequest(clientConfigs, requestCreator)} \n\n ${printTypes(decls)}`);
 };
 
-function printRequest(clientConfigs: IClientConfig[]): string {
+function printRequest(clientConfigs: IClientConfig[], requestCreator = "createRequestAction"): string {
   const configs = sortBy(clientConfigs, (o) => o.operationId);
 
   return configs
@@ -119,7 +119,7 @@ function printRequest(clientConfigs: IClientConfig[]): string {
 
       return `
 ${v.deprecated ? setDeprecated(v.operationId) : ""}
-export const ${v.operationId} = createRequestAction${toGenerators()}("${
+export const ${v.operationId} = ${requestCreator}${toGenerators()}("${
         v.operationId
       }", (${toRequestInputs()}) => ({${toUrl()}${toMethod()}${toRequestBody()}${toQueryParams()}${toHeaders()}})
 );
