@@ -170,7 +170,6 @@ export const getClientConfigsV3 = (
     const bodyData = requestBody?.$ref ? register.getData(getPathsFromRef(requestBody.$ref)) : requestBody;
 
     return {
-      // TODO: 这里是否会存在处理 request body 中 multipart/form-data 和 application/json 并存的情况？
       requestBody: {
         name: "requestBody",
         ...omit(bodyData, "content"),
