@@ -8,7 +8,7 @@ export const DEFAULT_CODEGEN_CONFIG = {
   requestCreateLib: "",
   requestCreateMethod: "createRequestAction",
   timeout: 3 * 60 * 1000,
-  outputFolder: ".output",
+  outputFolder: "clients",
   apiSpecsPaths: [],
   options: {
     typeWithPrefix: false,
