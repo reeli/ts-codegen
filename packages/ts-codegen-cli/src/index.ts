@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import prettier from "prettier";
 import { program } from "commander";
-import { codegen, getCodegenConfig, DEFAULT_CONFIG } from "@ts-tool/ts-codegen-core";
+import { codegen, getCodegenConfig, DEFAULT_CODEGEN_CONFIG } from "@ts-tool/ts-codegen-core";
 
 program
   .version("0.7.8", "-v, --version")
@@ -22,7 +22,7 @@ program
     if (fs.existsSync(file)) {
       console.log("Will do nothing, because you've already have a ts-codegen.config.js file in the root directory.");
     } else {
-      fs.writeFileSync(file, prettier.format(JSON.stringify(DEFAULT_CONFIG), { parser: "json" }));
+      fs.writeFileSync(file, prettier.format(JSON.stringify(DEFAULT_CODEGEN_CONFIG), { parser: "json" }));
     }
   });
 

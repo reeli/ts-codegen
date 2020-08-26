@@ -4,7 +4,7 @@ export const ERROR_MESSAGES = {
   EMPTY_API_SPECS_PATHS: "The `apiSpecsPaths` cannot be empty! Please input it in your ts-codegen.config.ts file.",
 };
 
-export const DEFAULT_CONFIG = {
+export const DEFAULT_CODEGEN_CONFIG = {
   requestCreateLib: "",
   requestCreateMethod: "createRequestAction",
   timeout: 3 * 60 * 1000,

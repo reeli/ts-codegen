@@ -8,7 +8,7 @@ import { CustomReference, CustomSchema, IClientConfig, RequestType } from "./__t
 import { createRegister, DeclKinds, IStore } from "./createRegister";
 import { parse } from "url";
 import { getClientConfigsV2, getClientConfigsV3 } from "./createClientConfigs";
-import { DEFAULT_CONFIG } from "./constants";
+import { DEFAULT_CODEGEN_CONFIG } from "./constants";
 
 enum DataType {
   openapi,
@@ -78,7 +78,7 @@ const print = (clientConfigs: IClientConfig[], decls: IStore["decls"], requestCr
 
 function printRequest(
   clientConfigs: IClientConfig[],
-  requestCreateMethod = DEFAULT_CONFIG.requestCreateMethod,
+  requestCreateMethod = DEFAULT_CODEGEN_CONFIG.requestCreateMethod,
 ): string {
   const configs = sortBy(clientConfigs, (o) => o.operationId);
 
