@@ -1,6 +1,6 @@
 {
   "name": "@ts-tool/ts-codegen-core",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "main": "dist/lib/index.js",
   "module": "dist/module/index.js",
   "types": "dist/index.d.ts",

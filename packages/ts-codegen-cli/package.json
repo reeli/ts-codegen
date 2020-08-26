@@ -1,6 +1,6 @@
 {
   "name": "@ts-tool/ts-codegen-cli",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "main": "dist/lib/index.js",
   "bin": {
     "ts-codegen": "bin/cli.js"
@@ -10,7 +10,7 @@
     "bin"
   ],
   "dependencies": {
-    "@ts-tool/ts-codegen-core": "^2.1.1",
+    "@ts-tool/ts-codegen-core": "^2.1.2",
     "commander": "^5.1.0",
     "prettier": "^2.0.x",
     "tslib": "^2.0.x"
