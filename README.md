@@ -32,7 +32,7 @@ npx ts-codegen
 
 ### 3. 修改配置文件
 
-根据自己的需求修改文件 ts-codegen.config.json，配置必填的 `requestCreateLib` 和 `apiSpecsPaths` 参数后，即可使用。参数说明详见[TS Codegen Config 参数说明](https://github.com/reeli/ts-codegen#TS Codegen Config 参数说明)。
+根据自己的需求修改文件 ts-codegen.config.json，配置必填的 `requestCreateLib` 和 `apiSpecsPaths` 参数后，即可使用。参数说明详见 [TS Codegen Config 参数说明](https://github.com/reeli/ts-codegen#ts-codegen-config-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E)。
 
 ### 4. 执行命令
 
