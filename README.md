@@ -92,7 +92,7 @@ npx ts-codegen
 
 - **`options`: Object [可选项]**
 
-    表示一些额外配置。
+    表示一些额外配置，仅在需要兼容老版本时进行配置。
 
     - **`typeWithPrefix`: Boolean [可选项]，默认值: false**
     
