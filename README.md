@@ -22,21 +22,21 @@ npx ts-codegen
 
 ## 开始
 
-### 1. 安装
+1. 安装
 
 `npm install @ts-tool/ts-codegen-cli -D`
 
-### 2. 生成配置文件
+2. 生成配置文件
 
 `npx ts-codegen init`
 
 这个命令会在你的 project 根目录下生成一个配置文件：ts-codegen.config.json。
 
-### 3. 修改配置文件
+3. 修改配置文件
 
-根据自己的需求修改文件 ts-codegen.config.json，配置必填的 `requestCreateLib` 和 `apiSpecsPaths` 参数后，即可使用。参数说明详见 [TS Codegen Config 参数说明](https://github.com/reeli/ts-codegen#ts-codegen-config-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E)。
+根据自己的需求修改文件 ts-codegen.config.json，配置必填的 `requestCreateLib` 和 `apiSpecsPaths` 参数后，即可使用。参数说明详见 [附录：TS Codegen Config 参数说明](https://github.com/reeli/ts-codegen#ts-codegen-config-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E)。
 
-### 4. 执行命令
+4. 执行命令
 
 cd 到你项目的根目录下，执行如下命令：
 
@@ -54,9 +54,9 @@ npx ts-codegen
 
 ## 版本迁移
 
-详见 [版本迁移文档]()
+请参考[版本迁移文档](https://github.com/reeli/ts-codegen/blob/master/docs/migration.md)
 
-## TS Codegen Config 参数说明
+## 附录：TS Codegen Config 参数说明
 
 - **`requestCreateMethod`: String [可选项]**
 
