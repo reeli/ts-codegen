@@ -58,7 +58,24 @@ npx ts-codegen
 
 - **`requestCreateMethod`: String [可选项]**
 
-    表示方法或函数名，用于创建请求。默认值为 createRequest。你可以自己实现 `requestCreateMethod` 方法，也可以参考示例（examples/utils/requestActionCreators.ts）。
+    表示方法或函数名，用于创建发起请求的函数。默认值为 createRequest。你可以自己实现 `requestCreateMethod` 方法，也可以参考[示例代码](https://github.com/reeli/ts-codegen/tree/master/packages/ts-codegen-core/examples/utils)。
+    
+    ```typescript
+    import axios, { AxiosRequestConfig } from "axios";
+    
+    const axiosInstance = axios.create({
+      baseURL: "https://petstore.swagger.io",
+    });
+    
+    export const createRequest = <TReq, TResp = any>(
+      _: string,
+      requestConfigCreator: (args: TReq) => AxiosRequestConfig,
+    ) => {
+      return (args: TReq) => {
+        return axiosInstance.request<TResp>(requestConfigCreator(args));
+      };
+    };
+    ```
     
 - **`requestCreateLib`: String [必填项]**
 

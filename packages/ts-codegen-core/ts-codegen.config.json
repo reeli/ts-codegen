@@ -1,7 +1,7 @@
 {
   "outputFolder": "clients",
-  "requestCreateLib": "../examples/utils/requestActionCreators",
-  "requestCreateMethod": "createRequestAction",
+  "requestCreateLib": "../examples/utils/createRequest",
+  "requestCreateMethod": "createRequest",
   "apiSpecsPaths": [
     "https://petstore.swagger.io/v2/swagger.json",
     "./examples/swagger.json",
