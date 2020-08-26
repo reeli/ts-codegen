@@ -24,29 +24,27 @@ npx ts-codegen
 
 1. 安装
 
-`npm install @ts-tool/ts-codegen-cli -D`
+    `npm install @ts-tool/ts-codegen-cli -D`
 
 2. 生成配置文件
 
-`npx ts-codegen init`
+    `npx ts-codegen init`
 
-这个命令会在你的 project 根目录下生成一个配置文件：ts-codegen.config.json。
+    这个命令会在你的 project 根目录下生成一个配置文件：ts-codegen.config.json。
 
 3. 修改配置文件
 
-根据自己的需求修改文件 ts-codegen.config.json，配置必填的 `requestCreateLib` 和 `apiSpecsPaths` 参数后，即可使用。参数说明详见 [附录：TS Codegen Config 参数说明](https://github.com/reeli/ts-codegen#ts-codegen-config-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E)。
+    根据自己的需求修改文件 ts-codegen.config.json，配置必填的 `requestCreateLib` 和 `apiSpecsPaths` 参数后，即可使用。参数说明详见 [附录：TS Codegen Config 参数说明](https://github.com/reeli/ts-codegen#ts-codegen-config-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E)。
 
 4. 执行命令
 
-cd 到你项目的根目录下，执行如下命令：
+    cd 到你项目的根目录下，执行如下命令：
 
-```bash
-npx ts-codegen
-```
+    ```bash
+    npx ts-codegen
+    ```
 
-然后就可以在配置的 `clients` 目录下看到生成的结果，并开始使用。
-
-> 注意：提供的 Swagger/Openapi json 中，必须保证每个 API 请求都包含属性 `operationId`。
+    然后就可以在配置的 `clients` 目录下看到生成的结果，并开始使用。
 
 ## 使用核心依赖进行二次封装
    
@@ -69,6 +67,7 @@ npx ts-codegen
 - **`apiSpecsPaths`: Array [必填项]**
 
     表示项目 swagger/openapi json 所在的地址。 这个地址既可以是远端 url，也可以是本地 swagger/openapi 所在的文件路径。CLI 工具会根据你的配置，自动读取远端或者本地文件，生成对应代码。
+    > 注意：提供的 Swagger/Openapi json 中，必须保证每个 API 请求都包含属性 `operationId`。
 
 - **`outputFolder`: String [可选项]**
 
