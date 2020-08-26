@@ -3,10 +3,10 @@
 [![Build Status](https://img.shields.io/travis/reeli/ts-codegen.svg?style=flat-square&branch=master)](https://travis-ci.org/reeli/ts-codegen)
 [![codecov](https://codecov.io/gh/reeli/ts-codegen/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/reeli/ts-codegen)
 [![License](https://img.shields.io/npm/l/@ts-tool/ts-codegen.svg?style=flat-square)](https://npmjs.org/package/@ts-tool/ts-codegen)
+[![NPM](https://img.shields.io/npm/v/@ts-tool/ts-codegen-cli.svg?style=flat-square)](https://npmjs.org/package/@ts-tool/ts-codegen-cli)
+
 
 TS Codegen 是一个用于生成「前端接口层代码」以及对应「TypeScript 定义」的工具。你只需要提供一个 Swagger 或 Openapi 的 JSON 文件，它就可以为您生成相应的代码。
-
-[![NPM](https://img.shields.io/npm/v/@react-rx/form.svg?style=flat-square)](https://npmjs.org/package/@react-rx/form)
 
 ## 快速尝试 Try it
 
@@ -34,7 +34,7 @@ npx ts-codegen
 
 3. 修改配置文件
 
-    根据自己的需求修改文件 ts-codegen.config.json，配置必填的 `requestCreateLib` 和 `apiSpecsPaths` 参数后，即可使用。参数说明详见 [附录：TS Codegen Config 参数说明](https://github.com/reeli/ts-codegen#ts-codegen-config-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E)。
+    根据自己的需求修改文件 ts-codegen.config.json，配置必填的 `requestCreateLib` 和 `apiSpecsPaths` 参数后，即可使用。参数说明详见 [附录：TS Codegen Config 参数说明](https://github.com/reeli/ts-codegen#%E9%99%84%E5%BD%95ts-codegen-config-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E)。
 
 4. 执行命令
 
