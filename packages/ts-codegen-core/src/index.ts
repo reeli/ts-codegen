@@ -3,7 +3,7 @@ export * from "./core/createRegister";
 export * from "./core/scan";
 export * from "./core/Schema";
 export * from "./core/Type";
-export * from "./utils/utils";
+export * from "./utils/common";
 export * from "./__types__/OpenAPI";
 export * from "./__types__/types";
 export * from "./codegen";

@@ -1,5 +1,5 @@
 import { compact, isArray, keys, map, some, uniqueId } from "lodash";
-import { getRefId, isNumberLike, quoteKey, toCapitalCase } from "../utils/utils";
+import { getRefId, isNumberLike, quoteKey, toCapitalCase } from "../utils/common";
 import { createRegister, DeclKinds } from "./createRegister";
 
 export type CustomType = Ref | Obj | Arr | Enum | OneOf | AllOf | BasicType;

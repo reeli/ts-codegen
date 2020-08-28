@@ -14,7 +14,7 @@ import {
   upperCase,
   values,
 } from "lodash";
-import { getPathsFromRef, toCapitalCase, withOptionalName } from "../utils/utils";
+import { getPathsFromRef, toCapitalCase, withOptionalName } from "../utils/common";
 import { CustomType } from "./Type";
 import { Schema } from "./Schema";
 import {

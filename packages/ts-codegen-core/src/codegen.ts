@@ -1,4 +1,4 @@
-import { getFilename, testJSON, hasHttpOrHttps } from "./utils/utils";
+import { getFilename, testJSON, hasHttpOrHttps } from "./utils/common";
 import axios from "axios";
 import { isEmpty } from "lodash";
 import * as fs from "fs";

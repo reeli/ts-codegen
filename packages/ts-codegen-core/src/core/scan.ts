@@ -1,6 +1,6 @@
 import { keys } from "lodash";
 import { Schema } from "./Schema";
-import { shouldUseExtends, toCapitalCase } from "../utils/utils";
+import { shouldUseExtends, toCapitalCase } from "../utils/common";
 import { CustomSchema, IClientConfig, CustomSpec } from "../__types__/types";
 import { createRegister, DeclKinds } from "./createRegister";
 import { getClientConfigsV2, getClientConfigsV3 } from "./createClientConfigs";
