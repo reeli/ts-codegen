@@ -5,7 +5,7 @@ import { DEFAULT_CODEGEN_CONFIG } from "../constants";
 import { sortBy, isEmpty, compact, keys, mapValues } from "lodash";
 import { CustomType } from "../core/Type";
 
-export const print = (clientConfigs: IClientConfig[], decls: IStore["decls"], requestCreateMethod?: string) => {
+export const printOutputs = (clientConfigs: IClientConfig[], decls: IStore["decls"], requestCreateMethod?: string) => {
   return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod)} \n\n ${printTypes(decls)}`);
 };
 

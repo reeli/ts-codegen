@@ -4,7 +4,7 @@ import { isEmpty } from "lodash";
 import * as fs from "fs";
 import * as path from "path";
 import { scan } from "./core/scan";
-import { print } from "./utils/print";
+import { printOutputs } from "./utils/printOutputs";
 import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants";
 import { CustomSpec } from "./__types__/types";
 import { getUnifiedInputs } from "./utils/unifyInputs";
@@ -34,7 +34,7 @@ export const codegen = () => {
     }
     const importLib = `import { ${requestCreateMethod} } from '${requestCreateLib}';\n\n`;
     const { clientConfigs, decls } = scan(spec, options);
-    const fileStr = `${importLib} ${print(clientConfigs, decls, requestCreateMethod)}`;
+    const fileStr = `${importLib} ${printOutputs(clientConfigs, decls, requestCreateMethod)}`;
     const { basePath } = getUnifiedInputs(spec);
     write(outputFolder || DEFAULT_CODEGEN_CONFIG.outputFolder, `./${getFilename(basePath)}`, fileStr);
   };
