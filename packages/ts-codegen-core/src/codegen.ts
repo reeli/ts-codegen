@@ -3,10 +3,11 @@ import axios from "axios";
 import { isEmpty } from "lodash";
 import * as fs from "fs";
 import * as path from "path";
-import { getUnifiedInputs, scan } from "./scan";
+import { scan } from "./scan";
 import { print } from "./print";
 import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants";
 import { CustomSpec } from "./__types__/types";
+import { getUnifiedInputs } from "./unifyInputs";
 
 interface CodegenConfig {
   requestCreateLib: string;

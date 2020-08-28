@@ -1,16 +1,10 @@
-import { IOpenAPI, IServer } from "./__types__/OpenAPI";
-import { get, isEmpty, keys } from "lodash";
+import { keys } from "lodash";
 import { Schema } from "./Schema";
 import { shouldUseExtends, toCapitalCase } from "./utils";
-import { CustomReference, CustomSchema, IClientConfig, CustomSpec } from "./__types__/types";
+import { CustomSchema, IClientConfig, CustomSpec } from "./__types__/types";
 import { createRegister, DeclKinds } from "./createRegister";
-import { parse } from "url";
 import { getClientConfigsV2, getClientConfigsV3 } from "./createClientConfigs";
-
-enum DataType {
-  openapi,
-  swagger,
-}
+import { getUnifiedInputs, DataType } from "./unifyInputs";
 
 interface ScanOptions {
   typeWithPrefix?: boolean; // Will keep prefix('I' for interface, 'T' for type) in types when it sets true
@@ -44,46 +38,9 @@ export const scan = (data: CustomSpec, options?: ScanOptions) => {
   return { clientConfigs, decls };
 };
 
-const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
-
-export const getUnifiedInputs = (data: CustomSpec) => {
-  if (isOpenApi(data)) {
-    return {
-      dataType: DataType.openapi,
-      basePath: getBasePathFromServers(data?.servers),
-      paths: data.paths,
-      schemas: data.components?.schemas as { [key: string]: CustomSchema | CustomReference },
-      parameters: data.components?.parameters,
-      responses: data.components?.responses,
-      requestBodies: data.components?.requestBodies,
-    };
-  }
-  return {
-    dataType: DataType.swagger,
-    basePath: data.basePath || "",
-    paths: data.paths,
-    schemas: data.definitions as { [key: string]: CustomSchema },
-    parameters: data.parameters,
-    responses: data.responses,
-    requestBodies: null,
-  };
-};
-
 const getDeclarationType = (schema: CustomSchema) => {
   if (schema?.type === "object" || schema?.properties || (schema?.allOf && shouldUseExtends(schema?.allOf))) {
     return DeclKinds.interface;
   }
   return DeclKinds.type;
-};
-
-const getBasePathFromServers = (servers?: IServer[]): string => {
-  if (isEmpty(servers)) {
-    return "";
-  }
-  const server = servers![0];
-  if (server?.variables) {
-    const basePath = get(server, "variables.basePath.default");
-    return basePath ? `/${basePath}` : "";
-  }
-  return parse(server?.url)?.pathname || "";
 };
