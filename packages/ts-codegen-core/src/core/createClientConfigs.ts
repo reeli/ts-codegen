@@ -14,7 +14,7 @@ import {
   upperCase,
   values,
 } from "lodash";
-import { getPathsFromRef, toCapitalCase, withOptionalName } from "./utils";
+import { getPathsFromRef, toCapitalCase, withOptionalName } from "../utils/utils";
 import { CustomType } from "./Type";
 import { Schema } from "./Schema";
 import {
@@ -26,9 +26,9 @@ import {
   CustomReference,
   CustomSchema,
   IClientConfig,
-} from "./__types__/types";
+} from "../__types__/types";
 import { createRegister } from "./createRegister";
-import { IOperation, IPaths, IRequestBody, IResponse } from "./__types__/OpenAPI";
+import { IOperation, IPaths, IRequestBody, IResponse } from "../__types__/OpenAPI";
 
 const buildConfigs = <TOperation extends CustomOperation>({
   paths,

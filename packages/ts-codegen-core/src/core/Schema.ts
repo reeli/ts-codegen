@@ -1,8 +1,8 @@
-import { isObj, shouldUseExtends, toCapitalCase } from "./utils";
+import { isObj, shouldUseExtends, toCapitalCase } from "../utils/utils";
 import { filter, isArray, isEmpty, map, reduce } from "lodash";
-import { IReference, ISchema } from "./__types__/OpenAPI";
+import { IReference, ISchema } from "../__types__/OpenAPI";
 import { CustomType, Obj, Type } from "./Type";
-import { CustomSchema } from "./__types__/types";
+import { CustomSchema } from "../__types__/types";
 import { createRegister } from "./createRegister";
 
 export class Schema {

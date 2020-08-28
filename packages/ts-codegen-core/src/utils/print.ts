@@ -1,9 +1,9 @@
-import { IClientConfig, RequestType } from "./__types__/types";
-import { IStore, DeclKinds } from "./createRegister";
+import { IClientConfig, RequestType } from "../__types__/types";
+import { IStore, DeclKinds } from "../core/createRegister";
 import { prettifyCode, setDeprecated, objToTypeStr } from "./utils";
-import { DEFAULT_CODEGEN_CONFIG } from "./constants";
+import { DEFAULT_CODEGEN_CONFIG } from "../constants/constants";
 import { sortBy, isEmpty, compact, keys, mapValues } from "lodash";
-import { CustomType } from "./Type";
+import { CustomType } from "../core/Type";
 
 export const print = (clientConfigs: IClientConfig[], decls: IStore["decls"], requestCreateMethod?: string) => {
   return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod)} \n\n ${printTypes(decls)}`);

@@ -1,5 +1,5 @@
-import { CustomSpec, CustomSchema, CustomReference } from "./__types__/types";
-import { IServer, IOpenAPI } from "./__types__/OpenAPI";
+import { CustomSpec, CustomSchema, CustomReference } from "../__types__/types";
+import { IServer, IOpenAPI } from "../__types__/OpenAPI";
 import { isEmpty, get } from "lodash";
 import { parse } from "url";
 

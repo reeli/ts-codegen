@@ -1,4 +1,4 @@
-import { CustomType } from "../Type";
+import { CustomType } from "../core/Type";
 import { Operation, Parameter, Path, Schema, Spec } from "swagger-schema-official";
 import { IComponents, IOpenAPI, IOperation, IPathItem, ISchema, TParameter } from "../__types__/OpenAPI";
 
