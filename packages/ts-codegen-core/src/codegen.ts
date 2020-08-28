@@ -3,10 +3,9 @@ import axios from "axios";
 import { isEmpty } from "lodash";
 import * as fs from "fs";
 import * as path from "path";
-import { IOpenAPI } from "./__types__/OpenAPI";
-import { Spec } from "swagger-schema-official";
 import { getInputs, scan } from "./scan";
 import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants";
+import { CustomSpec } from "./__types__/types";
 
 interface CodegenConfig {
   requestCreateLib: string;
@@ -27,7 +26,7 @@ export const getCodegenConfig = (): CodegenConfig => {
 export const codegen = () => {
   const { outputFolder, requestCreateLib, requestCreateMethod, apiSpecsPaths, options } = getCodegenConfig();
 
-  const writeSpecToFile = (spec: IOpenAPI | Spec) => {
+  const writeSpecToFile = (spec: CustomSpec) => {
     if (!spec) {
       return;
     }

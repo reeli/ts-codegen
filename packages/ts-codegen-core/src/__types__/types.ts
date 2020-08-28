@@ -27,3 +27,4 @@ export type CustomParameter = Parameter | TParameter;
 export type CustomPath = Path | IPathItem;
 export type CustomPaths = Spec["paths"] | IOpenAPI["paths"];
 export type CustomOperation = Operation | IOperation;
+export type CustomSpec = IOpenAPI | Spec;

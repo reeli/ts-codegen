@@ -3,8 +3,7 @@ import { CustomType } from "./Type";
 import { compact, get, isEmpty, keys, mapValues, sortBy } from "lodash";
 import { Schema } from "./Schema";
 import { shouldUseExtends, prettifyCode, setDeprecated, toCapitalCase, objToTypeStr } from "./utils";
-import { Spec } from "swagger-schema-official";
-import { CustomReference, CustomSchema, IClientConfig, RequestType } from "./__types__/types";
+import { CustomReference, CustomSchema, IClientConfig, RequestType, CustomSpec } from "./__types__/types";
 import { createRegister, DeclKinds, IStore } from "./createRegister";
 import { parse } from "url";
 import { getClientConfigsV2, getClientConfigsV3 } from "./createClientConfigs";
@@ -20,7 +19,7 @@ interface ScanOptions {
   backwardCompatible?: boolean; // Not recommend, only if you want backward capability. This option will help to keep operationId and method name as before when it sets true. This option is only worked with swagger version 2.0.
 }
 
-export const scan = (data: Spec | IOpenAPI, options?: ScanOptions, requestCreateMethod?: string) => {
+export const scan = (data: CustomSpec, options?: ScanOptions, requestCreateMethod?: string) => {
   const register = createRegister(options?.typeWithPrefix);
   const schemaHandler = new Schema(register);
   const { dataType, basePath, paths, schemas, parameters, responses, requestBodies } = getInputs(data);
@@ -49,7 +48,7 @@ export const scan = (data: Spec | IOpenAPI, options?: ScanOptions, requestCreate
 
 const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
 
-export const getInputs = (data: Spec | IOpenAPI) => {
+export const getInputs = (data: CustomSpec) => {
   if (isOpenApi(data)) {
     return {
       dataType: DataType.openapi,
