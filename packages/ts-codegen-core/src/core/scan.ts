@@ -1,10 +1,9 @@
 import { keys } from "lodash";
 import { Schema } from "./Schema";
-import { shouldUseExtends, toCapitalCase } from "../utils/common";
+import { shouldUseExtends, toCapitalCase, getUnifiedInputs, DataType } from "../utils";
 import { CustomSchema, IClientConfig, CustomSpec } from "../__types__/types";
 import { createRegister, DeclKinds } from "./createRegister";
 import { getClientConfigsV2, getClientConfigsV3 } from "./createClientConfigs";
-import { getUnifiedInputs, DataType } from "../utils/unifyInputs";
 
 interface ScanOptions {
   typeWithPrefix?: boolean; // Will keep prefix('I' for interface, 'T' for type) in types when it sets true

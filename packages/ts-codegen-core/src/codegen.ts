@@ -1,13 +1,11 @@
-import { getFilename, testJSON, hasHttpOrHttps } from "./utils/common";
+import { getFilename, testJSON, hasHttpOrHttps, printOutputs, getUnifiedInputs } from "./utils";
 import axios from "axios";
 import { isEmpty } from "lodash";
 import * as fs from "fs";
 import * as path from "path";
-import { scan } from "./core/scan";
-import { printOutputs } from "./utils/printOutputs";
+import { scan } from "./core";
 import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants";
 import { CustomSpec } from "./__types__/types";
-import { getUnifiedInputs } from "./utils/unifyInputs";
 
 interface CodegenConfig {
   requestCreateLib: string;
