@@ -1,7 +1,7 @@
 import { IClientConfig, RequestType } from "../__types__/types";
 import { IStore, DeclKinds } from "../core/createRegister";
 import { prettifyCode, setDeprecated, objToTypeStr } from "./utils";
-import { DEFAULT_CODEGEN_CONFIG } from "../constants/constants";
+import { DEFAULT_CODEGEN_CONFIG } from "../constants";
 import { sortBy, isEmpty, compact, keys, mapValues } from "lodash";
 import { CustomType } from "../core/Type";
 

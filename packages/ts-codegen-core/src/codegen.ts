@@ -5,7 +5,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { scan } from "./core/scan";
 import { print } from "./utils/print";
-import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants/constants";
+import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants";
 import { CustomSpec } from "./__types__/types";
 import { getUnifiedInputs } from "./utils/unifyInputs";
 

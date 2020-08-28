@@ -7,4 +7,4 @@ export * from "./utils/utils";
 export * from "./__types__/OpenAPI";
 export * from "./__types__/types";
 export * from "./codegen";
-export * from "./constants/constants";
+export * from "./constants";
