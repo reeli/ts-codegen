@@ -3,7 +3,8 @@ import axios from "axios";
 import { isEmpty } from "lodash";
 import * as fs from "fs";
 import * as path from "path";
-import { getInputs, scan, print } from "./scan";
+import { getInputs, scan } from "./scan";
+import { print } from "./print";
 import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants";
 import { CustomSpec } from "./__types__/types";
 
