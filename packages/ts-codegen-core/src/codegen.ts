@@ -3,7 +3,7 @@ import axios from "axios";
 import { isEmpty } from "lodash";
 import * as fs from "fs";
 import * as path from "path";
-import { getInputs, scan } from "./scan";
+import { getUnifiedInputs, scan } from "./scan";
 import { print } from "./print";
 import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants";
 import { CustomSpec } from "./__types__/types";
@@ -34,7 +34,7 @@ export const codegen = () => {
     const importLib = `import { ${requestCreateMethod} } from '${requestCreateLib}';\n\n`;
     const { clientConfigs, decls } = scan(spec, options);
     const fileStr = `${importLib} ${print(clientConfigs, decls, requestCreateMethod)}`;
-    const { basePath } = getInputs(spec);
+    const { basePath } = getUnifiedInputs(spec);
     write(outputFolder || DEFAULT_CODEGEN_CONFIG.outputFolder, `./${getFilename(basePath)}`, fileStr);
   };
 

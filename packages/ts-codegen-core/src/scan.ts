@@ -20,7 +20,7 @@ interface ScanOptions {
 export const scan = (data: CustomSpec, options?: ScanOptions) => {
   const register = createRegister(options?.typeWithPrefix);
   const schemaHandler = new Schema(register);
-  const { dataType, basePath, paths, schemas, parameters, responses, requestBodies } = getInputs(data);
+  const { dataType, basePath, paths, schemas, parameters, responses, requestBodies } = getUnifiedInputs(data);
 
   keys(schemas).forEach((k) => {
     const name = toCapitalCase(k);
@@ -46,7 +46,7 @@ export const scan = (data: CustomSpec, options?: ScanOptions) => {
 
 const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
 
-export const getInputs = (data: CustomSpec) => {
+export const getUnifiedInputs = (data: CustomSpec) => {
   if (isOpenApi(data)) {
     return {
       dataType: DataType.openapi,
