@@ -19,7 +19,7 @@ interface ScanOptions {
   backwardCompatible?: boolean; // Not recommend, only if you want backward capability. This option will help to keep operationId and method name as before when it sets true. This option is only worked with swagger version 2.0.
 }
 
-export const scan = (data: CustomSpec, options?: ScanOptions, requestCreateMethod?: string) => {
+export const scan = (data: CustomSpec, options?: ScanOptions) => {
   const register = createRegister(options?.typeWithPrefix);
   const schemaHandler = new Schema(register);
   const { dataType, basePath, paths, schemas, parameters, responses, requestBodies } = getInputs(data);
@@ -43,7 +43,7 @@ export const scan = (data: CustomSpec, options?: ScanOptions, requestCreateMetho
     register.renameAllRefs((key) => decls[key].name);
   }
 
-  return print(clientConfigs, decls, requestCreateMethod);
+  return { clientConfigs, decls };
 };
 
 const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
@@ -71,7 +71,7 @@ export const getInputs = (data: CustomSpec) => {
   };
 };
 
-const print = (clientConfigs: IClientConfig[], decls: IStore["decls"], requestCreateMethod?: string) => {
+export const print = (clientConfigs: IClientConfig[], decls: IStore["decls"], requestCreateMethod?: string) => {
   return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod)} \n\n ${printTypes(decls)}`);
 };
 
