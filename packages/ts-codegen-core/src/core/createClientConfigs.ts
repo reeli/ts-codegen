@@ -175,8 +175,6 @@ export const getClientConfigsV3 = (
         ...omit(bodyData, "content"),
         ...getFirstValue(bodyData?.content),
       },
-      // TODO: handle reference later
-      // TODO: handle other content type later
       contentType: bodyData && getFirstKey(bodyData?.content),
     };
   };

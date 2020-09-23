@@ -21,7 +21,6 @@ const printRequest = (
       const toMethod = () => `method: "${v.method}",`;
       const toRequestBody = () => {
         if (!isEmpty(v.bodyParams)) {
-          // TODO: refactor code
           return `data: ${v.bodyParams!.length > 1 ? `{${v.bodyParams!.join(",")}}` : v.bodyParams![0]},`;
         }
         return v.contentType ? "data: requestBody," : "";
