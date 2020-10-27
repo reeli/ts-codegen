@@ -2,9 +2,7 @@
 
 exports[`swagger v2 should handle spec correctly 1`] = `
 "export const addPet = createRequestAction<{
-  requestBody: {
-    body: Pet;
-  };
+  requestBody: Pet;
 }>(\\"addPet\\", ({ requestBody }) => ({
   url: \`/api/v2/pet\`,
   method: \\"POST\\",
@@ -14,9 +12,7 @@ exports[`swagger v2 should handle spec correctly 1`] = `
 
 export const createItem = createRequestAction<
   {
-    requestBody: {
-      item?: Item;
-    };
+    requestBody?: Item;
   },
   Message
 >(\\"createItem\\", ({ requestBody }) => ({
@@ -27,9 +23,7 @@ export const createItem = createRequestAction<
 }));
 
 export const createUser = createRequestAction<{
-  requestBody: {
-    body: User;
-  };
+  requestBody: User;
 }>(\\"createUser\\", ({ requestBody }) => ({
   url: \`/api/v2/user\`,
   method: \\"POST\\",
@@ -38,9 +32,7 @@ export const createUser = createRequestAction<{
 }));
 
 export const createUsersWithArrayInput = createRequestAction<{
-  requestBody: {
-    body: User[];
-  };
+  requestBody: User[];
 }>(\\"createUsersWithArrayInput\\", ({ requestBody }) => ({
   url: \`/api/v2/user/createWithArray\`,
   method: \\"POST\\",
@@ -49,9 +41,7 @@ export const createUsersWithArrayInput = createRequestAction<{
 }));
 
 export const createUsersWithListInput = createRequestAction<{
-  requestBody: {
-    body: User[];
-  };
+  requestBody: User[];
 }>(\\"createUsersWithListInput\\", ({ requestBody }) => ({
   url: \`/api/v2/user/createWithList\`,
   method: \\"POST\\",
@@ -269,9 +259,7 @@ export const logoutUser = createRequestAction(\\"logoutUser\\", () => ({ url: \`
 
 export const placeOrder = createRequestAction<
   {
-    requestBody: {
-      body: Order;
-    };
+    requestBody: Order;
   },
   Order
 >(\\"placeOrder\\", ({ requestBody }) => ({
@@ -283,9 +271,7 @@ export const placeOrder = createRequestAction<
 
 export const updateBookByIdUsingPut = createRequestAction<{
   id: string;
-  requestBody: {
-    updateBookRequest: UpdateBookRequest;
-  };
+  requestBody: UpdateBookRequest;
 }>(\\"updateBookByIdUsingPut\\", ({ id, requestBody }) => ({
   url: \`/api/v2/book/\${id}\`,
   method: \\"PUT\\",
@@ -294,9 +280,7 @@ export const updateBookByIdUsingPut = createRequestAction<{
 }));
 
 export const updatePet = createRequestAction<{
-  requestBody: {
-    body: Pet;
-  };
+  requestBody: Pet;
 }>(\\"updatePet\\", ({ requestBody }) => ({
   url: \`/api/v2/pet\`,
   method: \\"PUT\\",
@@ -318,9 +302,7 @@ export const updatePetWithForm = createRequestAction<{
 }));
 
 export const updateUser = createRequestAction<{
-  requestBody: {
-    body: User;
-  };
+  requestBody: User;
   username: string;
 }>(\\"updateUser\\", ({ username, requestBody }) => ({
   url: \`/api/v2/user/\${username}\`,

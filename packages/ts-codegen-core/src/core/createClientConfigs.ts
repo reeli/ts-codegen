@@ -141,15 +141,15 @@ export const getClientConfigsV2 = (
 
       const successResponsesGetter = getSuccessResponsesType(schemaHandler, register);
       const { requestBody, contentType } = getRequestBody(operation.parameters);
-      const requestBodyTypes = requestTypesGetter(requestBody);
+      const requestBodyType = requestTypesGetter(requestBody);
+      const finalBodyType = backwardCompatible ? requestBodyType : getRequestBodyType({schemaHandler, operationId:operation.operationId, params:requestBody, contentType});
 
       return {
         TResp: successResponsesGetter<Response>(operation.responses, (resp) => resp?.schema),
         TReq: {
           ...requestTypesGetter(pathParams),
           ...requestTypesGetter(queryParams),
-          ...(!isEmpty(requestBodyTypes) &&
-            (backwardCompatible ? requestBodyTypes : { requestBody: requestBodyTypes })),
+          ...(!isEmpty(requestBodyType) && finalBodyType),
         },
         contentType,
       };
@@ -229,6 +229,33 @@ const getRequestTypes = (schemaHandler: Schema) => (operationId?: string) => (
     {},
   );
 };
+
+const getRequestBodyType = ({schemaHandler,operationId, params, contentType}:{
+                              schemaHandler: Schema;
+                              operationId?: string;
+                            params?: CustomParameter[];
+                            contentType?:string;
+                            })=> {
+  if (!params) {
+    return;
+  }
+
+  const REQUEST_BODY = "requestBody";
+
+  if(contentType==="application/json"){
+    const param = params[0];
+    return {
+      [withOptionalName(REQUEST_BODY, param.required)]: schemaHandler.convert(
+          get(param, "schema", param),
+          `${toCapitalCase(operationId)}${toCapitalCase(param.name)}`,
+      ),
+    }
+  }
+
+  return {
+    [REQUEST_BODY]: getRequestTypes(schemaHandler)(operationId)(params)
+  };
+}
 
 const getSuccessResponsesType = (schemaHandler: Schema, register: ReturnType<typeof createRegister>) => <TResponse>(
   responses?: { [responseName: string]: TResponse | CustomReference },
