@@ -57,7 +57,7 @@ export const findPets = createRequestAction<
 }));
 
 export const formMultipartWithFile = createRequestAction<{
-  requestBody: { data?: Pet; file: string; slice?: string[]; string?: string };
+  requestBody: { data?: Pet; file: File; slice?: string[]; string?: string };
 }>(\\"formMultipartWithFile\\", ({ requestBody }) => ({
   url: \`/api/v3/demo/forms/multipart\`,
   method: \\"POST\\",
@@ -66,7 +66,7 @@ export const formMultipartWithFile = createRequestAction<{
 }));
 
 export const formMultipartWithFiles = createRequestAction<{
-  requestBody: { files: string[] };
+  requestBody: { files: File[] };
 }>(\\"formMultipartWithFiles\\", ({ requestBody }) => ({
   url: \`/api/v3/demo/forms/multipart-with-files\`,
   method: \\"POST\\",

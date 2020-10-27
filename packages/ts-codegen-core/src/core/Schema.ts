@@ -43,7 +43,7 @@ export class Schema {
     }
 
     if (schema.type === "string") {
-      return this.type.string();
+      return schema.format==="binary" ? this.type.file() : this.type.string();
     }
 
     if (schema.type === "boolean") {

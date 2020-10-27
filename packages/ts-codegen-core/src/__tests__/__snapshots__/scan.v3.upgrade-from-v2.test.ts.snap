@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`swagger v2 should handle spec correctly 1`] = `
+exports[`swagger v3 should handle basic schemas correctly 1`] = `
 "export const addPet = createRequestAction<{
   requestBody: Pet;
 }>(\\"addPet\\", ({ requestBody }) => ({
@@ -290,10 +290,7 @@ export const updatePet = createRequestAction<{
 
 export const updatePetWithForm = createRequestAction<{
   petId: number;
-  requestBody?: {
-    name?: string;
-    status?: string;
-  };
+  requestBody?: { name?: string; status?: string };
 }>(\\"updatePetWithForm\\", ({ petId, requestBody }) => ({
   url: \`/api/v2/pet/\${petId}\`,
   method: \\"POST\\",
@@ -313,9 +310,7 @@ export const updateUser = createRequestAction<{
 
 export const uploadAttachmentUsingPost = createRequestAction<
   {
-    requestBody: {
-      attachment: File;
-    };
+    requestBody?: { attachment: File };
   },
   AttachmentBo
 >(\\"uploadAttachmentUsingPost\\", ({ requestBody }) => ({
@@ -328,10 +323,7 @@ export const uploadAttachmentUsingPost = createRequestAction<
 export const uploadFile = createRequestAction<
   {
     petId: number;
-    requestBody?: {
-      additionalMetadata?: string;
-      file?: File;
-    };
+    requestBody?: { additionalMetadata?: string; file?: File };
   },
   ApiResponse
 >(\\"uploadFile\\", ({ petId, requestBody }) => ({

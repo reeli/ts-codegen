@@ -13,6 +13,7 @@ import {
   reduce,
   upperCase,
   values,
+  some
 } from "lodash";
 import { getPathsFromRef, toCapitalCase, withOptionalName } from "../utils/common";
 import { CustomType } from "./Type";
@@ -109,17 +110,21 @@ export const getClientConfigsV2 = (
   backwardCompatible?: boolean,
 ): IClientConfig[] => {
   const schemaHandler = new Schema(register);
-  const getRequestBody = (parameters?: Operation["parameters"]) => {
-    const pickParamsByType = pickParams(register)(parameters);
+  const getRequestBody = (operation: Operation) => {
+    const pickParamsByType = pickParams(register)(operation.parameters);
 
     const bodyParams = pickParamsByType<BodyParameter>("body");
     const formDataParams = pickParamsByType<FormDataParameter>("formData");
 
     const getContentType = () => {
+      if(operation.consumes&&operation.consumes!.length>0 ){
+        return operation.consumes[0] as string;
+      }
       if (bodyParams) {
         return "application/json";
       }
       if (formDataParams) {
+
         return "multipart/form-data";
       }
       return "";
@@ -140,7 +145,7 @@ export const getClientConfigsV2 = (
       const requestTypesGetter = getRequestTypes(schemaHandler)(operation.operationId);
 
       const successResponsesGetter = getSuccessResponsesType(schemaHandler, register);
-      const { requestBody, contentType } = getRequestBody(operation.parameters);
+      const { requestBody, contentType } = getRequestBody(operation);
       const requestBodyType = requestTypesGetter(requestBody);
       const finalBodyType = backwardCompatible ? requestBodyType : getRequestBodyType({schemaHandler, operationId:operation.operationId, params:requestBody, contentType});
 
@@ -252,8 +257,9 @@ const getRequestBodyType = ({schemaHandler,operationId, params, contentType}:{
     }
   }
 
+  const isRequired = some(params, (param)=>param.required);
   return {
-    [REQUEST_BODY]: getRequestTypes(schemaHandler)(operationId)(params)
+    [withOptionalName(REQUEST_BODY, isRequired)]: getRequestTypes(schemaHandler)(operationId)(params)
   };
 }
 
