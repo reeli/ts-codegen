@@ -81,7 +81,7 @@ export const findBookByIdUsingGET = createRequestAction<
 
 export const findPetsByStatus = createRequestAction<
   {
-    status: keyof typeof FindPetsByStatusStatus[];
+    status: (keyof typeof FindPetsByStatusStatus)[];
   },
   IPet[]
 >(\\"findPetsByStatus\\", ({ status }) => ({

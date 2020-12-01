@@ -41,8 +41,8 @@ export const findPets = createRequestAction<
   {
     fee: { age?: number; text: string };
     limit?: number;
-    status: keyof typeof FindPetsStatus[];
-    tags?: keyof typeof FindPetsTags[];
+    status: (keyof typeof FindPetsStatus)[];
+    tags?: (keyof typeof FindPetsTags)[];
   },
   Pet[]
 >(\\"findPets\\", ({ tags, fee, limit, status }) => ({

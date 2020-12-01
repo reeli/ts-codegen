@@ -30,7 +30,7 @@ export class Enum implements TypeFactory {
       }
       return `{${this.value.map((v) => `'${v}' = '${v}',`).join("\n")}}`;
     }
-    return `keyof typeof ${this.name}`;
+    return `(keyof typeof ${this.name})`;
   }
 }
 

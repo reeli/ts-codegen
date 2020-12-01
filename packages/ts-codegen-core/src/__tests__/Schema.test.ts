@@ -320,7 +320,7 @@ describe("Schema Converter", () => {
         )
         .toType(true);
 
-      expect(res).toEqual("extends  {'country'?: string;'kind'?: keyof typeof PetKind;}");
+      expect(res).toEqual("extends  {'country'?: string;'kind'?: (keyof typeof PetKind);}");
     });
 
     it("should handle enum in `allOf`", () => {
@@ -350,7 +350,7 @@ describe("Schema Converter", () => {
         )
         .toType();
 
-      expect(res).toEqual("extends Pet {'bark'?: boolean;'breed'?: keyof typeof DogBreed;}");
+      expect(res).toEqual("extends Pet {'bark'?: boolean;'breed'?: (keyof typeof DogBreed);}");
     });
 
     it("should handle `oneOf` in `allOf`", () => {
@@ -397,7 +397,7 @@ describe("Schema Converter", () => {
         )
         .toType();
 
-      expect(res).toEqual("keyof typeof VisitsCount[]");
+      expect(res).toEqual("(keyof typeof VisitsCount)[]");
     });
 
     it("should handle array of string", () => {
@@ -503,7 +503,7 @@ describe("Schema Converter", () => {
         )
         .toType();
 
-      expect(res).toEqual("keyof typeof Status");
+      expect(res).toEqual("(keyof typeof Status)");
     });
   });
 
@@ -542,7 +542,7 @@ describe("Schema Converter", () => {
         )
         .toType();
 
-      expect(res).toEqual("{'visitsCount'?: keyof typeof TestVisitsCount[];}");
+      expect(res).toEqual("{'visitsCount'?: (keyof typeof TestVisitsCount)[];}");
     });
 
     it("should handle required array in schema", () => {
