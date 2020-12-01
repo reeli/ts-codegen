@@ -1,6 +1,6 @@
 # TS Codegen
 
-[![Build Status](https://img.shields.io/travis/reeli/ts-codegen.svg?style=flat-square&branch=master)](https://travis-ci.org/reeli/ts-codegen)
+[![Build Status](https://travis-ci.com/reeli/ts-codegen.svg?branch=master&status=created)](https://travis-ci.com/github/reeli/ts-codegen)
 [![codecov](https://codecov.io/gh/reeli/ts-codegen/branch/master/graph/badge.svg?style=flat-square)](https://codecov.io/gh/reeli/ts-codegen)
 [![License](https://img.shields.io/npm/l/@ts-tool/ts-codegen.svg?style=flat-square)](https://npmjs.org/package/@ts-tool/ts-codegen)
 [![NPM](https://img.shields.io/npm/v/@ts-tool/ts-codegen-cli.svg?style=flat-square)](https://npmjs.org/package/@ts-tool/ts-codegen-cli)
