@@ -6,6 +6,7 @@ import * as path from "path";
 import { scan } from "./core";
 import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants";
 import { CustomSpec } from "./__types__/types";
+import yaml from "js-yaml";
 
 interface CodegenConfig {
   requestCreateLib: string;
@@ -23,6 +24,8 @@ export const getCodegenConfig = (): CodegenConfig => {
   return fs.existsSync(codegenConfigPath) ? require(codegenConfigPath) : DEFAULT_CODEGEN_CONFIG;
 };
 
+const isJSON = (ext: string) => ext === ".json";
+
 export const codegen = () => {
   const { outputFolder, requestCreateLib, requestCreateMethod, apiSpecsPaths, options } = getCodegenConfig();
 
@@ -38,10 +41,29 @@ export const codegen = () => {
   };
 
   function handleLocalApiSpec(filePath: string) {
-    const specStr = fs.readFileSync(filePath, "utf8");
-    const spec = testJSON(specStr, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
+    const ext = path.extname(filePath);
+    const validExts = [".json", ".yaml", ".yml"];
 
-    writeSpecToFile(spec);
+    if (!validExts.includes(ext)) {
+      throw new Error(ERROR_MESSAGES.INVALID_FILE_EXT_ERROR);
+    }
+
+    const fileStr = fs.readFileSync(filePath, "utf8");
+
+    // handle json file
+    if (isJSON(ext)) {
+      const spec = testJSON(fileStr, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
+      writeSpecToFile(spec);
+
+      return;
+    }
+
+    // handle yaml file
+    try {
+      writeSpecToFile(yaml.load(fileStr));
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async function handleRemoteApiSpec(url: string) {
