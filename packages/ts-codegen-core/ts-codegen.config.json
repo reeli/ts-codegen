@@ -3,10 +3,26 @@
   "requestCreateLib": "../examples/utils/createRequest",
   "requestCreateMethod": "createRequest",
   "apiSpecsPaths": [
-    "https://petstore.swagger.io/v2/swagger.json",
-    "./examples/swagger.json",
-    "./examples/openapi.json",
-    "./examples/demo.yaml"
+    {
+      "path": "https://petstore.swagger.io/v2/swagger.json", // 远程获取 Swagger 文档（json 格式）
+      "name": "PetStoreService1"
+    },
+    {
+      "path": "https://petstore.swagger.io/v2/swagger.yaml", // 远程获取 Swagger 文档（yaml 格式）
+      "name": "PetStoreService2"
+    },
+    {
+      "path": "./examples/swagger.json", // 从本地文件读取 Swagger 文档（json 格式）
+      "name": "SwaggerService"
+    },
+    {
+      "path": "./examples/openapi.json", // 从本地文件读取 OpenAPI 文档（json 格式）
+      "name": "OpenApiService"
+    },
+    {
+      "path": "./examples/demo.yaml", // 从本地文件读取 Swagger 文档（yaml 格式）
+      "name": "DemoService"
+    }
   ],
   "options": {
     "typeWithPrefix": true,

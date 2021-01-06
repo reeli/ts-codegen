@@ -8,10 +8,15 @@ import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants";
 import { CustomSpec } from "./__types__/types";
 import yaml from "js-yaml";
 
+interface ApiSpecsPath {
+  path: string;
+  name?: string;
+}
+
 interface CodegenConfig {
   requestCreateLib: string;
   requestCreateMethod: string;
-  apiSpecsPaths: string[];
+  apiSpecsPaths: ApiSpecsPath[];
   outputFolder?: string;
   options?: {
     typeWithPrefix?: boolean;
@@ -29,7 +34,7 @@ const isJSON = (ext: string) => ext === ".json";
 export const codegen = () => {
   const { outputFolder, requestCreateLib, requestCreateMethod, apiSpecsPaths, options } = getCodegenConfig();
 
-  const writeSpecToFile = (spec: CustomSpec) => {
+  const writeSpecToFile = (spec: CustomSpec, filename?: string) => {
     if (!spec) {
       return;
     }
@@ -37,38 +42,33 @@ export const codegen = () => {
     const { clientConfigs, decls } = scan(spec, options);
     const fileStr = `${importLib} ${printOutputs(clientConfigs, decls, requestCreateMethod)}`;
     const { basePath } = getUnifiedInputs(spec);
-    write(outputFolder || DEFAULT_CODEGEN_CONFIG.outputFolder, `./${getFilename(basePath)}`, fileStr);
+    write(outputFolder || DEFAULT_CODEGEN_CONFIG.outputFolder, `./${filename || getFilename(basePath)}`, fileStr);
   };
 
-  function handleLocalApiSpec(filePath: string) {
-    const ext = path.extname(filePath);
+  function handleLocalApiSpec(item: ApiSpecsPath) {
+    const ext = path.extname(item.path);
     const validExts = [".json", ".yaml", ".yml"];
 
     if (!validExts.includes(ext)) {
       throw new Error(ERROR_MESSAGES.INVALID_FILE_EXT_ERROR);
     }
 
-    const fileStr = fs.readFileSync(filePath, "utf8");
+    const fileStr = fs.readFileSync(item.path, "utf8");
 
     // handle json file
     if (isJSON(ext)) {
       const spec = testJSON(fileStr, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
-      writeSpecToFile(spec);
+      writeSpecToFile(spec, item.name);
 
       return;
     }
 
     // handle yaml file
     try {
-      writeSpecToFile(yaml.load(fileStr));
+      writeSpecToFile(yaml.load(fileStr), item.name);
     } catch (e) {
       console.log(e);
     }
-  }
-
-  async function handleRemoteApiSpec(url: string) {
-    const apiSpec = await fetchApiSpec(url);
-    writeSpecToFile(apiSpec);
   }
 
   if (isEmpty(apiSpecsPaths)) {
@@ -76,8 +76,13 @@ export const codegen = () => {
     return;
   }
 
-  apiSpecsPaths.forEach((apiSpecsPath) => {
-    hasHttpOrHttps(apiSpecsPath) ? handleRemoteApiSpec(apiSpecsPath) : handleLocalApiSpec(apiSpecsPath);
+  async function handleRemoteApiSpec(item: ApiSpecsPath) {
+    const apiSpec = await fetchApiSpec(item.path);
+    writeSpecToFile(apiSpec, item.name);
+  }
+
+  apiSpecsPaths.forEach((item) => {
+    hasHttpOrHttps(item.path) ? handleRemoteApiSpec(item) : handleLocalApiSpec(item);
   });
 };
 
