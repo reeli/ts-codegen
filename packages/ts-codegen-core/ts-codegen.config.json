@@ -4,23 +4,23 @@
   "requestCreateMethod": "createRequest",
   "apiSpecsPaths": [
     {
-      "path": "https://petstore.swagger.io/v2/swagger.json", // 远程获取 Swagger 文档（json 格式）
+      "path": "https://petstore.swagger.io/v2/swagger.json",
       "name": "PetStoreService1"
     },
     {
-      "path": "https://petstore.swagger.io/v2/swagger.yaml", // 远程获取 Swagger 文档（yaml 格式）
+      "path": "https://petstore.swagger.io/v2/swagger.yaml",
       "name": "PetStoreService2"
     },
     {
-      "path": "./examples/swagger.json", // 从本地文件读取 Swagger 文档（json 格式）
+      "path": "./examples/swagger.json",
       "name": "SwaggerService"
     },
     {
-      "path": "./examples/openapi.json", // 从本地文件读取 OpenAPI 文档（json 格式）
+      "path": "./examples/openapi.json",
       "name": "OpenApiService"
     },
     {
-      "path": "./examples/demo.yaml", // 从本地文件读取 Swagger 文档（yaml 格式）
+      "path": "./examples/demo.yaml",
       "name": "DemoService"
     }
   ],

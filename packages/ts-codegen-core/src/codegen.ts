@@ -29,61 +29,71 @@ export const getCodegenConfig = (): CodegenConfig => {
   return fs.existsSync(codegenConfigPath) ? require(codegenConfigPath) : DEFAULT_CODEGEN_CONFIG;
 };
 
-const isJSON = (ext: string) => ext === ".json";
-
 export const codegen = () => {
-  const { outputFolder, requestCreateLib, requestCreateMethod, apiSpecsPaths, options } = getCodegenConfig();
-
-  const writeSpecToFile = (spec: CustomSpec, filename?: string) => {
-    if (!spec) {
-      return;
-    }
-    const importLib = `import { ${requestCreateMethod} } from '${requestCreateLib}';\n\n`;
-    const { clientConfigs, decls } = scan(spec, options);
-    const fileStr = `${importLib} ${printOutputs(clientConfigs, decls, requestCreateMethod)}`;
-    const { basePath } = getUnifiedInputs(spec);
-    write(outputFolder || DEFAULT_CODEGEN_CONFIG.outputFolder, `./${filename || getFilename(basePath)}`, fileStr);
-  };
-
-  function handleLocalApiSpec(item: ApiSpecsPath) {
-    const ext = path.extname(item.path);
-    const validExts = [".json", ".yaml", ".yml"];
-
-    if (!validExts.includes(ext)) {
-      throw new Error(ERROR_MESSAGES.INVALID_FILE_EXT_ERROR);
-    }
-
-    const fileStr = fs.readFileSync(item.path, "utf8");
-
-    // handle json file
-    if (isJSON(ext)) {
-      const spec = testJSON(fileStr, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
-      writeSpecToFile(spec, item.name);
-
-      return;
-    }
-
-    // handle yaml file
-    try {
-      writeSpecToFile(yaml.load(fileStr), item.name);
-    } catch (e) {
-      console.log(e);
-    }
-  }
+  const { apiSpecsPaths } = getCodegenConfig();
 
   if (isEmpty(apiSpecsPaths)) {
     console.error(ERROR_MESSAGES.EMPTY_API_SPECS_PATHS);
     return;
   }
 
-  async function handleRemoteApiSpec(item: ApiSpecsPath) {
-    const apiSpec = await fetchApiSpec(item.path);
-    writeSpecToFile(apiSpec, item.name);
-  }
-
   apiSpecsPaths.forEach((item) => {
     hasHttpOrHttps(item.path) ? handleRemoteApiSpec(item) : handleLocalApiSpec(item);
   });
+};
+
+const handleRemoteApiSpec = async (item: ApiSpecsPath) => {
+  const { data, fileType } = (await fetchRemoteSpec(item.path)) || {};
+  const getResponseData = () => data;
+
+  covertAndWrite(fileType, getResponseData, item.name);
+};
+
+const handleLocalApiSpec = (item: ApiSpecsPath) => {
+  const fileType = path.extname(item.path).split(".")[1];
+  const getFileStr = () => fs.readFileSync(item.path, "utf8");
+
+  covertAndWrite(fileType, getFileStr, item.name);
+};
+
+const covertAndWrite = (fileType: string = "", getData: () => any, filename?: string) => {
+  if (!fileType) {
+    return;
+  }
+
+  const validFileType = ["json", "yaml", "yml"];
+
+  if (!validFileType.includes(fileType)) {
+    throw new Error(ERROR_MESSAGES.INVALID_FILE_EXT_ERROR);
+  }
+
+  const data = getData();
+
+  // handle json file
+  if (isJSON(fileType)) {
+    writeSpecToFile(testJSON(data, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR), filename);
+    return;
+  }
+
+  // handle yaml file
+  try {
+    writeSpecToFile(yaml.load(data), filename);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const writeSpecToFile = (spec: CustomSpec, filename?: string) => {
+  const { outputFolder, requestCreateLib, requestCreateMethod, options } = getCodegenConfig();
+
+  if (!spec) {
+    return;
+  }
+  const importLib = `import { ${requestCreateMethod} } from '${requestCreateLib}';\n\n`;
+  const { clientConfigs, decls } = scan(spec, options);
+  const fileStr = `${importLib} ${printOutputs(clientConfigs, decls, requestCreateMethod)}`;
+  const { basePath } = getUnifiedInputs(spec);
+  write(outputFolder || DEFAULT_CODEGEN_CONFIG.outputFolder, `./${filename || getFilename(basePath)}`, fileStr);
 };
 
 const write = (output: string, filename: string, str: string) => {
@@ -94,13 +104,32 @@ const write = (output: string, filename: string, str: string) => {
   fs.writeFileSync(path.resolve(output, `./${filename}.ts`), str, "utf-8");
 };
 
-const fetchApiSpec = (url: string, timeout: number = DEFAULT_CODEGEN_CONFIG.timeout) => {
+const fetchRemoteSpec = (url: string, timeout: number = DEFAULT_CODEGEN_CONFIG.timeout) => {
   const instance = axios.create({ timeout });
 
   return instance
     .get(url)
-    .then((response) => response.data)
+    .then((response) => {
+      return {
+        data: response.data,
+        fileType: getFileTypeByContentType(response.headers["content-type"]),
+      };
+    })
     .catch((error) => {
       console.error(`${error.code}: ${ERROR_MESSAGES.FETCH_CLIENT_FAILED_ERROR}`);
     });
+};
+
+const isJSON = (ext: string) => ext.includes("json");
+
+const getFileTypeByContentType = (contentType: string) => {
+  if (contentType.includes("json")) {
+    return "json";
+  }
+
+  if (contentType.includes("yaml") || contentType.includes("yml")) {
+    return "yaml";
+  }
+
+  return "";
 };

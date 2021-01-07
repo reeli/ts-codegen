@@ -41,20 +41,24 @@ export const quoteKey = (k: string) => {
 };
 
 export function testJSON(
-  str: unknown,
+  input: unknown,
   errorMsg: string = ERROR_MESSAGES.INVALID_JSON_FILE_ERROR,
   output: (message: string) => void = console.error,
 ) {
-  if (typeof str !== "string") {
-    return;
+  if (typeof input === "object") {
+    return input;
   }
 
-  try {
-    return JSON.parse(str);
-  } catch (e) {
-    output(errorMsg);
-    return;
+  if (typeof input === "string") {
+    try {
+      return JSON.parse(input);
+    } catch (e) {
+      output(errorMsg);
+      return;
+    }
   }
+
+  return;
 }
 
 export const setDeprecated = (description: string = "") =>
