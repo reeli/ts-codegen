@@ -1,4 +1,4 @@
-import { getFilename, testJSON, hasHttpOrHttps, printOutputs, getUnifiedInputs } from "./utils";
+import { getFilename, toJSONObj, hasHttpOrHttps, printOutputs, getUnifiedInputs } from "./utils";
 import axios from "axios";
 import { isEmpty } from "lodash";
 import * as fs from "fs";
@@ -71,7 +71,7 @@ const covertAndWrite = (fileType: string = "", getData: () => any, filename?: st
 
   // handle json file
   if (isJSON(fileType)) {
-    writeSpecToFile(testJSON(data, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR), filename);
+    writeSpecToFile(toJSONObj(data, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR), filename);
     return;
   }
 

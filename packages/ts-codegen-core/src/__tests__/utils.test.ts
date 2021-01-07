@@ -8,7 +8,7 @@ import {
   quoteKey,
   setDeprecated,
   shouldUseExtends,
-  testJSON,
+  toJSONObj,
   toCapitalCase,
   withOptionalName,
 } from "@ts-tool/ts-codegen-core";
@@ -23,20 +23,23 @@ describe("#toCapitalCase", () => {
   });
 });
 
-describe("#testJSON", () => {
+describe("#toJSONObj", () => {
   it("when inputs is a valid json string, should parse it and return correct json object", () => {
-    expect(testJSON("{}")).toEqual({});
-    expect(testJSON('["foo","bar",{"foo":"bar"}]')).toEqual(["foo", "bar", { foo: "bar" }]);
+    expect(toJSONObj("{}")).toEqual({});
+    expect(toJSONObj('["foo","bar",{"foo":"bar"}]')).toEqual(["foo", "bar", { foo: "bar" }]);
   });
-  it("when inputs is not a string, should return nothing", () => {
-    expect(testJSON(3)).toEqual(undefined);
-    expect(testJSON(true)).toEqual(undefined);
-    expect(testJSON({})).toEqual(undefined);
-    expect(testJSON([])).toEqual(undefined);
+  it("when inputs is an object, just return itself", () => {
+    expect(toJSONObj({ a: 1, b: 2 })).toEqual({ a: 1, b: 2 });
+    expect(toJSONObj({})).toEqual({});
+    expect(toJSONObj([])).toEqual([]);
+  });
+  it("when inputs is not a string nor an object, should return nothing", () => {
+    expect(toJSONObj(3)).toEqual(undefined);
+    expect(toJSONObj(true)).toEqual(undefined);
   });
   it("when inputs is an invalid json string, should print error message", () => {
     const mockPrint = jest.fn();
-    testJSON("{a: 1}", "some error", mockPrint);
+    toJSONObj("{a: 1}", "some error", mockPrint);
     expect(mockPrint).toHaveBeenCalledWith("some error");
   });
 });

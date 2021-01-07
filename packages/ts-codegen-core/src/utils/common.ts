@@ -40,7 +40,7 @@ export const quoteKey = (k: string) => {
   return `'${trimEnd(k, "?")}'${isOptional ? "?" : ""}`;
 };
 
-export function testJSON(
+export function toJSONObj(
   input: unknown,
   errorMsg: string = ERROR_MESSAGES.INVALID_JSON_FILE_ERROR,
   output: (message: string) => void = console.error,
