@@ -13,7 +13,7 @@ import {
   reduce,
   upperCase,
   values,
-  some
+  some,
 } from "lodash";
 import { getPathsFromRef, toCapitalCase, withOptionalName } from "../utils/common";
 import { CustomType } from "./Type";
@@ -68,6 +68,8 @@ const buildConfigs = <TOperation extends CustomOperation>({
             ]
           : undefined,
         ...createOtherConfig(operation, pathParams, queryParams),
+        summary: operation.summary,
+        description: operation.description,
       };
     });
   };
@@ -117,14 +119,13 @@ export const getClientConfigsV2 = (
     const formDataParams = pickParamsByType<FormDataParameter>("formData");
 
     const getContentType = () => {
-      if(operation.consumes&&operation.consumes!.length>0 ){
+      if (operation.consumes && operation.consumes!.length > 0) {
         return operation.consumes[0] as string;
       }
       if (bodyParams) {
         return "application/json";
       }
       if (formDataParams) {
-
         return "multipart/form-data";
       }
       return "";
@@ -147,7 +148,9 @@ export const getClientConfigsV2 = (
       const successResponsesGetter = getSuccessResponsesType(schemaHandler, register);
       const { requestBody, contentType } = getRequestBody(operation);
       const requestBodyType = requestTypesGetter(requestBody);
-      const finalBodyType = backwardCompatible ? requestBodyType : getRequestBodyType({schemaHandler, operationId:operation.operationId, params:requestBody, contentType});
+      const finalBodyType = backwardCompatible
+        ? requestBodyType
+        : getRequestBodyType({ schemaHandler, operationId: operation.operationId, params: requestBody, contentType });
 
       return {
         TResp: successResponsesGetter<Response>(operation.responses, (resp) => resp?.schema),
@@ -235,33 +238,38 @@ const getRequestTypes = (schemaHandler: Schema) => (operationId?: string) => (
   );
 };
 
-const getRequestBodyType = ({schemaHandler,operationId, params, contentType}:{
-                              schemaHandler: Schema;
-                              operationId?: string;
-                            params?: CustomParameter[];
-                            contentType?:string;
-                            })=> {
+const getRequestBodyType = ({
+  schemaHandler,
+  operationId,
+  params,
+  contentType,
+}: {
+  schemaHandler: Schema;
+  operationId?: string;
+  params?: CustomParameter[];
+  contentType?: string;
+}) => {
   if (!params) {
     return;
   }
 
   const REQUEST_BODY = "requestBody";
 
-  if(contentType==="application/json"){
+  if (contentType === "application/json") {
     const param = params[0];
     return {
       [withOptionalName(REQUEST_BODY, param.required)]: schemaHandler.convert(
-          get(param, "schema", param),
-          `${toCapitalCase(operationId)}${toCapitalCase(param.name)}`,
+        get(param, "schema", param),
+        `${toCapitalCase(operationId)}${toCapitalCase(param.name)}`,
       ),
-    }
+    };
   }
 
-  const isRequired = some(params, (param)=>param.required);
+  const isRequired = some(params, (param) => param.required);
   return {
-    [withOptionalName(REQUEST_BODY, isRequired)]: getRequestTypes(schemaHandler)(operationId)(params)
+    [withOptionalName(REQUEST_BODY, isRequired)]: getRequestTypes(schemaHandler)(operationId)(params),
   };
-}
+};
 
 const getSuccessResponsesType = (schemaHandler: Schema, register: ReturnType<typeof createRegister>) => <TResponse>(
   responses?: { [responseName: string]: TResponse | CustomReference },

@@ -15,6 +15,8 @@ export interface IClientConfig {
   bodyParams?: string[]; // for backward capability, only used in swagger version 2.0
   contentType?: string;
   deprecated?: boolean;
+  summary?: string;
+  description?: string;
 }
 
 export type CustomSchema = Schema | ISchema;
@@ -28,3 +30,23 @@ export type CustomPath = Path | IPathItem;
 export type CustomPaths = Spec["paths"] | IOpenAPI["paths"];
 export type CustomOperation = Operation | IOperation;
 export type CustomSpec = IOpenAPI | Spec;
+
+export interface ScanOptions {
+  withComments?: boolean; // Toggle comments in generated code
+  typeWithPrefix?: boolean; // Will keep prefix('I' for interface, 'T' for type) in types when it sets true
+  backwardCompatible?: boolean; // Not recommend, only if you want backward capability. This option will help to keep operationId and method name as before when it sets true. This option is only worked with swagger version 2.0.
+}
+
+export interface ApiSpecsPath {
+  path: string;
+  name?: string;
+}
+
+export interface CodegenConfig {
+  requestCreateLib: string;
+  requestCreateMethod: string;
+  apiSpecsPaths: ApiSpecsPath[];
+  outputFolder?: string;
+  timeout?: number;
+  options?: ScanOptions;
+}

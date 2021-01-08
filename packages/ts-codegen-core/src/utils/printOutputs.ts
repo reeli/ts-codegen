@@ -1,17 +1,23 @@
-import { IClientConfig, RequestType } from "../__types__/types";
+import { IClientConfig, RequestType, ScanOptions } from "../__types__/types";
 import { IStore, DeclKinds } from "../core/createRegister";
-import { prettifyCode, setDeprecated, objToTypeStr } from "./common";
+import { prettifyCode, objToTypeStr } from "./common";
 import { DEFAULT_CODEGEN_CONFIG } from "../constants";
 import { sortBy, isEmpty, compact, keys, mapValues } from "lodash";
 import { CustomType } from "../core/Type";
 
-export const printOutputs = (clientConfigs: IClientConfig[], decls: IStore["decls"], requestCreateMethod?: string) => {
-  return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod)} \n\n ${printTypes(decls)}`);
+export const printOutputs = (
+  clientConfigs: IClientConfig[],
+  decls: IStore["decls"],
+  requestCreateMethod?: string,
+  options?: ScanOptions,
+) => {
+  return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod, options)} \n\n ${printTypes(decls)}`);
 };
 
 const printRequest = (
   clientConfigs: IClientConfig[],
   requestCreateMethod = DEFAULT_CODEGEN_CONFIG.requestCreateMethod,
+  options?: ScanOptions,
 ): string => {
   const configs = sortBy(clientConfigs, (o) => o.operationId);
 
@@ -54,14 +60,28 @@ const printRequest = (
       };
 
       return `
-${v.deprecated ? setDeprecated(v.operationId) : ""}
+${options?.withComments ? addComments(v) : ""}
 export const ${v.operationId} = ${requestCreateMethod}${toGenerators()}("${
         v.operationId
       }", (${toRequestInputs()}) => ({${toUrl()}${toMethod()}${toRequestBody()}${toQueryParams()}${toHeaders()}})
 );
 `;
     })
-    .join("\n\n");
+    .join("");
+};
+
+const addComments = (v: IClientConfig) => {
+  if (!v.summary && !v.deprecated) {
+    return "";
+  }
+
+  const summaryComment = v.summary ? `* ${v.summary}` : "";
+  const deprecatedComment = v.deprecated ? `* @deprecated ${v.operationId}` : "";
+  const comments = [summaryComment, deprecatedComment].filter((c) => !!c).join("\n");
+
+  return `/**
+  ${comments}
+  */`;
 };
 
 const printTypes = (decls: IStore["decls"]): string => {

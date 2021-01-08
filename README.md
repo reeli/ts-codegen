@@ -120,7 +120,7 @@ npx ts-codegen
 
 - **`options`: Object [可选项]**
 
-  表示一些额外配置，仅在需要兼容老版本时进行配置。
+  表示一些额外配置。其中，`typeWithPrefix` 和 `backwardCompatible` 仅在需要兼容老版本时进行配置。
 
   - **`typeWithPrefix`: Boolean [可选项]，默认值: false**
 
@@ -129,3 +129,7 @@ npx ts-codegen
   - **`backwardCompatible`: Boolean [可选项]，默认值: false**
 
     用于兼容老版本，一般不推荐设置为 true。如果你使用了之前的版本，并且希望尽可能兼容以前的老版本，可以将其设置为 true。
+
+  - **`withComments`: Boolean [可选项]，默认值: false**
+
+    用于设置在生成代码中是否显示注解。比如你在 swagger 文档中通过 `summary`, `description` 等字段，为一个 API 添加了描述，你就可以通过这个开关来控制这个描述是否显示在最终的生成代码中。

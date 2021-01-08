@@ -61,13 +61,6 @@ export function toJSONObj(
   return;
 }
 
-export const setDeprecated = (description: string = "") =>
-  `
-  /**
-  * @deprecated ${description}
-  */
-  `;
-
 export const shouldUseExtends = (schemas: CustomSchema): boolean =>
   !!find(schemas, (schema) => schema.$ref) && !!find(schemas, (schema) => !isEmpty(schema.properties));
 

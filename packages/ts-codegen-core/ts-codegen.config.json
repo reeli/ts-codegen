@@ -25,6 +25,7 @@
     }
   ],
   "options": {
+    "withComments": true,
     "typeWithPrefix": true,
     "backwardCompatible": true
   }

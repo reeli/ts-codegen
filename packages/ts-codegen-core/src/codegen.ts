@@ -5,30 +5,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { scan } from "./core";
 import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants";
-import { CustomSpec } from "./__types__/types";
+import { CustomSpec, CodegenConfig, ApiSpecsPath } from "./__types__/types";
 import yaml from "js-yaml";
-
-interface ApiSpecsPath {
-  path: string;
-  name?: string;
-}
-
-interface CodegenConfig {
-  requestCreateLib: string;
-  requestCreateMethod: string;
-  apiSpecsPaths: ApiSpecsPath[];
-  outputFolder?: string;
-  timeout?: number;
-  options?: {
-    typeWithPrefix?: boolean;
-    backwardCompatible?: boolean;
-  };
-}
-
-export const getCodegenConfig = (): CodegenConfig => {
-  const codegenConfigPath = path.resolve("ts-codegen.config.json");
-  return fs.existsSync(codegenConfigPath) ? require(codegenConfigPath) : DEFAULT_CODEGEN_CONFIG;
-};
 
 export const codegen = () => {
   const { apiSpecsPaths } = getCodegenConfig();
@@ -41,6 +19,11 @@ export const codegen = () => {
   apiSpecsPaths.forEach((item) => {
     hasHttpOrHttps(item.path) ? handleRemoteApiSpec(item) : handleLocalApiSpec(item);
   });
+};
+
+export const getCodegenConfig = (): CodegenConfig => {
+  const codegenConfigPath = path.resolve("ts-codegen.config.json");
+  return fs.existsSync(codegenConfigPath) ? require(codegenConfigPath) : DEFAULT_CODEGEN_CONFIG;
 };
 
 const handleRemoteApiSpec = async (item: ApiSpecsPath) => {
@@ -92,7 +75,7 @@ const writeSpecToFile = (spec: CustomSpec, filename?: string) => {
   }
   const importLib = `import { ${requestCreateMethod} } from '${requestCreateLib}';\n\n`;
   const { clientConfigs, decls } = scan(spec, options);
-  const fileStr = `${importLib} ${printOutputs(clientConfigs, decls, requestCreateMethod)}`;
+  const fileStr = `${importLib} ${printOutputs(clientConfigs, decls, requestCreateMethod, options)}`;
   const { basePath } = getUnifiedInputs(spec);
   write(outputFolder || DEFAULT_CODEGEN_CONFIG.outputFolder, `./${filename || getFilename(basePath)}`, fileStr);
 };

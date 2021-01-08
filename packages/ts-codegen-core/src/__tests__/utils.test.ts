@@ -6,7 +6,6 @@ import {
   objToTypeStr,
   prettifyCode,
   quoteKey,
-  setDeprecated,
   shouldUseExtends,
   toJSONObj,
   toCapitalCase,
@@ -122,16 +121,6 @@ describe("#quoteKey", () => {
   it("should quote the key if it not contains the optional tag", () => {
     const input = "001";
     expect(quoteKey(input)).toEqual("'001'");
-  });
-});
-
-describe("#setDeprecated", () => {
-  it("should add deprecated comments with some description", () => {
-    expect(setDeprecated("findPet")).toEqual(`
-  /**
-  * @deprecated findPet
-  */
-  `);
   });
 });
 
