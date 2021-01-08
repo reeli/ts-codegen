@@ -18,6 +18,7 @@ interface CodegenConfig {
   requestCreateMethod: string;
   apiSpecsPaths: ApiSpecsPath[];
   outputFolder?: string;
+  timeout?: number;
   options?: {
     typeWithPrefix?: boolean;
     backwardCompatible?: boolean;
