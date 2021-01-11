@@ -1,14 +1,9 @@
 import { keys } from "lodash";
 import { Schema } from "./Schema";
 import { shouldUseExtends, toCapitalCase, getUnifiedInputs, DataType } from "../utils";
-import { CustomSchema, IClientConfig, CustomSpec } from "../__types__/types";
+import { CustomSchema, IClientConfig, CustomSpec, ScanOptions } from "../__types__/types";
 import { createRegister, DeclKinds } from "./createRegister";
 import { getClientConfigsV2, getClientConfigsV3 } from "./createClientConfigs";
-
-interface ScanOptions {
-  typeWithPrefix?: boolean; // Will keep prefix('I' for interface, 'T' for type) in types when it sets true
-  backwardCompatible?: boolean; // Not recommend, only if you want backward capability. This option will help to keep operationId and method name as before when it sets true. This option is only worked with swagger version 2.0.
-}
 
 export const scan = (data: CustomSpec, options?: ScanOptions) => {
   const register = createRegister(options?.typeWithPrefix);

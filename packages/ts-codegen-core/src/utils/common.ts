@@ -40,29 +40,26 @@ export const quoteKey = (k: string) => {
   return `'${trimEnd(k, "?")}'${isOptional ? "?" : ""}`;
 };
 
-export function testJSON(
-  str: unknown,
+export function toJSONObj(
+  input: unknown,
   errorMsg: string = ERROR_MESSAGES.INVALID_JSON_FILE_ERROR,
   output: (message: string) => void = console.error,
 ) {
-  if (typeof str !== "string") {
-    return;
+  if (typeof input === "object") {
+    return input;
   }
 
-  try {
-    return JSON.parse(str);
-  } catch (e) {
-    output(errorMsg);
-    return;
+  if (typeof input === "string") {
+    try {
+      return JSON.parse(input);
+    } catch (e) {
+      output(errorMsg);
+      return;
+    }
   }
+
+  return;
 }
-
-export const setDeprecated = (description: string = "") =>
-  `
-  /**
-  * @deprecated ${description}
-  */
-  `;
 
 export const shouldUseExtends = (schemas: CustomSchema): boolean =>
   !!find(schemas, (schema) => schema.$ref) && !!find(schemas, (schema) => !isEmpty(schema.properties));

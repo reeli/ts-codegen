@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "axios": "0.19.x",
+    "js-yaml": "4.0.x",
     "lodash": "4.17.x",
     "tslib": "2.0.x"
   },
@@ -24,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/reeli/ts-codegen/issues"
   },
-  "homepage": "https://github.com/reeli/ts-codegen#readme"
+  "homepage": "https://github.com/reeli/ts-codegen#readme",
+  "devDependencies": {
+    "@types/js-yaml": "3.12.x"
+  }
 }

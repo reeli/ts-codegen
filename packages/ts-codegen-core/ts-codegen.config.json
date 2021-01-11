@@ -3,11 +3,29 @@
   "requestCreateLib": "../examples/utils/createRequest",
   "requestCreateMethod": "createRequest",
   "apiSpecsPaths": [
-    "https://petstore.swagger.io/v2/swagger.json",
-    "./examples/swagger.json",
-    "./examples/openapi.json"
+    {
+      "path": "https://petstore.swagger.io/v2/swagger.json",
+      "name": "PetStoreService1"
+    },
+    {
+      "path": "https://petstore.swagger.io/v2/swagger.yaml",
+      "name": "PetStoreService2"
+    },
+    {
+      "path": "./examples/swagger.json",
+      "name": "SwaggerService"
+    },
+    {
+      "path": "./examples/openapi.json",
+      "name": "OpenApiService"
+    },
+    {
+      "path": "./examples/demo.yaml",
+      "name": "DemoService"
+    }
   ],
   "options": {
+    "withComments": true,
     "typeWithPrefix": true,
     "backwardCompatible": true
   }

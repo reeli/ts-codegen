@@ -1,17 +1,25 @@
-import { IClientConfig, RequestType } from "../__types__/types";
+import { IClientConfig, RequestType, ScanOptions } from "../__types__/types";
 import { IStore, DeclKinds } from "../core/createRegister";
-import { prettifyCode, setDeprecated, objToTypeStr } from "./common";
+import { prettifyCode, objToTypeStr } from "./common";
 import { DEFAULT_CODEGEN_CONFIG } from "../constants";
 import { sortBy, isEmpty, compact, keys, mapValues } from "lodash";
 import { CustomType } from "../core/Type";
 
-export const printOutputs = (clientConfigs: IClientConfig[], decls: IStore["decls"], requestCreateMethod?: string) => {
-  return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod)} \n\n ${printTypes(decls)}`);
+export const printOutputs = (
+  clientConfigs: IClientConfig[],
+  decls: IStore["decls"],
+  requestCreateMethod?: string,
+  options?: ScanOptions,
+) => {
+  return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod, options)} \n\n ${printTypes(decls)}`);
 };
+
+const hasRequestBody = (TReq: IClientConfig["TReq"]) => TReq?.requestBody || (TReq || {})["requestBody?"];
 
 const printRequest = (
   clientConfigs: IClientConfig[],
   requestCreateMethod = DEFAULT_CODEGEN_CONFIG.requestCreateMethod,
+  options?: ScanOptions,
 ): string => {
   const configs = sortBy(clientConfigs, (o) => o.operationId);
 
@@ -23,7 +31,7 @@ const printRequest = (
         if (!isEmpty(v.bodyParams)) {
           return `data: ${v.bodyParams!.length > 1 ? `{${v.bodyParams!.join(",")}}` : v.bodyParams![0]},`;
         }
-        return v.contentType ? "data: requestBody," : "";
+        return v.contentType && hasRequestBody(v.TReq) ? "data: requestBody," : "";
       };
       const toQueryParams = () => {
         const params = toRequestParams(v.queryParams);
@@ -47,21 +55,33 @@ const printRequest = (
           if (!isEmpty(v.bodyParams)) {
             return v.bodyParams!;
           }
-          return v.contentType ? ["requestBody"] : "";
+          return v.contentType && hasRequestBody(v.TReq) ? ["requestBody"] : "";
         };
         const list = compact([...v.pathParams, ...v.queryParams, ...getRequestBody()]);
         return isEmpty(list) ? "" : toRequestParams(list);
       };
 
       return `
-${v.deprecated ? setDeprecated(v.operationId) : ""}
+${addComments(v, options?.withComments)}
 export const ${v.operationId} = ${requestCreateMethod}${toGenerators()}("${
         v.operationId
       }", (${toRequestInputs()}) => ({${toUrl()}${toMethod()}${toRequestBody()}${toQueryParams()}${toHeaders()}})
 );
 `;
     })
-    .join("\n\n");
+    .join("");
+};
+
+const addComments = (v: IClientConfig, withComments?: boolean) => {
+  const summaryComment = withComments && v.summary ? `* ${v.summary}` : "";
+  const deprecatedComment = v.deprecated ? `* @deprecated ${v.operationId}` : "";
+  const comments = [summaryComment, deprecatedComment].filter((c) => !!c);
+
+  return isEmpty(comments)
+    ? ""
+    : `/**
+  ${comments.join("\\n")}
+  */`;
 };
 
 const printTypes = (decls: IStore["decls"]): string => {
