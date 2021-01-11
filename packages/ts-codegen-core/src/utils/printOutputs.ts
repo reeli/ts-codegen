@@ -14,6 +14,8 @@ export const printOutputs = (
   return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod, options)} \n\n ${printTypes(decls)}`);
 };
 
+const hasRequestBody = (TReq: IClientConfig["TReq"]) => TReq?.requestBody || (TReq || {})["requestBody?"];
+
 const printRequest = (
   clientConfigs: IClientConfig[],
   requestCreateMethod = DEFAULT_CODEGEN_CONFIG.requestCreateMethod,
@@ -29,7 +31,7 @@ const printRequest = (
         if (!isEmpty(v.bodyParams)) {
           return `data: ${v.bodyParams!.length > 1 ? `{${v.bodyParams!.join(",")}}` : v.bodyParams![0]},`;
         }
-        return v.contentType ? "data: requestBody," : "";
+        return v.contentType && hasRequestBody(v.TReq) ? "data: requestBody," : "";
       };
       const toQueryParams = () => {
         const params = toRequestParams(v.queryParams);
@@ -53,7 +55,7 @@ const printRequest = (
           if (!isEmpty(v.bodyParams)) {
             return v.bodyParams!;
           }
-          return v.contentType ? ["requestBody"] : "";
+          return v.contentType && hasRequestBody(v.TReq) ? ["requestBody"] : "";
         };
         const list = compact([...v.pathParams, ...v.queryParams, ...getRequestBody()]);
         return isEmpty(list) ? "" : toRequestParams(list);
