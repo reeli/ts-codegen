@@ -95,7 +95,6 @@ export const findPetsByStatus = createRequestAction<
 /**
  * @deprecated findPetsByTags
  */
-
 export const findPetsByTags = createRequestAction<
   {
     tags: string[];

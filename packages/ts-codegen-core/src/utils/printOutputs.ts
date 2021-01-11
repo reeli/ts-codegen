@@ -60,7 +60,7 @@ const printRequest = (
       };
 
       return `
-${options?.withComments ? addComments(v) : ""}
+${addComments(v, options?.withComments)}
 export const ${v.operationId} = ${requestCreateMethod}${toGenerators()}("${
         v.operationId
       }", (${toRequestInputs()}) => ({${toUrl()}${toMethod()}${toRequestBody()}${toQueryParams()}${toHeaders()}})
@@ -70,17 +70,15 @@ export const ${v.operationId} = ${requestCreateMethod}${toGenerators()}("${
     .join("");
 };
 
-const addComments = (v: IClientConfig) => {
-  if (!v.summary && !v.deprecated) {
-    return "";
-  }
-
-  const summaryComment = v.summary ? `* ${v.summary}` : "";
+const addComments = (v: IClientConfig, withComments?: boolean) => {
+  const summaryComment = withComments && v.summary ? `* ${v.summary}` : "";
   const deprecatedComment = v.deprecated ? `* @deprecated ${v.operationId}` : "";
-  const comments = [summaryComment, deprecatedComment].filter((c) => !!c).join("\n");
+  const comments = [summaryComment, deprecatedComment].filter((c) => !!c);
 
-  return `/**
-  ${comments}
+  return isEmpty(comments)
+    ? ""
+    : `/**
+  ${comments.join("\\n")}
   */`;
 };
 
