@@ -1,6 +1,6 @@
 import swaggerV3 from "../../examples/openapi.json";
 import { IOpenAPI, scan } from "@ts-tool/ts-codegen-core";
-import { printOutputs } from "../utils/printOutputs";
+import { printOutputs } from "../core/print";
 
 describe("swagger v3", () => {
   it("should handle basic schemas correctly", () => {

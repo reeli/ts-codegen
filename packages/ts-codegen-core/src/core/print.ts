@@ -1,9 +1,9 @@
 import { IClientConfig, RequestType, ScanOptions } from "../__types__/types";
-import { IStore, DeclKinds } from "../core/createRegister";
-import { prettifyCode, objToTypeStr } from "./common";
+import { IStore, DeclKinds } from "./createRegister";
+import { prettifyCode, objToTypeStr } from "../utils/common";
 import { DEFAULT_CODEGEN_CONFIG } from "../constants";
 import { sortBy, isEmpty, compact, keys, mapValues } from "lodash";
-import { CustomType } from "../core/Type";
+import { CustomType } from "./Type";
 
 export const printOutputs = (
   clientConfigs: IClientConfig[],
