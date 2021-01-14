@@ -279,15 +279,15 @@ const getSuccessResponsesType = (schemaHandler: Schema, register: ReturnType<typ
     return;
   }
 
-  let fistSuccessResp: TResponse | CustomReference | undefined = undefined;
+  let firstSuccessResp: TResponse | CustomReference | undefined = undefined;
 
   keys(responses).forEach((code) => {
     const httpCode = Number(code);
     const resp = responses[code];
     const hasContent = getRef(resp) || getSchema(resp as TResponse);
 
-    if (httpCode >= 200 && httpCode < 300 && hasContent && !fistSuccessResp) {
-      fistSuccessResp = resp;
+    if (httpCode >= 200 && httpCode < 300 && hasContent && !firstSuccessResp) {
+      firstSuccessResp = resp;
     }
   });
 
@@ -302,7 +302,7 @@ const getSuccessResponsesType = (schemaHandler: Schema, register: ReturnType<typ
     return schema && schemaHandler.convert(schema);
   };
 
-  return fistSuccessResp && handleResp(fistSuccessResp);
+  return firstSuccessResp && handleResp(firstSuccessResp);
 };
 
 const getRef = (v: any): v is CustomReference => v.$ref;
