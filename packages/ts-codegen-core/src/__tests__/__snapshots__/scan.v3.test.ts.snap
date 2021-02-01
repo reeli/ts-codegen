@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`swagger v3 should handle basic schemas correctly 1`] = `
-"export const addPet = createRequestAction<
+"export const addPet = createRequest<
   {
     requestBody: NewPet;
   },
@@ -13,7 +13,7 @@ exports[`swagger v3 should handle basic schemas correctly 1`] = `
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
-export const createItem = createRequestAction<
+export const createItem = createRequest<
   {
     item?: Item;
   },
@@ -26,18 +26,18 @@ export const createItem = createRequestAction<
   },
 }));
 
-export const deletePet = createRequestAction<{
+export const deletePet = createRequest<{
   id: number;
 }>(\\"deletePet\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"DELETE\\" }));
 
-export const findPetById = createRequestAction<
+export const findPetById = createRequest<
   {
     id: number;
   },
   Pet
 >(\\"findPetById\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"GET\\" }));
 
-export const findPets = createRequestAction<
+export const findPets = createRequest<
   {
     fee: { age?: number; text: string };
     limit?: number;
@@ -56,7 +56,7 @@ export const findPets = createRequestAction<
   },
 }));
 
-export const formMultipartWithFile = createRequestAction<{
+export const formMultipartWithFile = createRequest<{
   requestBody: { data?: Pet; file: File; slice?: string[]; string?: string };
 }>(\\"formMultipartWithFile\\", ({ requestBody }) => ({
   url: \`/api/v3/demo/forms/multipart\`,
@@ -65,7 +65,7 @@ export const formMultipartWithFile = createRequestAction<{
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
 }));
 
-export const formMultipartWithFiles = createRequestAction<{
+export const formMultipartWithFiles = createRequest<{
   requestBody: { files: File[] };
 }>(\\"formMultipartWithFiles\\", ({ requestBody }) => ({
   url: \`/api/v3/demo/forms/multipart-with-files\`,
@@ -74,7 +74,7 @@ export const formMultipartWithFiles = createRequestAction<{
   headers: { \\"Content-Type\\": \\"multipart/form-data\\" },
 }));
 
-export const formUrlEncoded = createRequestAction<{
+export const formUrlEncoded = createRequest<{
   requestBody: RequestForm;
 }>(\\"formUrlEncoded\\", ({ requestBody }) => ({
   url: \`/api/v3/demo/forms/url-encoded\`,
@@ -83,12 +83,12 @@ export const formUrlEncoded = createRequestAction<{
   headers: { \\"Content-Type\\": \\"application/x-www-form-urlencoded\\" },
 }));
 
-export const generateFeedbackAndLeadReportUsingGet = createRequestAction<undefined, Resource>(
+export const generateFeedbackAndLeadReportUsingGet = createRequest<undefined, Resource>(
   \\"generateFeedbackAndLeadReportUsingGet\\",
   () => ({ url: \`/api/v3/demo/feedback\`, method: \\"GET\\" }),
 );
 
-export const getItems = createRequestAction<
+export const getItems = createRequest<
   {
     limit?: number;
     page?: number;
@@ -105,7 +105,7 @@ export const getItems = createRequestAction<
   },
 }));
 
-export const postBody = createRequestAction<{
+export const postBody = createRequest<{
   requestBody: Pet;
 }>(\\"postBody\\", ({ requestBody }) => ({
   url: \`/api/v3/body\`,
@@ -114,7 +114,7 @@ export const postBody = createRequestAction<{
   headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
-export const updatePet = createRequestAction<{
+export const updatePet = createRequest<{
   requestBody?: Cat | Dog;
 }>(\\"updatePet\\", ({ requestBody }) => ({
   url: \`/api/v3/pets\`,
