@@ -7,12 +7,18 @@ export const ERROR_MESSAGES = {
 };
 
 export const DEFAULT_CODEGEN_CONFIG = {
-  requestCreateLib: "",
-  requestCreateMethod: "createRequestAction",
-  timeout: 3 * 60 * 1000,
   outputFolder: "clients",
-  apiSpecsPaths: [],
+  requestCreateLib: "",
+  requestCreateMethod: "createRequest",
+  timeout: 3 * 60 * 1000,
+  apiSpecsPaths: [
+    {
+      path: "",
+      name: "",
+    },
+  ],
   options: {
+    withComments: false,
     typeWithPrefix: false,
     backwardCompatible: false,
   },
