@@ -4,7 +4,7 @@ import { isEmpty } from "lodash";
 import * as fs from "fs";
 import * as path from "path";
 import { scan, printOutputs } from "./core";
-import { ERROR_MESSAGES, DEFAULT_CODEGEN_CONFIG } from "./constants";
+import { ERROR_MESSAGES } from "./constants";
 import { CustomSpec, CodegenConfig, ApiSpecsPath } from "./__types__/types";
 import yaml from "js-yaml";
 
@@ -23,7 +23,10 @@ export const codegen = () => {
 
 export const getCodegenConfig = (): CodegenConfig => {
   const codegenConfigPath = path.resolve("ts-codegen.config.json");
-  return fs.existsSync(codegenConfigPath) ? require(codegenConfigPath) : DEFAULT_CODEGEN_CONFIG;
+  if (!fs.existsSync(codegenConfigPath)) {
+    throw new Error(ERROR_MESSAGES.NOT_FOUND_CONFIG_FILE);
+  }
+  return require(codegenConfigPath);
 };
 
 const handleRemoteApiSpec = async (item: ApiSpecsPath) => {
@@ -77,7 +80,7 @@ const writeSpecToFile = (spec: CustomSpec, filename?: string) => {
   const { clientConfigs, decls } = scan(spec, options);
   const fileStr = `${importLib} ${printOutputs(clientConfigs, decls, requestCreateMethod, options)}`;
   const { basePath } = getUnifiedInputs(spec);
-  write(outputFolder || DEFAULT_CODEGEN_CONFIG.outputFolder, `./${filename || getFilename(basePath)}`, fileStr);
+  write(outputFolder || "clients", `./${filename || getFilename(basePath)}`, fileStr);
 };
 
 const write = (output: string, filename: string, str: string) => {
@@ -88,7 +91,7 @@ const write = (output: string, filename: string, str: string) => {
   fs.writeFileSync(path.resolve(output, `./${filename}.ts`), str, "utf-8");
 };
 
-const fetchRemoteSpec = (url: string, timeout: number = DEFAULT_CODEGEN_CONFIG.timeout) => {
+const fetchRemoteSpec = (url: string, timeout: number = 180000) => {
   const instance = axios.create({ timeout });
 
   return instance

@@ -1,14 +1,13 @@
 import { IClientConfig, RequestType, ScanOptions } from "../__types__/types";
 import { IStore, DeclKinds } from "./createRegister";
 import { prettifyCode, objToTypeStr } from "../utils/common";
-import { DEFAULT_CODEGEN_CONFIG } from "../constants";
 import { sortBy, isEmpty, compact, keys, mapValues } from "lodash";
 import { CustomType } from "./Type";
 
 export const printOutputs = (
   clientConfigs: IClientConfig[],
   decls: IStore["decls"],
-  requestCreateMethod?: string,
+  requestCreateMethod: string = "createRequest",
   options?: ScanOptions,
 ) => {
   return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod, options)} \n\n ${printTypes(decls)}`);
@@ -16,11 +15,7 @@ export const printOutputs = (
 
 const hasRequestBody = (TReq: IClientConfig["TReq"]) => TReq?.requestBody || (TReq || {})["requestBody?"];
 
-const printRequest = (
-  clientConfigs: IClientConfig[],
-  requestCreateMethod = DEFAULT_CODEGEN_CONFIG.requestCreateMethod,
-  options?: ScanOptions,
-): string => {
+const printRequest = (clientConfigs: IClientConfig[], requestCreateMethod: string, options?: ScanOptions): string => {
   const configs = sortBy(clientConfigs, (o) => o.operationId);
 
   return configs

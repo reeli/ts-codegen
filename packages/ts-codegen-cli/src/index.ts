@@ -2,7 +2,25 @@ import fs from "fs";
 import path from "path";
 import prettier from "prettier";
 import { program } from "commander";
-import { codegen, getCodegenConfig, DEFAULT_CODEGEN_CONFIG } from "@ts-tool/ts-codegen-core";
+import { codegen, getCodegenConfig } from "@ts-tool/ts-codegen-core";
+
+const DEFAULT_CODEGEN_CONFIG = {
+  outputFolder: "clients",
+  requestCreateLib: "",
+  requestCreateMethod: "createRequest",
+  timeout: 3 * 60 * 1000,
+  apiSpecsPaths: [
+    {
+      path: "",
+      name: "",
+    },
+  ],
+  options: {
+    withComments: false,
+    typeWithPrefix: false,
+    backwardCompatible: false,
+  },
+};
 
 program
   .version("0.7.8", "-v, --version")
