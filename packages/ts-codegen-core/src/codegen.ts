@@ -8,8 +8,8 @@ import { ERROR_MESSAGES } from "./constants";
 import { CustomSpec, CodegenConfig, ApiSpecsPath } from "./__types__/types";
 import yaml from "js-yaml";
 
-export const codegen = () => {
-  const { apiSpecsPaths } = getCodegenConfig();
+export const codegen = (codegenConfig = getCodegenConfig()) => {
+  const { apiSpecsPaths } = codegenConfig;
 
   if (isEmpty(apiSpecsPaths)) {
     console.error(ERROR_MESSAGES.EMPTY_API_SPECS_PATHS);
@@ -17,33 +17,33 @@ export const codegen = () => {
   }
 
   apiSpecsPaths.forEach((item) => {
-    hasHttpOrHttps(item.path) ? handleRemoteApiSpec(item) : handleLocalApiSpec(item);
+    hasHttpOrHttps(item.path) ? handleRemoteApiSpec(item, codegenConfig) : handleLocalApiSpec(item, codegenConfig);
   });
 };
 
-export const getCodegenConfig = (): CodegenConfig => {
-  const codegenConfigPath = path.resolve("ts-codegen.config.json");
+export const getCodegenConfig = (configPath?: string): CodegenConfig => {
+  const codegenConfigPath = configPath || path.resolve("ts-codegen.config.json");
   if (!fs.existsSync(codegenConfigPath)) {
     throw new Error(ERROR_MESSAGES.NOT_FOUND_CONFIG_FILE);
   }
   return require(codegenConfigPath);
 };
 
-const handleRemoteApiSpec = async (item: ApiSpecsPath) => {
+const handleRemoteApiSpec = async (item: ApiSpecsPath, codegenConfig: CodegenConfig) => {
   const { data, fileType } = (await fetchRemoteSpec(item.path)) || {};
   const getResponseData = () => data;
 
-  covertAndWrite(fileType, getResponseData, item.name);
+  covertAndWrite(fileType, getResponseData, codegenConfig, item.name);
 };
 
-const handleLocalApiSpec = (item: ApiSpecsPath) => {
+const handleLocalApiSpec = (item: ApiSpecsPath, codegenConfig: CodegenConfig) => {
   const fileType = path.extname(item.path).split(".")[1];
   const getFileStr = () => fs.readFileSync(item.path, "utf8");
 
-  covertAndWrite(fileType, getFileStr, item.name);
+  covertAndWrite(fileType, getFileStr, codegenConfig, item.name);
 };
 
-const covertAndWrite = (fileType: string = "", getData: () => any, filename?: string) => {
+const covertAndWrite = (fileType: string = "", getData: () => any, codegenConfig: CodegenConfig, filename?: string) => {
   if (!fileType) {
     return;
   }
@@ -58,20 +58,20 @@ const covertAndWrite = (fileType: string = "", getData: () => any, filename?: st
 
   // handle json file
   if (isJSON(fileType)) {
-    writeSpecToFile(toJSONObj(data, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR), filename);
+    writeSpecToFile(toJSONObj(data, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR), codegenConfig, filename);
     return;
   }
 
   // handle yaml file
   try {
-    writeSpecToFile(yaml.load(data), filename);
+    writeSpecToFile(yaml.load(data), codegenConfig, filename);
   } catch (e) {
     console.log(e);
   }
 };
 
-const writeSpecToFile = (spec: CustomSpec, filename?: string) => {
-  const { outputFolder, requestCreateLib, requestCreateMethod, options } = getCodegenConfig();
+const writeSpecToFile = (spec: CustomSpec, codegenConfig: CodegenConfig, filename?: string) => {
+  const { outputFolder, requestCreateLib, requestCreateMethod, options } = codegenConfig;
 
   if (!spec) {
     return;

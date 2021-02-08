@@ -26,9 +26,9 @@ program
   .version("0.7.8", "-v, --version")
   .description("generate code")
   .action(() => {
-    const { outputFolder } = getCodegenConfig();
-    console.log(`Generate code to folder ${outputFolder} successfully!`);
-    codegen();
+    const codegenConfig = getCodegenConfig();
+    console.log(`Generate code to folder ${codegenConfig.outputFolder} successfully!`);
+    codegen(codegenConfig);
   });
 
 program
