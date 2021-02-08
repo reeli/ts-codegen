@@ -1,4 +1,4 @@
-import { Schema,createRegister } from "@ts-tool/ts-codegen-core";
+import { Schema, createRegister } from "@ts-tool/ts-codegen-core";
 
 describe("Schema Converter", () => {
   let register: ReturnType<typeof createRegister>;

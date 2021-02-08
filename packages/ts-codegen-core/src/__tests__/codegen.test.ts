@@ -35,7 +35,7 @@ const codegenConfig = {
 };
 
 describe("codegen", () => {
-  it("should generate code from swagger/openapi correctly", () => {
-    codegen(codegenConfig);
+  it("should generate code from swagger/openapi correctly", async () => {
+    await codegen(codegenConfig);
   });
 });
