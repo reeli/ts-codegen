@@ -1,4 +1,4 @@
-import { camelCase, Dictionary, find, indexOf, isEmpty, map, takeRight, trimEnd } from "lodash";
+import { camelCase, Dictionary, find, indexOf, isEmpty, map, takeRight, trimEnd, chain } from "lodash";
 import prettier from "prettier";
 import { CustomSchema } from "../__types__/types";
 import { ERROR_MESSAGES } from "../constants";
@@ -91,4 +91,23 @@ export const isObj = (s: CustomSchema) => s.type === "object" || s.properties;
 export const hasHttpOrHttps = (path: string) => {
   const { protocol } = url.parse(path);
   return protocol && /https?:/.test(protocol);
+};
+
+export const getRequestURL = (pathName: string, basePath?: string) => {
+  const isPathParam = (str: string) => str.startsWith("{");
+  const path = chain(pathName)
+    .split("/")
+    .map((p) => (isPathParam(p) ? `$${p}` : p))
+    .join("/")
+    .value();
+
+  if (basePath === "/") {
+    return path;
+  }
+
+  if (path === "/") {
+    return basePath || path;
+  }
+
+  return `${basePath}${path}`;
 };

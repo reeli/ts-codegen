@@ -1,7 +1,6 @@
 import { BodyParameter, FormDataParameter, Operation, Path, Response } from "swagger-schema-official";
 import {
   camelCase,
-  chain,
   Dictionary,
   first,
   get,
@@ -15,7 +14,7 @@ import {
   values,
   some,
 } from "lodash";
-import { getPathsFromRef, toCapitalCase, withOptionalName } from "../utils/common";
+import { getPathsFromRef, toCapitalCase, withOptionalName, getRequestURL } from "../utils/common";
 import { CustomType } from "./Type";
 import { Schema } from "./Schema";
 import {
@@ -90,17 +89,6 @@ const getParams = (register: ReturnType<typeof createRegister>) => (parameters: 
     pathParams: pickParamsByType<CustomParameter>("path"),
     queryParams: pickParamsByType<CustomParameter>("query"),
   };
-};
-
-const getRequestURL = (pathName: string, basePath?: string) => {
-  const isPathParam = (str: string) => str.startsWith("{");
-  const path = chain(pathName)
-    .split("/")
-    .map((p) => (isPathParam(p) ? `$${p}` : p))
-    .join("/")
-    .value();
-
-  return `${basePath}${path === "/" && !!basePath ? "" : path}`;
 };
 
 const getParamsNames = (params?: any[]) => (isEmpty(params) ? [] : map(params, (param) => param?.name));

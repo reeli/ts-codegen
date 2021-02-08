@@ -10,6 +10,7 @@ import {
   toJSONObj,
   toCapitalCase,
   withOptionalName,
+  getRequestURL,
 } from "@ts-tool/ts-codegen-core";
 
 describe("#toCapitalCase", () => {
@@ -251,5 +252,23 @@ describe("#getFilename", () => {
   it("should pick file name from basePath", () => {
     expect(getFilename("/v2")).toEqual("v2");
     expect(getFilename("/api/web")).toEqual("api.web");
+  });
+});
+
+describe("#getRequestURL", () => {
+  it("should return path without baseURL if baseURL is '/'", () => {
+    expect(getRequestURL("/api/dashboard/{dashboardId}/stage", "/")).toEqual("/api/dashboard/${dashboardId}/stage");
+  });
+
+  it("should return baseURL if baseURL exists but path is '/'", () => {
+    expect(getRequestURL("/", "/apis")).toEqual("/apis");
+  });
+
+  it("should return baseURL if baseURL not exists but path is '/'", () => {
+    expect(getRequestURL("/", "")).toEqual("/");
+  });
+
+  it("should get `/` baseURL if both baseURL and path is '/'", () => {
+    expect(getRequestURL("/", "/")).toEqual("/");
   });
 });
