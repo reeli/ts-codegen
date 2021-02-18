@@ -12,8 +12,7 @@
   "dependencies": {
     "@ts-tool/ts-codegen-core": "^3.1.0",
     "commander": "7.1.x",
-    "prettier": "2.2.x",
-    "tslib": "2.1.x"
+    "prettier": "2.2.x"
   },
   "publishConfig": {
     "access": "public"

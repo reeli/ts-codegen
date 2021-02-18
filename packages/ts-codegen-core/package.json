@@ -14,8 +14,7 @@
   "dependencies": {
     "axios": "0.21.x",
     "js-yaml": "4.0.x",
-    "lodash": "4.17.x",
-    "tslib": "2.1.x"
+    "lodash": "4.17.x"
   },
   "publishConfig": {
     "access": "public"
@@ -25,8 +24,5 @@
   "bugs": {
     "url": "https://github.com/reeli/ts-codegen/issues"
   },
-  "homepage": "https://github.com/reeli/ts-codegen#readme",
-  "devDependencies": {
-    "@types/js-yaml": "4.0.x"
-  }
+  "homepage": "https://github.com/reeli/ts-codegen#readme"
 }
