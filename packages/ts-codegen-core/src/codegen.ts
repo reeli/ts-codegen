@@ -43,7 +43,12 @@ const handleLocalApiSpec = (item: ApiSpecsPath, codegenConfig: CodegenConfig) =>
   covertAndWrite(fileType, getFileStr, codegenConfig, item.name);
 };
 
-const covertAndWrite = (fileType: string = "", getData: () => any, codegenConfig: CodegenConfig, filename?: string) => {
+const covertAndWrite = (
+  fileType: string = "",
+  getData: () => string,
+  codegenConfig: CodegenConfig,
+  filename?: string,
+) => {
   if (!fileType) {
     return;
   }
@@ -64,7 +69,7 @@ const covertAndWrite = (fileType: string = "", getData: () => any, codegenConfig
 
   // handle yaml file
   try {
-    writeSpecToFile(yaml.load(data), codegenConfig, filename);
+    writeSpecToFile(yaml.load(data) as CustomSpec, codegenConfig, filename);
   } catch (e) {
     console.log(e);
   }

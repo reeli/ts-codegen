@@ -6,6 +6,7 @@
   ],
   "description": "Typescript code generator, which is able to convert swagger to ts code.",
   "scripts": {
+    "postinstall": "husky install",
     "test": "tsc && jest",
     "clean": "rm -rf dist && lerna exec 'rm -rf dist'",
     "copy": "npm run clean && npm run build:types && ts-node scripts/copy.ts",
@@ -25,40 +26,35 @@
   },
   "homepage": "https://github.com/reeli/ts-codegen#readme",
   "devDependencies": {
-    "@babel/core": "7.9.x",
-    "@babel/preset-env": "7.9.x",
-    "@babel/preset-typescript": "7.9.x",
+    "@babel/core": "7.12.x",
+    "@babel/preset-env": "7.12.x",
+    "@babel/preset-typescript": "7.12.x",
     "@types/axios": "0.14.x",
-    "@types/jest": "25.2.x",
+    "@types/jest": "26.0.x",
     "@types/lodash": "4.14.x",
-    "@types/node": "14.0.x",
+    "@types/node": "14.14.x",
     "@types/rollup": "0.54.x",
     "@types/swagger-schema-official": "2.0.x",
     "babel-core": "6.26.x",
-    "babel-jest": "26.0.x",
+    "babel-jest": "26.6.x",
     "babel-plugin-pure-calls-annotation": "0.3.x",
-    "jest": "26.0.x",
-    "lerna": "^3.21.0",
+    "jest": "26.6.x",
+    "lerna": "^3.22.1",
     "lodash": "4.17.x",
-    "rollup": "2.10.x",
+    "rollup": "2.39.x",
     "rollup-plugin-babel": "4.4.x",
     "rollup-plugin-typescript": "1.0.x",
-    "ts-jest": "26.0.x",
-    "ts-node": "8.10.x",
+    "ts-jest": "26.5.x",
+    "ts-node": "9.1.x",
     "tsconfig-paths": "3.9.0",
-    "typescript": "3.9.x",
-    "@types/prettier": "2.0.x",
-    "prettier": "^2.0.x",
-    "husky": "^4.3.6",
+    "typescript": "4.1.x",
+    "@types/prettier": "2.2.x",
+    "prettier": "^2.2.x",
+    "husky": "^5.0.9",
     "pretty-quick": "^3.1.0"
   },
   "dependencies": {
-    "tslib": "^2.0.x"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
+    "tslib": "^2.1.x"
   },
   "jest": {
     "testEnvironment": "node",
