@@ -116,7 +116,7 @@ npx ts-codegen
 
 - **`outputFolder`: String [可选项]**
 
-  表示输出生成代码的目录名称。默认值为 clients。
+  表示输出生成代码的目录名称。默认值为 clients。支持配置子路径，比如：`clients/apis`
 
 - **`options`: Object [可选项]**
 
@@ -133,3 +133,40 @@ npx ts-codegen
   - **`withComments`: Boolean [可选项]，默认值: false**
 
     用于设置在生成代码中是否显示注解。比如你在 swagger 文档中通过 `summary`, `description` 等字段，为一个 API 添加了描述，你就可以通过这个开关来控制这个描述是否显示在最终的生成代码中。
+
+## 附录：配置模板
+
+```json5
+{
+  outputFolder: "clients", // 支持配置子文件夹, eg: clients/apis
+  requestCreateLib: "../examples/utils/createRequest",
+  requestCreateMethod: "createRequest",
+  apiSpecsPaths: [
+    {
+      path: "https://petstore.swagger.io/v2/swagger.json",
+      name: "PetStoreService1",
+    },
+    {
+      path: "https://petstore.swagger.io/v2/swagger.yaml",
+      name: "PetStoreService2",
+    },
+    {
+      path: "./examples/swagger.json",
+      name: "SwaggerService",
+    },
+    {
+      path: "./examples/openapi.json",
+      name: "OpenApiService",
+    },
+    {
+      path: "./examples/demo.yaml",
+      name: "DemoService",
+    },
+  ],
+  options: {
+    withComments: true,
+    typeWithPrefix: true,
+    backwardCompatible: true,
+  },
+}
+```

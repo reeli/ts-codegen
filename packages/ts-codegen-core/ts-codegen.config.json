@@ -1,5 +1,5 @@
 {
-  "outputFolder": "clients",
+  "outputFolder": "clients", // also support sub dir, eg: clients/apis
   "requestCreateLib": "../examples/utils/createRequest",
   "requestCreateMethod": "createRequest",
   "apiSpecsPaths": [

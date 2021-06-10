@@ -90,7 +90,7 @@ const writeSpecToFile = (spec: CustomSpec, codegenConfig: CodegenConfig, filenam
 
 const write = (output: string, filename: string, str: string) => {
   if (!fs.existsSync(output)) {
-    fs.mkdirSync(output);
+    fs.mkdirSync(output, { recursive: true });
   }
 
   fs.writeFileSync(path.resolve(output, `./${filename}.ts`), str, "utf-8");
