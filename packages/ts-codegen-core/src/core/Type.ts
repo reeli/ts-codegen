@@ -163,7 +163,7 @@ export class Type {
   }
 
   file() {
-    return BasicType.type("File");
+    return BasicType.type("Blob");
   }
 
   any() {

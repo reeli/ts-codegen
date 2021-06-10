@@ -1,7 +1,7 @@
 import { CustomSpec, CustomSchema, CustomReference } from "../__types__/types";
 import { IServer, IOpenAPI } from "../__types__/OpenAPI";
 import { isEmpty, get } from "lodash";
-import { parse } from "url";
+import { URL } from "url";
 
 const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
 
@@ -37,10 +37,13 @@ const getBasePathFromServers = (servers?: IServer[]): string => {
   if (isEmpty(servers)) {
     return "";
   }
+
   const server = servers![0];
+
   if (server?.variables) {
     const basePath = get(server, "variables.basePath.default");
     return basePath ? `/${basePath}` : "";
   }
-  return parse(server?.url)?.pathname || "";
+
+  return new URL(server.url)?.pathname || "";
 };

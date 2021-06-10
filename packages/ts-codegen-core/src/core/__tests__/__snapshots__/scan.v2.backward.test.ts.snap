@@ -310,7 +310,7 @@ export const updateUser = createRequest<{
 
 export const uploadAttachmentUsingPOST = createRequest<
   {
-    attachment: File;
+    attachment: Blob;
   },
   IAttachmentBo
 >(\\"uploadAttachmentUsingPOST\\", ({ attachment }) => ({
@@ -323,7 +323,7 @@ export const uploadAttachmentUsingPOST = createRequest<
 export const uploadFile = createRequest<
   {
     additionalMetadata?: string;
-    file?: File;
+    file?: Blob;
     petId: number;
   },
   IApiResponse

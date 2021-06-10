@@ -774,7 +774,7 @@ describe("Schema Converter", () => {
     ["number", "number"],
     ["boolean", "boolean"],
     ["null", "null"],
-    ["file", "File"],
+    ["file", "Blob"],
   ])("should handle type %s in schema", (input, expected) => {
     const res = new Schema(register)
       .convert(
