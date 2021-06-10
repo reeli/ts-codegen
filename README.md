@@ -50,13 +50,13 @@ npx ts-codegen
 
 1. 通过工具生成的代码格式都是双引号，但是我项目上使用的是单引号，应该怎么办？
 
-可以先使用 ts-codegen 命令生成 API Requests，然后再通过自己项目的 prettier 格式化一次
+   可以先使用 ts-codegen 命令生成 API Requests，然后再通过自己项目的 prettier 格式化一次
 
-```json
-{
-  "api": "npx ts-codegen && prettier --write src/apis/*.ts"
-}
-```
+   ```json
+   {
+     "api": "npx ts-codegen && prettier --write src/apis/*.ts"
+   }
+   ```
 
 2. 如果出现 "Error: Cannot find module 'tslib'"，请升级到 ≥3.1.2 版本
 
