@@ -16,7 +16,8 @@
       "@ts-tool/*": ["packages/*/src", "@ts-tool/*"]
     },
     "rootDir": ".",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "importHelpers": false
   },
   "exclude": ["node_modules"]
 }

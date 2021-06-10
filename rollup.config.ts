@@ -19,7 +19,6 @@ module.exports = {
     },
   ],
   external: [
-    "tslib",
     // @ts-ignore
     ...Object.keys(process.binding("natives")),
     ...Object.keys(pkg.dependencies || {}),

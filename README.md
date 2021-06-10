@@ -46,6 +46,20 @@ npx ts-codegen
 
    然后就可以在配置的 `clients` 目录下看到生成的结果，并开始使用。
 
+## 常见问题
+
+1. 通过工具生成的代码格式都是双引号，但是我项目上使用的是单引号，应该怎么办？
+
+可以先使用 ts-codegen 命令生成 API Requests，然后再通过自己项目的 prettier 格式化一次
+
+```json
+{
+  "api": "npx ts-codegen && prettier --write src/apis/*.ts"
+}
+```
+
+2. 如果出现 "Error: Cannot find module 'tslib'"，请升级到 ≥3.1.2 版本
+
 ## 使用核心依赖进行二次封装
 
 如果您想自己编写命令行工具，或者对核心功能进行一些修改，可以使用 `npm intall @ts-tool/ts-codegen-core` 安装核心依赖包，然后根据核心依赖包提供的方法进行二次封装。
@@ -138,7 +152,7 @@ npx ts-codegen
 
 ```json5
 {
-  outputFolder: "clients", // 支持配置子文件夹, eg: clients/apis
+  outputFolder: "clients", // 支持配置子文件夹, eg: src/apis
   requestCreateLib: "../examples/utils/createRequest",
   requestCreateMethod: "createRequest",
   apiSpecsPaths: [
