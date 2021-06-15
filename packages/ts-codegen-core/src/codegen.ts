@@ -83,8 +83,9 @@ const writeSpecToFile = (spec: CustomSpec, codegenConfig: CodegenConfig, filenam
   }
   const importLib = `import { ${requestCreateMethod} } from '${requestCreateLib}';\n\n`;
   const { clientConfigs, decls } = scan(spec, options);
-  const fileStr = `${importLib} ${printOutputs(clientConfigs, decls, requestCreateMethod, options)}`;
-  const { basePath } = getUnifiedInputs(spec);
+  const { basePath, host } = getUnifiedInputs(spec);
+  const fileStr = `${importLib} ${printOutputs(clientConfigs, decls, requestCreateMethod, host, options)}`;
+
   write(outputFolder || "clients", `./${filename || getFilename(basePath)}`, fileStr);
 };
 

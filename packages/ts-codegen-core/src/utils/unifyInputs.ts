@@ -12,14 +12,16 @@ export enum DataType {
 
 export const getUnifiedInputs = (data: CustomSpec) => {
   if (isOpenApi(data)) {
+    const { basePath, host } = transformServers(data?.servers);
     return {
       dataType: DataType.openapi,
-      basePath: getBasePathFromServers(data?.servers),
+      basePath,
       paths: data.paths,
       schemas: data.components?.schemas as { [key: string]: CustomSchema | CustomReference },
       parameters: data.components?.parameters,
       responses: data.components?.responses,
       requestBodies: data.components?.requestBodies,
+      host,
     };
   }
   return {
@@ -30,20 +32,28 @@ export const getUnifiedInputs = (data: CustomSpec) => {
     parameters: data.parameters,
     responses: data.responses,
     requestBodies: null,
+    host: data.host,
   };
 };
 
-const getBasePathFromServers = (servers?: IServer[]): string => {
+const transformServers = (servers?: IServer[]): { basePath: string; host: string } => {
   if (isEmpty(servers)) {
-    return "";
+    return {} as { basePath: string; host: string };
   }
 
   const server = servers![0];
 
   if (server?.variables) {
     const basePath = get(server, "variables.basePath.default");
-    return basePath ? `/${basePath}` : "";
+    return {
+      basePath: basePath ? `/${basePath}` : "",
+      host: "", // TODO: handle openapi host
+    };
   }
 
-  return new URL(server.url)?.pathname || "";
+  const data = new URL(server.url);
+  return {
+    basePath: data?.pathname || "",
+    host: data?.host,
+  };
 };

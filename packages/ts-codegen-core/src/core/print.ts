@@ -1,21 +1,27 @@
 import { IClientConfig, RequestType, ScanOptions } from "../__types__/types";
 import { IStore, DeclKinds } from "./createRegister";
 import { prettifyCode, objToTypeStr } from "../utils/common";
-import { sortBy, isEmpty, compact, keys, mapValues } from "lodash";
+import { sortBy, isEmpty, compact, keys, mapValues, omitBy } from "lodash";
 import { CustomType } from "./Type";
 
 export const printOutputs = (
   clientConfigs: IClientConfig[],
   decls: IStore["decls"],
   requestCreateMethod: string = "createRequest",
+  host?: string,
   options?: ScanOptions,
 ) => {
-  return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod, options)} \n\n ${printTypes(decls)}`);
+  return prettifyCode(`${printRequest(clientConfigs, requestCreateMethod, host, options)} \n\n ${printTypes(decls)}`);
 };
 
 const hasRequestBody = (TReq: IClientConfig["TReq"]) => TReq?.requestBody || (TReq || {})["requestBody?"];
 
-const printRequest = (clientConfigs: IClientConfig[], requestCreateMethod: string, options?: ScanOptions): string => {
+const printRequest = (
+  clientConfigs: IClientConfig[],
+  requestCreateMethod: string,
+  host?: string,
+  options?: ScanOptions,
+): string => {
   const configs = sortBy(clientConfigs, (o) => o.operationId);
 
   return configs
@@ -32,7 +38,16 @@ const printRequest = (clientConfigs: IClientConfig[], requestCreateMethod: strin
         const params = toRequestParams(v.queryParams);
         return params ? `params: ${params},` : "";
       };
-      const toHeaders = () => (v.contentType ? `headers: {"Content-Type": '${v.contentType}'},` : "");
+      const toHeaders = () => {
+        const headerList = {
+          Host: options?.withHost ? host : "",
+          "Content-Type": v.contentType || "",
+        };
+
+        const nonEmptyHeaderList = omitBy(headerList, (v) => !v);
+
+        return isEmpty(nonEmptyHeaderList) ? "" : `headers: ${JSON.stringify(nonEmptyHeaderList)},`;
+      };
       const toGenerators = () => {
         const TReq = generateTReq(v.TReq);
         const TResp = v.TResp?.toType(false);
