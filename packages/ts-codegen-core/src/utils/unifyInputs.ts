@@ -1,6 +1,6 @@
 import { CustomSpec, CustomSchema, CustomReference } from "../__types__/types";
 import { IServer, IOpenAPI } from "../__types__/OpenAPI";
-import { isEmpty, get } from "lodash";
+import { isEmpty, keys } from "lodash";
 import { URL } from "url";
 
 const isOpenApi = (v: any): v is IOpenAPI => v.openapi;
@@ -10,9 +10,9 @@ export enum DataType {
   swagger,
 }
 
-export const getUnifiedInputs = (data: CustomSpec) => {
+export const getUnifiedInputs = (data: CustomSpec, serviceName?: string) => {
   if (isOpenApi(data)) {
-    const { basePath, host } = transformServers(data?.servers);
+    const { basePath } = transformServers(data?.servers);
     return {
       dataType: DataType.openapi,
       basePath,
@@ -21,7 +21,7 @@ export const getUnifiedInputs = (data: CustomSpec) => {
       parameters: data.components?.parameters,
       responses: data.components?.responses,
       requestBodies: data.components?.requestBodies,
-      host,
+      host: serviceName,
     };
   }
   return {
@@ -32,11 +32,11 @@ export const getUnifiedInputs = (data: CustomSpec) => {
     parameters: data.parameters,
     responses: data.responses,
     requestBodies: null,
-    host: data.host,
+    host: serviceName,
   };
 };
 
-const transformServers = (servers?: IServer[]): { basePath: string; host: string } => {
+export const transformServers = (servers?: IServer[]): { basePath: string; host: string } => {
   if (isEmpty(servers)) {
     return {} as { basePath: string; host: string };
   }
@@ -44,10 +44,20 @@ const transformServers = (servers?: IServer[]): { basePath: string; host: string
   const server = servers![0];
 
   if (server?.variables) {
-    const basePath = get(server, "variables.basePath.default");
+    let fullUrl = server.url;
+
+    keys(server.variables).forEach((key) => {
+      const pattern = `\{${key}\}`;
+      const regex = new RegExp(pattern, "g");
+
+      fullUrl = fullUrl.replace(regex, server.variables![key].default);
+    });
+
+    const { pathname, hostname } = new URL(fullUrl);
+
     return {
-      basePath: basePath ? `/${basePath}` : "",
-      host: "", // TODO: handle openapi host
+      basePath: pathname || "",
+      host: hostname || "",
     };
   }
 

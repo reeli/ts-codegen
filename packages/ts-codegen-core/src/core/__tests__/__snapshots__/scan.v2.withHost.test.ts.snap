@@ -10,7 +10,7 @@ exports[`swagger v2 with host should handle basic schemas correctly 1`] = `
   url: \`/api/v3/pets\`,
   method: \\"POST\\",
   data: requestBody,
-  headers: { Host: \\"http://0.0.0.0:8000\\", \\"Content-Type\\": \\"application/json\\" },
+  headers: { \\"Content-Type\\": \\"application/json\\", Host: serviceName },
 }));
 
 export const createItem = createRequestConfig<
@@ -24,23 +24,19 @@ export const createItem = createRequestConfig<
   params: {
     item,
   },
-  headers: { Host: \\"http://0.0.0.0:8000\\" },
+  headers: { Host: serviceName },
 }));
 
 export const deletePet = createRequestConfig<{
   id: number;
-}>(\\"deletePet\\", ({ id }) => ({
-  url: \`/api/v3/pets/\${id}\`,
-  method: \\"DELETE\\",
-  headers: { Host: \\"http://0.0.0.0:8000\\" },
-}));
+}>(\\"deletePet\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"DELETE\\", headers: { Host: serviceName } }));
 
 export const findPetById = createRequestConfig<
   {
     id: number;
   },
   Pet
->(\\"findPetById\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"GET\\", headers: { Host: \\"http://0.0.0.0:8000\\" } }));
+>(\\"findPetById\\", ({ id }) => ({ url: \`/api/v3/pets/\${id}\`, method: \\"GET\\", headers: { Host: serviceName } }));
 
 export const findPets = createRequestConfig<
   {
@@ -59,7 +55,7 @@ export const findPets = createRequestConfig<
     limit,
     status,
   },
-  headers: { Host: \\"http://0.0.0.0:8000\\" },
+  headers: { Host: serviceName },
 }));
 
 export const formMultipartWithFile = createRequestConfig<{
@@ -68,7 +64,7 @@ export const formMultipartWithFile = createRequestConfig<{
   url: \`/api/v3/demo/forms/multipart\`,
   method: \\"POST\\",
   data: requestBody,
-  headers: { Host: \\"http://0.0.0.0:8000\\", \\"Content-Type\\": \\"multipart/form-data\\" },
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\", Host: serviceName },
 }));
 
 export const formMultipartWithFiles = createRequestConfig<{
@@ -77,7 +73,7 @@ export const formMultipartWithFiles = createRequestConfig<{
   url: \`/api/v3/demo/forms/multipart-with-files\`,
   method: \\"POST\\",
   data: requestBody,
-  headers: { Host: \\"http://0.0.0.0:8000\\", \\"Content-Type\\": \\"multipart/form-data\\" },
+  headers: { \\"Content-Type\\": \\"multipart/form-data\\", Host: serviceName },
 }));
 
 export const formUrlEncoded = createRequestConfig<{
@@ -86,12 +82,12 @@ export const formUrlEncoded = createRequestConfig<{
   url: \`/api/v3/demo/forms/url-encoded\`,
   method: \\"POST\\",
   data: requestBody,
-  headers: { Host: \\"http://0.0.0.0:8000\\", \\"Content-Type\\": \\"application/x-www-form-urlencoded\\" },
+  headers: { \\"Content-Type\\": \\"application/x-www-form-urlencoded\\", Host: serviceName },
 }));
 
 export const generateFeedbackAndLeadReportUsingGet = createRequestConfig<undefined, Resource>(
   \\"generateFeedbackAndLeadReportUsingGet\\",
-  () => ({ url: \`/api/v3/demo/feedback\`, method: \\"GET\\", headers: { Host: \\"http://0.0.0.0:8000\\" } }),
+  () => ({ url: \`/api/v3/demo/feedback\`, method: \\"GET\\", headers: { Host: serviceName } }),
 );
 
 export const getItems = createRequestConfig<
@@ -109,7 +105,7 @@ export const getItems = createRequestConfig<
     limit,
     sort,
   },
-  headers: { Host: \\"http://0.0.0.0:8000\\" },
+  headers: { Host: serviceName },
 }));
 
 export const postBody = createRequestConfig<{
@@ -118,7 +114,7 @@ export const postBody = createRequestConfig<{
   url: \`/api/v3/body\`,
   method: \\"POST\\",
   data: requestBody,
-  headers: { Host: \\"http://0.0.0.0:8000\\", \\"Content-Type\\": \\"application/json\\" },
+  headers: { \\"Content-Type\\": \\"application/json\\", Host: serviceName },
 }));
 
 export const updatePet = createRequestConfig<{
@@ -127,7 +123,7 @@ export const updatePet = createRequestConfig<{
   url: \`/api/v3/pets\`,
   method: \\"PATCH\\",
   data: requestBody,
-  headers: { Host: \\"http://0.0.0.0:8000\\", \\"Content-Type\\": \\"application/json\\" },
+  headers: { \\"Content-Type\\": \\"application/json\\", Host: serviceName },
 }));
 
 export interface Cat extends Pet {
