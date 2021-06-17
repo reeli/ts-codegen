@@ -21,16 +21,10 @@ describe("#transformServers", () => {
           },
         },
       ]),
-    ).toEqual({
-      basePath: "/api/v2",
-      host: "demo.gigantic-server.com",
-    });
+    ).toEqual("/api/v2");
   });
 
   it("should pick basePath and host from url", () => {
-    expect(transformServers([{ url: "http://petstore.swagger.io/api/v3" }])).toEqual({
-      basePath: "/api/v3",
-      host: "petstore.swagger.io",
-    });
+    expect(transformServers([{ url: "http://petstore.swagger.io/api/v3" }])).toEqual("/api/v3");
   });
 });

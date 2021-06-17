@@ -12,7 +12,7 @@ export enum DataType {
 
 export const getUnifiedInputs = (data: CustomSpec, serviceName?: string) => {
   if (isOpenApi(data)) {
-    const { basePath } = transformServers(data?.servers);
+    const basePath = transformServers(data?.servers);
     return {
       dataType: DataType.openapi,
       basePath,
@@ -36,9 +36,9 @@ export const getUnifiedInputs = (data: CustomSpec, serviceName?: string) => {
   };
 };
 
-export const transformServers = (servers?: IServer[]): { basePath: string; host: string } => {
+export const transformServers = (servers?: IServer[]): string => {
   if (isEmpty(servers)) {
-    return {} as { basePath: string; host: string };
+    return "";
   }
 
   const server = servers![0];
@@ -53,17 +53,11 @@ export const transformServers = (servers?: IServer[]): { basePath: string; host:
       fullUrl = fullUrl.replace(regex, server.variables![key].default);
     });
 
-    const { pathname, hostname } = new URL(fullUrl);
+    const { pathname } = new URL(fullUrl);
 
-    return {
-      basePath: pathname || "",
-      host: hostname || "",
-    };
+    return pathname || "";
   }
 
   const data = new URL(server.url);
-  return {
-    basePath: data?.pathname || "",
-    host: data?.host,
-  };
+  return data?.pathname || "";
 };

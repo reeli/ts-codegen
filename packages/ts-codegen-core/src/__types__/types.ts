@@ -32,7 +32,7 @@ export type CustomOperation = Operation | IOperation;
 export type CustomSpec = IOpenAPI | Spec;
 
 export interface ScanOptions {
-  withHost?: boolean; // Toggle host info in generated code
+  withServiceNameInHeader?: boolean | string; // Toggle host info in generated code
   withComments?: boolean; // Toggle comments in generated code
   typeWithPrefix?: boolean; // Will keep prefix('I' for interface, 'T' for type) in types when it sets true
   backwardCompatible?: boolean; // Not recommend, only if you want backward capability. This option will help to keep operationId and method name as before when it sets true. This option is only worked with swagger version 2.0.

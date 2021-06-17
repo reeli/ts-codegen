@@ -5,6 +5,8 @@ import { printOutputs } from "../print";
 describe("swagger v2 with host", () => {
   it("should handle basic schemas correctly", () => {
     const { clientConfigs, decls } = scan(swaggerV3 as IOpenAPI);
-    expect(printOutputs(clientConfigs, decls, "createRequestConfig", { withHost: true })).toMatchSnapshot();
+    expect(
+      printOutputs(clientConfigs, decls, "createRequestConfig", { withServiceNameInHeader: "Host" }),
+    ).toMatchSnapshot();
   });
 });

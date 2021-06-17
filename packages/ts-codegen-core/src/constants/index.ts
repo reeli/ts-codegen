@@ -6,3 +6,6 @@ export const ERROR_MESSAGES = {
   EMPTY_API_SPECS_PATHS: "The `apiSpecsPaths` cannot be empty! Please input it in your ts-codegen.config.ts file.",
   NOT_FOUND_CONFIG_FILE: "Cannot found config file ts-codegen.config.ts",
 };
+
+export const DEFAULT_SERVICE_NAME_IN_HEADER = "Service-Name";
+export const SERVICE_VARIABLE_NAME = "serviceName";

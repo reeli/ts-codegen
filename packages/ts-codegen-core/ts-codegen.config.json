@@ -25,9 +25,9 @@
     }
   ],
   "options": {
-    "withHost": true,
     "withComments": true,
     "typeWithPrefix": true,
-    "backwardCompatible": true
+    "backwardCompatible": true,
+    "withServiceNameInHeader": true
   }
 }

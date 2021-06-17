@@ -4,7 +4,7 @@ import { isEmpty } from "lodash";
 import * as fs from "fs";
 import * as path from "path";
 import { scan, printOutputs } from "./core";
-import { ERROR_MESSAGES } from "./constants";
+import { ERROR_MESSAGES, SERVICE_VARIABLE_NAME } from "./constants";
 import { CustomSpec, CodegenConfig, ApiSpecsPath } from "./__types__/types";
 import yaml from "js-yaml";
 
@@ -83,9 +83,9 @@ const writeSpecToFile = (spec: CustomSpec, codegenConfig: CodegenConfig, filenam
   }
   const importLib = `import { ${requestCreateMethod} } from '${requestCreateLib}';\n\n`;
   const { clientConfigs, decls } = scan(spec, options);
-  const { basePath, host } = getUnifiedInputs(spec, filename);
-  const hostVariable = options?.withHost ? `const serviceName = '${host}';\n\n` : "";
-  const fileStr = `${importLib} ${hostVariable} ${printOutputs(clientConfigs, decls, requestCreateMethod, options)}`;
+  const { basePath } = getUnifiedInputs(spec, filename);
+  const serviceNameStr = options?.withServiceNameInHeader ? `const ${SERVICE_VARIABLE_NAME} = '${filename}';\n\n` : "";
+  const fileStr = `${importLib} ${serviceNameStr} ${printOutputs(clientConfigs, decls, requestCreateMethod, options)}`;
 
   write(outputFolder || "clients", `./${filename || getFilename(basePath)}`, fileStr);
 };

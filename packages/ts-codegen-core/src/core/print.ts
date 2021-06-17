@@ -1,8 +1,9 @@
 import { IClientConfig, RequestType, ScanOptions } from "../__types__/types";
 import { IStore, DeclKinds } from "./createRegister";
 import { prettifyCode, objToTypeStr } from "../utils/common";
-import { sortBy, isEmpty, compact, keys, mapValues } from "lodash";
+import { sortBy, isEmpty, compact, keys, mapValues, isString } from "lodash";
 import { CustomType } from "./Type";
+import { DEFAULT_SERVICE_NAME_IN_HEADER } from "..";
 
 export const printOutputs = (
   clientConfigs: IClientConfig[],
@@ -33,16 +34,24 @@ const printRequest = (clientConfigs: IClientConfig[], requestCreateMethod: strin
         return params ? `params: ${params},` : "";
       };
       const toHeaders = () => {
-        if (v.contentType && options?.withHost) {
-          return `headers: { 'Content-Type': '${v.contentType}', Host: serviceName },`;
+        if (v.contentType && options?.withServiceNameInHeader) {
+          return `headers: { 'Content-Type': '${v.contentType}', '${
+            isString(options?.withServiceNameInHeader)
+              ? options?.withServiceNameInHeader
+              : DEFAULT_SERVICE_NAME_IN_HEADER
+          }': serviceName },`;
         }
 
         if (v.contentType) {
           return `headers: { 'Content-Type': '${v.contentType}' },`;
         }
 
-        if (options?.withHost) {
-          return `headers: { Host: serviceName },`;
+        if (options?.withServiceNameInHeader) {
+          return `headers: { '${
+            isString(options?.withServiceNameInHeader)
+              ? options?.withServiceNameInHeader
+              : DEFAULT_SERVICE_NAME_IN_HEADER
+          }': serviceName },`;
         }
 
         return "";
