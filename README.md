@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/npm/l/@ts-tool/ts-codegen.svg?style=flat-square)](https://npmjs.org/package/@ts-tool/ts-codegen)
 [![NPM](https://img.shields.io/npm/v/@ts-tool/ts-codegen-cli.svg?style=flat-square)](https://npmjs.org/package/@ts-tool/ts-codegen-cli)
 
-TS Codegen 是一个用于生成「前端接口层代码」以及对应「TypeScript 定义」的工具。你只需要提供一个 Swagger 或 Openapi 的 JSON 文件，它就可以为您生成相应的代码。
+TS Codegen 是一个用于生成「前端接口层代码」以及对应「TypeScript 定义」的工具。你只需要提供一个 Swagger 或 Openapi 的 JSON/YML 文件，它就可以为您生成相应的代码。
 
 ## 快速尝试 Try it
 
