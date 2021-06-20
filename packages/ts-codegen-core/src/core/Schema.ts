@@ -1,5 +1,5 @@
 import { isObj, shouldUseExtends, toCapitalCase } from "../utils/common";
-import { filter, isArray, isEmpty, map, reduce } from "lodash";
+import { filter, isArray, isEmpty, map, reduce, compact } from "lodash";
 import { IReference, ISchema } from "../__types__/OpenAPI";
 import { CustomType, Obj, Type } from "./Type";
 import { CustomSchema } from "../__types__/types";
@@ -43,7 +43,7 @@ export class Schema {
     }
 
     if (schema.type === "string") {
-      return schema.format==="binary" ? this.type.file() : this.type.string();
+      return schema.format === "binary" ? this.type.file() : this.type.string();
     }
 
     if (schema.type === "boolean") {
@@ -80,11 +80,15 @@ export class Schema {
       ) as Obj;
     };
 
-    const otherTypes: any[] = filter(schemas, (s) => !isObj(s)).map((v) =>
-      !isEmpty(v) ? this.convert(v, name) : undefined,
+    const otherTypes: (Omit<CustomType, "Obj"> | false)[] = filter(schemas, (s) => !isObj(s)).map(
+      (v) => !isEmpty(v) && this.convert(v, name),
     );
 
-    return this.type.allOf(getObj(), otherTypes, shouldUseExtends(schemas));
+    return this.type.allOf(
+      getObj(),
+      compact(otherTypes).filter((item) => item?.toType() != "null"),
+      shouldUseExtends(schemas),
+    );
   }
 
   private handleItems(items: CustomSchema | IReference | CustomSchema[], name?: string): CustomType | CustomType[] {

@@ -139,7 +139,7 @@ export const getAgencyResponseUsingGet = createRequest<
 export const getDocumentByIdUsingGet = createRequest<
   {
     documentId: string;
-    from?: keyof typeof GetDocumentByIdUsingGetFrom;
+    from?: CarTypeEnum;
   },
   DocumentVo
 >(\\"getDocumentByIdUsingGet\\", ({ documentId, from }) => ({
@@ -367,6 +367,12 @@ export interface BookingResponse {
   errors?: ErrorInfo[];
 }
 
+export enum CarTypeEnum {
+  \\"BMW\\" = \\"BMW\\",
+  \\"Audi\\" = \\"Audi\\",
+  \\"BYD\\" = \\"BYD\\",
+}
+
 export interface Category {
   id?: number;
   name?: string;
@@ -447,11 +453,6 @@ export enum GetAgencyResponseListUsingGetAddressType {
 }
 
 export enum GetAgencyResponseUsingGetAddressType {
-  \\"AAA\\" = \\"AAA\\",
-  \\"BBB\\" = \\"BBB\\",
-}
-
-export enum GetDocumentByIdUsingGetFrom {
   \\"AAA\\" = \\"AAA\\",
   \\"BBB\\" = \\"BBB\\",
 }

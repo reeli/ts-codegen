@@ -51,9 +51,7 @@ class AllOf implements TypeFactory {
 
   toType(useExtends: boolean | undefined = this.useExtends): string {
     if (useExtends) {
-      return `extends ${compact(this.otherTypes)
-        .map((v) => v.toType())
-        .join(",")} ${this.obj?.toType()}`;
+      return `extends ${this.otherTypes.map((v) => v.toType()).join(",")} ${this.obj?.toType()}`;
     }
     return `${map(compact([this.obj, ...this.otherTypes]), (type) => type.toType()).join("&")}`;
   }

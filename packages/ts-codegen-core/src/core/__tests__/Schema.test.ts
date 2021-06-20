@@ -379,6 +379,27 @@ describe("Schema Converter", () => {
 
       expect(res).toEqual("NewPet&(Cat|Dog)");
     });
+
+    it("should handle `allOf` with non-type definitions", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            allOf: [
+              {
+                $ref: "#/components/schemas/GitQuerycapComIdpSrvIdpPkgConstantsTypesAccountIdentityType",
+              },
+              {
+                "x-go-field-name": "AccountIdentityType",
+                "x-tag-name": "accountIdentityType",
+              },
+            ],
+          },
+          "Pet",
+        )
+        .toType();
+
+      expect(res).toEqual("GitQuerycapComIdpSrvIdpPkgConstantsTypesAccountIdentityType");
+    });
   });
 
   describe("array", () => {
