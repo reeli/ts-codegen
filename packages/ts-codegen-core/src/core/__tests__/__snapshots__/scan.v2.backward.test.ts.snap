@@ -124,16 +124,19 @@ export const getAgencyResponseListUsingGET = createRequest<
 export const getAgencyResponseUsingGET = createRequest<
   {
     addressType: keyof typeof GetAgencyResponseUsingGetAddressType;
+    carType: CarTypeEnum;
     responseDate: string;
   },
   IResource
->(\\"getAgencyResponseUsingGET\\", ({ responseDate, addressType }) => ({
+>(\\"getAgencyResponseUsingGET\\", ({ responseDate, addressType, carType }) => ({
   url: \`/api/v2/agency-response\`,
   method: \\"get\\",
+  data: carType,
   params: {
     responseDate,
     addressType,
   },
+  headers: { \\"Content-Type\\": \\"application/json\\" },
 }));
 
 export const getDocumentByIdUsingGET = createRequest<
@@ -367,6 +370,12 @@ export interface IBookVo {
 export interface IBookingResponse {
   data: IDocumentVo;
   errors?: IErrorInfo[];
+}
+
+export enum CarTypeEnum {
+  \\"BMW\\" = \\"BMW\\",
+  \\"Audi\\" = \\"Audi\\",
+  \\"BYD\\" = \\"BYD\\",
 }
 
 export interface ICategory {

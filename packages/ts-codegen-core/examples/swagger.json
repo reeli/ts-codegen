@@ -26,17 +26,11 @@
   "paths": {
     "/": {
       "post": {
-        "tags": [
-          "mock-controller"
-        ],
+        "tags": ["mock-controller"],
         "summary": "uploadAttachment",
         "operationId": "uploadAttachmentUsingPOST",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "*/*"
-        ],
+        "consumes": ["multipart/form-data"],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -89,14 +83,10 @@
     },
     "/{id}": {
       "get": {
-        "tags": [
-          "attachment-controller"
-        ],
+        "tags": ["attachment-controller"],
         "summary": "download",
         "operationId": "downloadUsingGET",
-        "produces": [
-          "*/*"
-        ],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -147,14 +137,10 @@
         "deprecated": false
       },
       "delete": {
-        "tags": [
-          "attachment-controller"
-        ],
+        "tags": ["attachment-controller"],
         "summary": "delete attachment by id",
         "operationId": "deleteAttachmentUsingDELETE",
-        "produces": [
-          "*/*"
-        ],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -207,14 +193,10 @@
     },
     "/book/{id}": {
       "get": {
-        "tags": [
-          "book-controller"
-        ],
+        "tags": ["book-controller"],
         "summary": "get book by id",
         "operationId": "findBookByIdUsingGET",
-        "produces": [
-          "*/*"
-        ],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -265,17 +247,11 @@
         "deprecated": false
       },
       "put": {
-        "tags": [
-          "book-controller"
-        ],
+        "tags": ["book-controller"],
         "summary": "update book by given id",
         "operationId": "updateBookByIdUsingPUT",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -337,14 +313,10 @@
     },
     "/schedules": {
       "get": {
-        "tags": [
-          "schedule-controller"
-        ],
+        "tags": ["schedule-controller"],
         "summary": "getScheduleDetailsByDate",
         "operationId": "getScheduleDetailsByDateUsingGET",
-        "produces": [
-          "*/*"
-        ],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -410,14 +382,10 @@
     },
     "/documents/{documentId}/doc": {
       "get": {
-        "tags": [
-          "documents-controller"
-        ],
+        "tags": ["documents-controller"],
         "summary": "getDocument",
         "operationId": "getDocumentByIdUsingGET",
-        "produces": [
-          "*/*"
-        ],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -446,10 +414,7 @@
             "description": "from",
             "required": false,
             "type": "string",
-            "enum": [
-              "AAA",
-              "BBB"
-            ]
+            "enum": ["AAA", "BBB"]
           },
           {
             "name": "documentId",
@@ -492,10 +457,7 @@
             "required": true
           }
         ],
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "responses": {
           "200": {
             "description": "flight exist",
@@ -648,20 +610,12 @@
     },
     "/pet": {
       "post": {
-        "tags": [
-          "pet"
-        ],
+        "tags": ["pet"],
         "summary": "Add a new pet to the store",
         "description": "",
         "operationId": "addPet",
-        "consumes": [
-          "application/json",
-          "application/xml"
-        ],
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "consumes": ["application/json", "application/xml"],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "in": "body",
@@ -681,20 +635,12 @@
         "security": []
       },
       "put": {
-        "tags": [
-          "pet"
-        ],
+        "tags": ["pet"],
         "summary": "Update an existing pet",
         "description": "",
         "operationId": "updatePet",
-        "consumes": [
-          "application/json",
-          "application/xml"
-        ],
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "consumes": ["application/json", "application/xml"],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "in": "body",
@@ -717,22 +663,16 @@
             "description": "Invalid ID supplied"
           }
         },
-        "security": [
-        ]
+        "security": []
       }
     },
     "/pet/findByStatus": {
       "get": {
-        "tags": [
-          "pet"
-        ],
+        "tags": ["pet"],
         "summary": "Finds Pets by status",
         "description": "Multiple status values can be provided with comma separated strings",
         "operationId": "findPetsByStatus",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "status",
@@ -742,11 +682,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "enum": [
-                "available",
-                "pending",
-                "sold"
-              ],
+              "enum": ["available", "pending", "sold"],
               "default": "available"
             },
             "collectionFormat": "multi"
@@ -766,22 +702,16 @@
             "description": "Invalid status value"
           }
         },
-        "security": [
-        ]
+        "security": []
       }
     },
     "/pet/findByTags": {
       "get": {
-        "tags": [
-          "pet"
-        ],
+        "tags": ["pet"],
         "summary": "Finds Pets by tags",
         "description": "Test deprecated request",
         "operationId": "findPetsByTags",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "tags",
@@ -809,23 +739,17 @@
             "description": "Invalid tag value"
           }
         },
-        "security": [
-        ],
+        "security": [],
         "deprecated": true
       }
     },
     "/pet/{petId}": {
       "get": {
-        "tags": [
-          "pet"
-        ],
+        "tags": ["pet"],
         "summary": "Find pet by ID",
         "description": "Returns a pet when ID < 10.  ID > 10 or nonintegers will simulate API error conditions",
         "operationId": "getPetById",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "petId",
@@ -850,23 +774,15 @@
             "description": "Invalid ID supplied"
           }
         },
-        "security": [
-        ]
+        "security": []
       },
       "post": {
-        "tags": [
-          "pet"
-        ],
+        "tags": ["pet"],
         "summary": "Updates a pet in the store with form data",
         "description": "",
         "operationId": "updatePetWithForm",
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "consumes": ["application/x-www-form-urlencoded"],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "petId",
@@ -896,20 +812,14 @@
             "description": "Invalid input"
           }
         },
-        "security": [
-        ]
+        "security": []
       },
       "delete": {
-        "tags": [
-          "pet"
-        ],
+        "tags": ["pet"],
         "summary": "Deletes a pet",
         "description": "",
         "operationId": "deletePet",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "api_key",
@@ -932,25 +842,17 @@
             "description": "Invalid pet value"
           }
         },
-        "security": [
-        ]
+        "security": []
       }
     },
     "/pet/{petId}/uploadImage": {
       "post": {
-        "tags": [
-          "pet"
-        ],
+        "tags": ["pet"],
         "summary": "uploads an image",
         "description": "",
         "operationId": "uploadFile",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "petId",
@@ -983,22 +885,16 @@
             }
           }
         },
-        "security": [
-        ]
+        "security": []
       }
     },
     "/store/inventory": {
       "get": {
-        "tags": [
-          "store"
-        ],
+        "tags": ["store"],
         "summary": "Returns pet inventories by status",
         "description": "Returns a map of status codes to quantities",
         "operationId": "getInventory",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1011,22 +907,16 @@
             }
           }
         },
-        "security": [
-        ]
+        "security": []
       }
     },
     "/store/order": {
       "post": {
-        "tags": [
-          "store"
-        ],
+        "tags": ["store"],
         "summary": "Place an order for a pet",
         "description": "",
         "operationId": "placeOrder",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "in": "body",
@@ -1053,16 +943,11 @@
     },
     "/store/order/{orderId}": {
       "get": {
-        "tags": [
-          "store"
-        ],
+        "tags": ["store"],
         "summary": "Find purchase order by ID",
         "description": "For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions",
         "operationId": "getOrderById",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "orderId",
@@ -1091,16 +976,11 @@
         }
       },
       "delete": {
-        "tags": [
-          "store"
-        ],
+        "tags": ["store"],
         "summary": "Delete purchase order by ID",
         "description": "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors",
         "operationId": "deleteOrder",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "orderId",
@@ -1124,16 +1004,11 @@
     },
     "/user": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Create user",
         "description": "This can only be done by the logged in user.",
         "operationId": "createUser",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "in": "body",
@@ -1154,16 +1029,11 @@
     },
     "/user/createWithArray": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Creates list of users with given input array",
         "description": "",
         "operationId": "createUsersWithArrayInput",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "in": "body",
@@ -1187,16 +1057,11 @@
     },
     "/user/createWithList": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Creates list of users with given input array",
         "description": "",
         "operationId": "createUsersWithListInput",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "in": "body",
@@ -1220,16 +1085,11 @@
     },
     "/user/login": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Logs user into the system",
         "description": "",
         "operationId": "loginUser",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "username",
@@ -1273,16 +1133,11 @@
     },
     "/user/logout": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Logs out current logged in user session",
         "description": "",
         "operationId": "logoutUser",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "responses": {
           "default": {
             "description": "successful operation"
@@ -1292,16 +1147,11 @@
     },
     "/user/{username}": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Get user by user name",
         "description": "",
         "operationId": "getUserByName",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "username",
@@ -1339,16 +1189,11 @@
         }
       },
       "put": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Updated user",
         "description": "This can only be done by the logged in user.",
         "operationId": "updateUser",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "username",
@@ -1377,16 +1222,11 @@
         }
       },
       "delete": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Delete user",
         "description": "This can only be done by the logged in user.",
         "operationId": "deleteUser",
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
+        "produces": ["application/json", "application/xml"],
         "parameters": [
           {
             "name": "username",
@@ -1408,14 +1248,10 @@
     },
     "/agency-response": {
       "get": {
-        "tags": [
-          "controller"
-        ],
+        "tags": ["controller"],
         "summary": "getAgencyResponse",
         "operationId": "getAgencyResponseUsingGET",
-        "produces": [
-          "*/*"
-        ],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -1452,10 +1288,16 @@
             "description": "addressType",
             "required": true,
             "type": "string",
-            "enum": [
-              "AAA",
-              "BBB"
-            ]
+            "enum": ["AAA", "BBB"]
+          },
+          {
+            "name": "carType",
+            "description": "carType",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/CarTypeEnum"
+            }
           }
         ],
         "responses": {
@@ -1480,14 +1322,10 @@
     },
     "/agency-responses": {
       "get": {
-        "tags": [
-          "controller"
-        ],
+        "tags": ["controller"],
         "summary": "getAgencyResponseList",
         "operationId": "getAgencyResponseListUsingGET",
-        "produces": [
-          "*/*"
-        ],
+        "produces": ["*/*"],
         "parameters": [
           {
             "name": "Authorities",
@@ -1516,10 +1354,7 @@
             "description": "addressType",
             "required": true,
             "type": "string",
-            "enum": [
-              "AAA",
-              "BBB"
-            ]
+            "enum": ["AAA", "BBB"]
           }
         ],
         "responses": {
@@ -1809,10 +1644,7 @@
         },
         "spokenLanguage": {
           "type": "array",
-          "example": [
-            "AH",
-            "AK"
-          ],
+          "example": ["AH", "AK"],
           "items": {
             "type": "string"
           }
@@ -1939,9 +1771,7 @@
     },
     "BookingResponse": {
       "type": "object",
-      "required": [
-        "data"
-      ],
+      "required": ["data"],
       "properties": {
         "data": {
           "$ref": "#/definitions/DocumentVO"
@@ -2078,10 +1908,7 @@
       }
     },
     "Pet": {
-      "required": [
-        "name",
-        "photoUrls"
-      ],
+      "required": ["name", "photoUrls"],
       "properties": {
         "id": {
           "type": "integer",
@@ -2117,11 +1944,7 @@
         "status": {
           "type": "string",
           "description": "pet status in the store",
-          "enum": [
-            "available",
-            "pending",
-            "sold"
-          ]
+          "enum": ["available", "pending", "sold"]
         }
       },
       "xml": {
@@ -2163,11 +1986,7 @@
         "status": {
           "type": "string",
           "description": "Order Status",
-          "enum": [
-            "placed",
-            "approved",
-            "delivered"
-          ]
+          "enum": ["placed", "approved", "delivered"]
         },
         "complete": {
           "type": "boolean"
@@ -2194,10 +2013,7 @@
     },
     "Dictionary": {
       "type": "object",
-      "required": [
-        "name",
-        "photoUrls"
-      ],
+      "required": ["name", "photoUrls"],
       "properties": {
         "id": {
           "type": "integer",
@@ -2233,11 +2049,7 @@
         "status": {
           "type": "string",
           "description": "pet status in the store",
-          "enum": [
-            "available",
-            "pending",
-            "sold"
-          ]
+          "enum": ["available", "pending", "sold"]
         },
         "dictionary": {
           "type": "object",
@@ -2315,6 +2127,10 @@
       "xml": {
         "name": "Pet"
       }
+    },
+    "CarTypeEnum": {
+      "type": "string",
+      "enum": ["BMW", "Audi", "BYD"]
     }
   },
   "parameters": {

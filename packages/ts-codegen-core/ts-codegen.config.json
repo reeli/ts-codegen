@@ -20,6 +20,10 @@
       "name": "OpenApiService"
     },
     {
+      "path": "./examples/openapi1.json",
+      "name": "OpenApiService1"
+    },
+    {
       "path": "./examples/demo.yaml",
       "name": "DemoService"
     }

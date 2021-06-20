@@ -55,11 +55,13 @@ export const createRegister = (typeWithPrefix: boolean = false) => {
     },
 
     setDecl: (id: string, type: CustomType, kind: string) => {
-      store.decls[id] = {
-        type,
-        kind,
-        name: typeWithPrefix ? withPrefix(id, kind) : id,
-      };
+      if (!store.decls[id]) {
+        store.decls[id] = {
+          type,
+          kind,
+          name: typeWithPrefix ? withPrefix(id, kind) : id,
+        };
+      }
     },
 
     setRef: (id: string) => {
