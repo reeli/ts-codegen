@@ -49,74 +49,76 @@ npx ts-codegen
 
 ## 常见问题
 
-1. 通过工具生成的代码格式都是双引号，但是我项目上使用的是单引号，应该怎么办？
+**1. 通过工具生成的代码格式都是双引号，但是我项目上使用的是单引号，应该怎么办？**
 
-   可以先使用 ts-codegen 命令生成 API Requests，然后再通过自己项目的 prettier 格式化一次
+可以先使用 ts-codegen 命令生成 API Requests，然后再通过自己项目的 prettier 格式化一次
 
-   ```json
-   {
-     "api": "npx ts-codegen && prettier --write src/apis/*.ts"
-   }
-   ```
+```json
+{
+  "api": "npx ts-codegen && prettier --write src/apis/*.ts"
+}
+```
 
-2. 出现 "Error: Cannot find module 'tslib'"，应该怎么办？
+**2. 出现 "Error: Cannot find module 'tslib'"，应该怎么办？**
 
-   请升级到 ≥3.1.2 版本
+请升级到 ≥3.1.2 版本
 
-3. 后端返回的 response 数据有一个统一的数据结构，然而这个结构在 swagger 中又没有定义，导致 swagger 生成的 response 类型和后端最终返回的数据结构不一致怎么办？
+**3. Swagger 生成的 response 类型和后端最终返回的数据结构不一致怎么办？**
 
-   举个例子，后端返回的 response 数据结构如下：
+后端返回的 response 数据可能有一个统一的数据结构，然而这个结构在 swagger 中又没有定义，导致 swagger 生成的 response 类型和后端最终返回的数据结构不一致。举个例子，后端返回的 response 数据结构如下：
 
-   ```json5
-   {
-     data: {}, // 响应数据
-     message: "",
-     code: "",
-   }
-   ```
+```json5
+{
+  data: {}, // 响应数据
+  message: "",
+  code: "",
+}
+```
 
-   这里的 data 才是我们在 swagger 里真正定义的 response，因此前端需要对 response 的类型进行修改。比如我们可以定一个 ResponseWrapper 类型，再把生成的 response 类型传进去：
+这里的 data 才是我们在 swagger 里真正定义的 response，因此前端需要对 response 的类型进行修改。比如我们可以定一个 ResponseWrapper 类型，再把生成的 response 类型传进去：
 
-   ```ts
-   interface RespWrapper<TData> {
-     data: TData;
-     message: string | null;
-     code: number;
-   }
+```ts
+interface RespWrapper<TData> {
+  data: TData;
+  message: string | null;
+  code: number;
+}
 
-   export const createRequest = <TReq, TResp = any>(
-     _: string,
-     requestConfigCreator: (args: TReq) => AxiosRequestConfig,
-   ) => {
-     return (args: TReq) => {
-       return axiosInstance.request<TReq, RespWrapper<TResp>>(requestConfigCreator(args));
-     };
-   };
-   ```
+export const createRequest = <TReq, TResp = any>(
+  _: string,
+  requestConfigCreator: (args: TReq) => AxiosRequestConfig,
+) => {
+  return (args: TReq) => {
+    return axiosInstance.request<TReq, RespWrapper<TResp>>(requestConfigCreator(args));
+  };
+};
+```
 
-4. 如果配置多个 service，并且每个 service 的域名都不一样，应该如何处理？
+**4. 在 `apiSpecsPaths` 中配置多个服务，每个服务的域名都不一样，应该如何处理？**
 
-使用 `withServiceNameInHeader`，具体使用方式请查看下面的文档。
+使用 `withServiceNameInHeader`，具体使用方式请查看[文档](https://github.com/reeli/ts-codegen#%E9%99%84%E5%BD%95ts-codegen-config-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E)。
 
-5. 在实现 requestCreateMethod （比如`createRequest`）时，可以不发起真正的 API Call 吗？
-   当然可以，`requestCreateMethod` 可以发起真正的 API call, 也可以只返回请求需要用到的配置项，比如：
-   ```ts
-   import { AxiosRequestConfig } from "axios";
+**5. 实现 requestCreateMethod （比如`createRequest`）时，可以不发起真正的 API call 吗？**
 
-   export const createRequestConfig = <TReq, TResp = any>(
-     _: string,
-     requestConfigCreator: (args: TReq) => AxiosRequestConfig,
-   ) => {
-     const fn = (args: TReq) => {
-       return requestConfigCreator(args);
-     };
+当然可以，`requestCreateMethod` 可以发起真正的 API call, 也可以只返回请求需要用到的配置项，比如：
 
-     return Object.assign(fn, {
-       TReq: {} as TReq,
-       TResp: {} as TResp,
-     });
-   };
-   ```
+```ts
+import { AxiosRequestConfig } from "axios";
+
+export const createRequestConfig = <TReq, TResp = any>(
+  _: string,
+  requestConfigCreator: (args: TReq) => AxiosRequestConfig,
+) => {
+  const fn = (args: TReq) => {
+    return requestConfigCreator(args);
+  };
+
+  return Object.assign(fn, {
+    TReq: {} as TReq,
+    TResp: {} as TResp,
+  });
+};
+```
 
 ## 使用核心依赖进行二次封装
 
