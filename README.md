@@ -9,7 +9,7 @@ TS Codegen 是一个用于生成「前端接口层代码」以及对应「TypeSc
 
 ## 快速尝试 Try it
 
-可以通过下面的命令进行快速尝试：
+可以通过下面的命令进行快速尝试 [example](https://github.com/reeli/ts-codegen-examples) ：
 
 ```bash
 git clone https://github.com/reeli/ts-codegen-examples
@@ -34,7 +34,8 @@ npx ts-codegen
 
 3. 修改配置文件
 
-   根据自己的需求修改文件 ts-codegen.config.json，配置必填的 `requestCreateLib` 和 `apiSpecsPaths` 参数后，即可使用。参数说明详见 [附录：TS Codegen Config 参数说明](https://github.com/reeli/ts-codegen#%E9%99%84%E5%BD%95ts-codegen-config-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E)。
+   根据自己的需求修改文件 ts-codegen.config.json，配置必填的 `requestCreateLib` 和 `apiSpecsPaths`
+   参数后，即可使用。参数说明详见 [附录：TS Codegen Config 参数说明](https://github.com/reeli/ts-codegen#%E9%99%84%E5%BD%95ts-codegen-config-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E)。
 
 4. 执行命令
 
@@ -58,7 +59,64 @@ npx ts-codegen
    }
    ```
 
-2. 如果出现 "Error: Cannot find module 'tslib'"，请升级到 ≥3.1.2 版本
+2. 出现 "Error: Cannot find module 'tslib'"，应该怎么办？
+
+   请升级到 ≥3.1.2 版本
+
+3. 后端返回的 response 数据有一个统一的数据结构，然而这个结构在 swagger 中又没有定义，导致 swagger 生成的 response 类型和后端最终返回的数据结构不一致怎么办？
+
+   举个例子，后端返回的 response 数据结构如下：
+
+   ```json5
+   {
+     data: {}, // 响应数据
+     message: "",
+     code: "",
+   }
+   ```
+
+   这里的 data 才是我们在 swagger 里真正定义的 response，因此前端需要对 response 的类型进行修改。比如我们可以定一个 ResponseWrapper 类型，再把生成的 response 类型传进去：
+
+   ```ts
+   interface RespWrapper<TData> {
+     data: TData;
+     message: string | null;
+     code: number;
+   }
+
+   export const createRequest = <TReq, TResp = any>(
+     _: string,
+     requestConfigCreator: (args: TReq) => AxiosRequestConfig,
+   ) => {
+     return (args: TReq) => {
+       return axiosInstance.request<TReq, RespWrapper<TResp>>(requestConfigCreator(args));
+     };
+   };
+   ```
+
+4. 如果配置多个 service，并且每个 service 的域名都不一样，应该如何处理？
+
+使用 `withServiceNameInHeader`，具体使用方式请查看下面的文档。
+
+5. 在实现 requestCreateMethod （比如`createRequest`）时，可以不发起真正的 API Call 吗？
+   当然可以，`requestCreateMethod` 可以发起真正的 API call, 也可以只返回请求需要用到的配置项，比如：
+   ```ts
+   import { AxiosRequestConfig } from "axios";
+
+   export const createRequestConfig = <TReq, TResp = any>(
+     _: string,
+     requestConfigCreator: (args: TReq) => AxiosRequestConfig,
+   ) => {
+     const fn = (args: TReq) => {
+       return requestConfigCreator(args);
+     };
+
+     return Object.assign(fn, {
+       TReq: {} as TReq,
+       TResp: {} as TResp,
+     });
+   };
+   ```
 
 ## 使用核心依赖进行二次封装
 
@@ -72,7 +130,9 @@ npx ts-codegen
 
 - **`requestCreateMethod`: String [可选项]**
 
-  表示方法或函数名，用于创建发起请求的函数。默认值为 createRequest。你可以自己实现 `requestCreateMethod` 方法，也可以参考[示例代码](https://github.com/reeli/ts-codegen/tree/master/packages/ts-codegen-core/examples/utils)。下面是一个基于 axios 实现的 createRequest 示例:
+  表示方法或函数名，用于创建发起请求的函数。默认值为 createRequest。你可以自己实现 `requestCreateMethod`
+  方法，也可以参考[示例代码](https://github.com/reeli/ts-codegen/tree/master/packages/ts-codegen-core/examples/utils)。下面是一个基于 axios
+  实现的 createRequest 示例:
 
   ```typescript
   import axios, { AxiosRequestConfig } from "axios";
@@ -97,7 +157,8 @@ npx ts-codegen
 
 - **`apiSpecsPaths`: Array [必填项]**
 
-  用于配置 swagger/openapi 文件所在的地址(`path`)，以及它对应的生成文件的名称(`name`)。其中 `path` 既可以是远端 url，也可以是本地 swagger/openapi 所在的文件路径。CLI 工具会根据你的配置，自动读取远端或者本地文件，生成对应代码。目前支持的文件格式有 `.json`, `.yaml`, `.yml`。
+  用于配置 swagger/openapi 文件所在的地址(`path`)，以及它对应的生成文件的名称(`name`)。其中 `path` 既可以是远端 url，也可以是本地 swagger/openapi 所在的文件路径。CLI
+  工具会根据你的配置，自动读取远端或者本地文件，生成对应代码。目前支持的文件格式有 `.json`, `.yaml`, `.yml`。
 
   ```json5
   {
@@ -148,11 +209,53 @@ npx ts-codegen
 
     用于设置在生成代码中是否显示注解。比如你在 swagger 文档中通过 `summary`, `description` 等字段，为一个 API 添加了描述，你就可以通过这个开关来控制这个描述是否显示在最终的生成代码中。
 
+  - **`withServiceNameInHeader`: Boolean [可选项]，默认值: false**
+
+    用于设置在生成代码中是否将 service name（也就是在 apiSpecsPaths 中配置 的 name 参数） 显示到 headers 中。比如你在 `ts-codegen.config.json` 中, 配置了
+    apiSpecsPaths 其中一个服务的 `name` 为 `PetStoreService1`，那么最终生成的代码中，每个请求的 headers 上都会带上 这个 service name。例如：
+
+    ```ts
+    import { createRequestConfig } from "service/createRequestConfig";
+
+    const serviceName = "fileService";
+
+    export const uploadFile = createRequestConfig("uploadFile", () => ({
+      url: "/v1/debit-card/link",
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Service-Name": serviceName },
+    }));
+    ```
+
+    只有当你配置的 service（也就是 apiSpecsPaths 中配置的 items）包含不同的域名时，你才需要配置这个属性，否则你无须关心它。这是因为生成请求的 url 上没有包含 host 信息，如果我们将
+    service name 生成到代码中，我们就可以通过它来映射不同的域名。比如，通过 axios 的 interceptor 统一拦截并处理：
+
+    ```ts
+    axios.interceptors.request.use(
+      (config) => {
+        if (config.headers["Service-Name"]) {
+          const mapping = {
+            fileService: "http://file.service.com",
+            accountService: "http://account.service.com",
+          };
+
+          config.baseURL = mapping[config.headers["Service-Name"]];
+
+          delete config.headers["Service-Name"];
+
+          return config;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error),
+    );
+    ```
+
 ## 附录：配置模板
 
 ```json5
 {
-  outputFolder: "clients", // 支持配置子文件夹, eg: src/apis
+  outputFolder: "clients",
+  // 支持配置子文件夹, eg: src/apis
   requestCreateLib: "../examples/utils/createRequest",
   requestCreateMethod: "createRequest",
   apiSpecsPaths: [
