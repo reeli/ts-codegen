@@ -23,7 +23,7 @@ const DEFAULT_CODEGEN_CONFIG = {
 };
 
 program
-  .version("0.7.8", "-v, --version")
+  .version("3.1.5", "-v, --version")
   .description("generate code")
   .action(() => {
     const codegenConfig = getCodegenConfig();
@@ -38,7 +38,7 @@ program
     const file = path.resolve(process.cwd(), `./ts-codegen.config.json`);
 
     if (fs.existsSync(file)) {
-      console.log("Will do nothing, because you've already have a ts-codegen.config.js file in the root directory.");
+      console.log("Will do nothing, because you've already have a ts-codegen.config.json file in the root directory.");
     } else {
       fs.writeFileSync(file, prettier.format(JSON.stringify(DEFAULT_CODEGEN_CONFIG), { parser: "json" }));
     }
