@@ -7,6 +7,16 @@
 
 TS Codegen 是一个用于生成「前端接口层代码」以及对应「TypeScript 定义」的工具。你只需要提供一个 Swagger 或 Openapi 的 JSON/YML 文件，它就可以为您生成相应的代码。
 
+## 为什么使用 TS Codegen？
+
+1. **简单易用**：只需一个 cli 命令行工具和一个配置文件即可使用。
+2. **灵活性高**：不依赖于具体的 HTTP client，你可以用它集成任何一个你期望的 HTTP client，不限于 axios 和 fetch。
+3. **完整的类型定义**：生成代码包含了完整的类型定义，包括请求的入参以及响应数据的类型定义。通过生成的函数，就可以直接获取到请求的入参和响应数据的类型定义。
+4. **降低前后端集成成本**：特别是当后端接口发生变动时，只需要重新执行一下 cli，就能立刻知道后端发生了哪些改动。
+5. **支持多版本 Swagger**：同时支持 Swagger2 和 Swagger3 (OpenAPI)。
+6. **对 Tree Shaking 友好**：生成代码都是由纯函数组成，方便 webpack/rollup 等工具进行 Tree Shaking
+7. **支持多种框架**：能够应用到 ReactNative、React、Vue、Angular 等项目。
+
 ## 快速尝试 Try it
 
 可以通过下面的命令进行快速尝试 [example](https://github.com/reeli/ts-codegen-examples) ：
