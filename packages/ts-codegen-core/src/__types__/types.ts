@@ -43,6 +43,10 @@ export interface ApiSpecsPath {
   name?: string;
 }
 
+export interface Hooks {
+  beforeConvert: (specs: CustomSpec) => CustomSpec;
+}
+
 export interface CodegenConfig {
   requestCreateLib: string;
   requestCreateMethod: string;
@@ -50,4 +54,5 @@ export interface CodegenConfig {
   outputFolder?: string;
   timeout?: number;
   options?: ScanOptions;
+  hooks?: Hooks;
 }

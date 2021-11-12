@@ -22,7 +22,8 @@ export const codegen = (codegenConfig = getCodegenConfig()) => {
 };
 
 export const getCodegenConfig = (configPath?: string): CodegenConfig => {
-  const codegenConfigPath = configPath || path.resolve("ts-codegen.config.json");
+  const codegenConfigPath =
+    configPath || path.resolve("ts-codegen.config.json") || path.resolve("ts-codegen.config.js");
   if (!fs.existsSync(codegenConfigPath)) {
     throw new Error(ERROR_MESSAGES.NOT_FOUND_CONFIG_FILE);
   }
@@ -41,6 +42,10 @@ const handleLocalApiSpec = (item: ApiSpecsPath, codegenConfig: CodegenConfig) =>
   const getFileStr = () => fs.readFileSync(item.path, "utf8");
 
   covertAndWrite(fileType, getFileStr, codegenConfig, item.name);
+};
+
+const updateSpecByHooks = (codegenConfig: CodegenConfig, spec: CustomSpec) => {
+  return codegenConfig.hooks?.beforeConvert ? codegenConfig.hooks?.beforeConvert(spec) : spec;
 };
 
 const covertAndWrite = (
@@ -63,13 +68,15 @@ const covertAndWrite = (
 
   // handle json file
   if (isJSON(fileType)) {
-    writeSpecToFile(toJSONObj(data, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR), codegenConfig, filename);
+    const spec = toJSONObj(data, ERROR_MESSAGES.INVALID_JSON_FILE_ERROR);
+    writeSpecToFile(updateSpecByHooks(codegenConfig, spec), codegenConfig, filename);
     return;
   }
 
   // handle yaml file
   try {
-    writeSpecToFile(yaml.load(data) as CustomSpec, codegenConfig, filename);
+    const spec = yaml.load(data) as CustomSpec;
+    writeSpecToFile(updateSpecByHooks(codegenConfig, spec), codegenConfig, filename);
   } catch (e) {
     console.log(e);
   }
