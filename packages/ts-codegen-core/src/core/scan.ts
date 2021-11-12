@@ -1,18 +1,28 @@
 import { keys } from "lodash";
 import { Schema } from "./Schema";
 import { shouldUseExtends, toCapitalCase, getUnifiedInputs, DataType } from "../utils";
-import { CustomSchema, IClientConfig, CustomSpec, ScanOptions } from "../__types__/types";
+import { CustomSchema, IClientConfig, CustomSpec, ScanOptions, Hooks } from "../__types__/types";
 import { createRegister, DeclKinds } from "./createRegister";
 import { getClientConfigsV2, getClientConfigsV3 } from "./createClientConfigs";
 
-export const scan = (data: CustomSpec, options?: ScanOptions) => {
+export const scan = (data: CustomSpec, options?: ScanOptions, hooks?: Hooks) => {
   const register = createRegister(options?.typeWithPrefix);
   const schemaHandler = new Schema(register);
   const { dataType, basePath, paths, schemas, parameters, responses, requestBodies } = getUnifiedInputs(data);
 
   keys(schemas).forEach((k) => {
     const name = toCapitalCase(k);
-    register.setDecl(name, schemaHandler.convert(schemas[k], name), getDeclarationType(schemas[k]));
+    const beforeConvertSchema =
+      hooks?.beforeConvertSchema ||
+      function (schema: CustomSchema) {
+        return schema;
+      };
+
+    register.setDecl(
+      name,
+      schemaHandler.convert(beforeConvertSchema(schemas[k]), name),
+      getDeclarationType(schemas[k]),
+    );
   });
 
   register.setData(["parameters"], parameters);

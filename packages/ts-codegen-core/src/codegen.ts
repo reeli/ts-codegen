@@ -21,13 +21,28 @@ export const codegen = (codegenConfig = getCodegenConfig()) => {
   });
 };
 
-export const getCodegenConfig = (configPath?: string): CodegenConfig => {
-  const codegenConfigPath =
-    configPath || path.resolve("ts-codegen.config.json") || path.resolve("ts-codegen.config.js");
-  if (!fs.existsSync(codegenConfigPath)) {
-    throw new Error(ERROR_MESSAGES.NOT_FOUND_CONFIG_FILE);
+const getFilePath = (configPath?: string, jsonConfigPath?: string, jsConfigPath?: string) => {
+  if (configPath && fs.existsSync(configPath)) {
+    return configPath;
   }
-  return require(codegenConfigPath);
+
+  if (jsonConfigPath && fs.existsSync(jsonConfigPath)) {
+    return jsonConfigPath;
+  }
+
+  if (jsConfigPath && fs.existsSync(jsConfigPath)) {
+    return jsConfigPath;
+  }
+
+  throw new Error(ERROR_MESSAGES.NOT_FOUND_CONFIG_FILE);
+};
+
+export const getCodegenConfig = (configPath?: string): CodegenConfig => {
+  const jsonConfigPath = path.resolve("ts-codegen.config.json");
+  const jsConfigPath = path.resolve("ts-codegen.config.js");
+  const filePath = getFilePath(configPath, jsonConfigPath, jsConfigPath);
+
+  return require(filePath);
 };
 
 const handleRemoteApiSpec = async (item: ApiSpecsPath, codegenConfig: CodegenConfig) => {
@@ -83,13 +98,13 @@ const covertAndWrite = (
 };
 
 const writeSpecToFile = (spec: CustomSpec, codegenConfig: CodegenConfig, filename?: string) => {
-  const { outputFolder, requestCreateLib, requestCreateMethod, options } = codegenConfig;
+  const { outputFolder, requestCreateLib, requestCreateMethod, options, hooks } = codegenConfig;
 
   if (!spec) {
     return;
   }
   const importLib = `import { ${requestCreateMethod} } from '${requestCreateLib}';\n\n`;
-  const { clientConfigs, decls } = scan(spec, options);
+  const { clientConfigs, decls } = scan(spec, options, hooks);
   const { basePath } = getUnifiedInputs(spec, filename);
   const serviceNameStr = options?.withServiceNameInHeader ? `const ${SERVICE_VARIABLE_NAME} = '${filename}';\n\n` : "";
   const fileStr = `${importLib} ${serviceNameStr} ${printOutputs(clientConfigs, decls, requestCreateMethod, options)}`;

@@ -32,6 +32,7 @@ export type CustomOperation = Operation | IOperation;
 export type CustomSpec = IOpenAPI | Spec;
 
 export interface ScanOptions {
+  beforeConvertSchema?: (schema: CustomSchema) => CustomSchema;
   withServiceNameInHeader?: boolean | string; // Toggle host info in generated code
   withComments?: boolean; // Toggle comments in generated code
   typeWithPrefix?: boolean; // Will keep prefix('I' for interface, 'T' for type) in types when it sets true
@@ -44,7 +45,8 @@ export interface ApiSpecsPath {
 }
 
 export interface Hooks {
-  beforeConvert: (specs: CustomSpec) => CustomSpec;
+  beforeConvert?: (specs: CustomSpec) => CustomSpec;
+  beforeConvertSchema?: (schema: CustomSchema) => CustomSchema;
 }
 
 export interface CodegenConfig {
