@@ -789,6 +789,21 @@ describe("Schema Converter", () => {
     });
   });
 
+  describe("xType", () => {
+    it("should handle custom schema type correctly", () => {
+      const res = new Schema(register)
+        .convert(
+          {
+            xType: "any",
+            title: "InputStream",
+          },
+          "status",
+        )
+        .toType();
+      expect(res).toEqual("any");
+    });
+  });
+
   describe.each([
     ["string", "string"],
     ["integer", "number"],

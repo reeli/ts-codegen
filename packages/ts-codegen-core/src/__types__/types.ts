@@ -19,7 +19,7 @@ export interface IClientConfig {
   description?: string;
 }
 
-export type CustomSchema = Schema | ISchema;
+export type CustomSchema = (Schema | ISchema) & { xType?: "any" };
 export type CustomReference = {
   $ref: string;
 };

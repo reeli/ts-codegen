@@ -42,6 +42,10 @@ export class Schema {
         : this.type.object("object");
     }
 
+    if (schema.xType && schema.xType === "any") {
+      return this.type.any();
+    }
+
     if (schema.type === "string") {
       return schema.format === "binary" ? this.type.file() : this.type.string();
     }
@@ -58,7 +62,7 @@ export class Schema {
       return this.type.file();
     }
 
-    return this.type.any();
+    return this.type.null();
   }
 
   private handleAllOf(schemas: Array<CustomSchema>, name?: string) {
