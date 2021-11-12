@@ -58,7 +58,7 @@ export class Schema {
       return this.type.file();
     }
 
-    return this.type.null();
+    return this.type.any();
   }
 
   private handleAllOf(schemas: Array<CustomSchema>, name?: string) {
