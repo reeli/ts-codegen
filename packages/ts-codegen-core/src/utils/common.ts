@@ -1,6 +1,6 @@
 import { camelCase, Dictionary, find, indexOf, isEmpty, map, takeRight, trimEnd, chain } from "lodash";
 import prettier from "prettier";
-import { CustomSchema } from "../__types__/types";
+import { CustomSchema, CustomParameter, CustomParameterWithOriginName } from "../__types__/types";
 import { ERROR_MESSAGES } from "../constants";
 import url from "url";
 
@@ -93,11 +93,20 @@ export const hasHttpOrHttps = (path: string) => {
   return protocol && /https?:/.test(protocol);
 };
 
-export const getRequestURL = (pathName: string, basePath?: string) => {
+export const getRequestURL = (pathName: string, basePath?: string, pathParams?: CustomParameterWithOriginName[]) => {
   const isPathParam = (str: string) => str.startsWith("{");
   const path = chain(pathName)
     .split("/")
-    .map((p) => (isPathParam(p) ? `$${p}` : p))
+    .map((p) => {
+      if (isPathParam(p)) {
+        const paramName = p.replace(/\{/gi, "").replace(/\}/gi, "");
+        const param = pathParams?.find((item) => item._originName === paramName);
+
+        return param ? `$\{${param.name}\}` : `$\{${paramName}\}`;
+      }
+
+      return p;
+    })
     .join("/")
     .value();
 
@@ -111,3 +120,21 @@ export const getRequestURL = (pathName: string, basePath?: string) => {
 
   return `${basePath}${path}`;
 };
+
+export const renameDuplicatedParams = (
+  params: CustomParameter[] = [],
+  paramsForCompare: CustomParameter[] = [],
+  rename: (k: string) => string = (a) => a,
+): CustomParameterWithOriginName[] => {
+  return map(params, (param) =>
+    paramsForCompare.find((item) => item.name == param.name)
+      ? {
+          ...param,
+          name: rename(param.name),
+          _originName: param.name,
+        }
+      : param,
+  );
+};
+
+export const renamePathParam = (name: string) => name && camelCase(`${name}InPath`);

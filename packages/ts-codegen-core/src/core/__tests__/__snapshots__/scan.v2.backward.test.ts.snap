@@ -53,6 +53,10 @@ export const deleteAttachmentUsingDELETE = createRequest<{
   id: string;
 }>(\\"deleteAttachmentUsingDELETE\\", ({ id }) => ({ url: \`/api/v2/\${id}\`, method: \\"delete\\" }));
 
+export const deleteAttachmentUsingDELETE2 = createRequest<{
+  id: string;
+}>(\\"deleteAttachmentUsingDELETE2\\", ({ id }) => ({ url: \`/api/v2/test/\${id}\`, method: \\"delete\\" }));
+
 export const deleteOrder = createRequest<{
   orderId: number;
 }>(\\"deleteOrder\\", ({ orderId }) => ({ url: \`/api/v2/store/order/\${orderId}\`, method: \\"delete\\" }));
@@ -71,6 +75,20 @@ export const downloadUsingGET = createRequest<
   },
   IResource
 >(\\"downloadUsingGET\\", ({ id }) => ({ url: \`/api/v2/\${id}\`, method: \\"get\\" }));
+
+export const downloadUsingGET2 = createRequest<
+  {
+    id: string;
+    idInPath: string;
+  },
+  IResource
+>(\\"downloadUsingGET2\\", ({ idInPath, id }) => ({
+  url: \`/api/v2/test/\${idInPath}\`,
+  method: \\"get\\",
+  params: {
+    id,
+  },
+}));
 
 export const findBookByIdUsingGET = createRequest<
   {

@@ -14,7 +14,14 @@ import {
   values,
   some,
 } from "lodash";
-import { getPathsFromRef, toCapitalCase, withOptionalName, getRequestURL } from "../utils/common";
+import {
+  getPathsFromRef,
+  toCapitalCase,
+  withOptionalName,
+  getRequestURL,
+  renameDuplicatedParams,
+  renamePathParam,
+} from "../utils/common";
 import { CustomType } from "./Type";
 import { Schema } from "./Schema";
 import {
@@ -54,7 +61,7 @@ const buildConfigs = <TOperation extends CustomOperation>({
       const { pathParams, queryParams } = getParams(register)(operation.parameters);
 
       return {
-        url: getRequestURL(pathName, basePath),
+        url: getRequestURL(pathName, basePath, pathParams),
         method: backwardCompatible ? method : upperCase(method),
         operationId: backwardCompatible ? operation.operationId : camelCase(operation.operationId),
         deprecated: operation.deprecated,
@@ -85,9 +92,12 @@ const getOperations = <TOperation>(path: CustomPath) =>
 
 const getParams = (register: ReturnType<typeof createRegister>) => (parameters: CustomParameters) => {
   const pickParamsByType = pickParams(register)(parameters);
+  const pathParams = pickParamsByType<CustomParameter>("path");
+  const queryParams = pickParamsByType<CustomParameter>("query");
+
   return {
-    pathParams: pickParamsByType<CustomParameter>("path"),
-    queryParams: pickParamsByType<CustomParameter>("query"),
+    pathParams: renameDuplicatedParams(pathParams, queryParams, renamePathParam),
+    queryParams,
   };
 };
 
@@ -197,34 +207,36 @@ export const getClientConfigsV3 = (
   });
 };
 
-const pickParams = (register: ReturnType<typeof createRegister>) => (params?: CustomParameters) => <TParameter>(
-  type: "path" | "query" | "body" | "formData",
-): TParameter[] | undefined => {
-  const list = map(params, (param) => (getRef(param) ? register.getData(getPathsFromRef(param.$ref)) : param)).filter(
-    (v: CustomParameter) => v.in === type,
-  );
+const pickParams =
+  (register: ReturnType<typeof createRegister>) =>
+  (params?: CustomParameters) =>
+  <TParameter>(type: "path" | "query" | "body" | "formData"): TParameter[] | undefined => {
+    const list = map(params, (param) => (getRef(param) ? register.getData(getPathsFromRef(param.$ref)) : param)).filter(
+      (v: CustomParameter) => v.in === type,
+    );
 
-  return isEmpty(list) ? undefined : list;
-};
+    return isEmpty(list) ? undefined : list;
+  };
 
-const getRequestTypes = (schemaHandler: Schema) => (operationId?: string) => (
-  params?: CustomParameter[],
-): { [key: string]: CustomType } | undefined => {
-  if (!params) {
-    return;
-  }
+const getRequestTypes =
+  (schemaHandler: Schema) =>
+  (operationId?: string) =>
+  (params?: CustomParameter[]): { [key: string]: CustomType } | undefined => {
+    if (!params) {
+      return;
+    }
 
-  return params.reduce(
-    (results, param) => ({
-      ...results,
-      [withOptionalName(param.name, param.required)]: schemaHandler.convert(
-        get(param, "schema", param),
-        `${toCapitalCase(operationId)}${toCapitalCase(param.name)}`,
-      ),
-    }),
-    {},
-  );
-};
+    return params.reduce(
+      (results, param) => ({
+        ...results,
+        [withOptionalName(param.name, param.required)]: schemaHandler.convert(
+          get(param, "schema", param),
+          `${toCapitalCase(operationId)}${toCapitalCase(param.name)}`,
+        ),
+      }),
+      {},
+    );
+  };
 
 const getRequestBodyType = ({
   schemaHandler,
@@ -259,39 +271,41 @@ const getRequestBodyType = ({
   };
 };
 
-const getSuccessResponsesType = (schemaHandler: Schema, register: ReturnType<typeof createRegister>) => <TResponse>(
-  responses?: { [responseName: string]: TResponse | CustomReference },
-  getSchema?: (resp?: TResponse) => CustomSchema | undefined,
-) => {
-  if (!responses || !getSchema) {
-    return;
-  }
-
-  let firstSuccessResp: TResponse | CustomReference | undefined = undefined;
-
-  keys(responses).forEach((code) => {
-    const httpCode = Number(code);
-    const resp = responses[code];
-    const hasContent = getRef(resp) || getSchema(resp as TResponse);
-
-    if (httpCode >= 200 && httpCode < 300 && hasContent && !firstSuccessResp) {
-      firstSuccessResp = resp;
-    }
-  });
-
-  const handleResp = (resp?: TResponse | CustomReference): CustomType | undefined => {
-    if (getRef(resp)) {
-      const paths = getPathsFromRef(resp.$ref);
-      const response = register.getData(paths);
-      return response ? handleResp(response) : schemaHandler.convert(resp);
+const getSuccessResponsesType =
+  (schemaHandler: Schema, register: ReturnType<typeof createRegister>) =>
+  <TResponse>(
+    responses?: { [responseName: string]: TResponse | CustomReference },
+    getSchema?: (resp?: TResponse) => CustomSchema | undefined,
+  ) => {
+    if (!responses || !getSchema) {
+      return;
     }
 
-    const schema = getSchema(resp);
-    return schema && schemaHandler.convert(schema);
+    let firstSuccessResp: TResponse | CustomReference | undefined = undefined;
+
+    keys(responses).forEach((code) => {
+      const httpCode = Number(code);
+      const resp = responses[code];
+      const hasContent = getRef(resp) || getSchema(resp as TResponse);
+
+      if (httpCode >= 200 && httpCode < 300 && hasContent && !firstSuccessResp) {
+        firstSuccessResp = resp;
+      }
+    });
+
+    const handleResp = (resp?: TResponse | CustomReference): CustomType | undefined => {
+      if (getRef(resp)) {
+        const paths = getPathsFromRef(resp.$ref);
+        const response = register.getData(paths);
+        return response ? handleResp(response) : schemaHandler.convert(resp);
+      }
+
+      const schema = getSchema(resp);
+      return schema && schemaHandler.convert(schema);
+    };
+
+    return firstSuccessResp && handleResp(firstSuccessResp);
   };
-
-  return firstSuccessResp && handleResp(firstSuccessResp);
-};
 
 const getRef = (v: any): v is CustomReference => v.$ref;
 

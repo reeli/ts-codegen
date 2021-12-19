@@ -26,6 +26,7 @@ export type CustomReference = {
 export type CustomParameters = Operation["parameters"] | IOperation["parameters"];
 export type CustomResponses = Spec["responses"] | IComponents["responses"];
 export type CustomParameter = Parameter | TParameter;
+export type CustomParameterWithOriginName = CustomParameter & { _originName?: string };
 export type CustomPath = Path | IPathItem;
 export type CustomPaths = Spec["paths"] | IOpenAPI["paths"];
 export type CustomOperation = Operation | IOperation;

@@ -11,6 +11,10 @@ import {
   toCapitalCase,
   withOptionalName,
   getRequestURL,
+  CustomParameterWithOriginName,
+  renameDuplicatedParams,
+  CustomParameter,
+  renamePathParam,
 } from "@ts-tool/ts-codegen-core";
 
 describe("#toCapitalCase", () => {
@@ -270,5 +274,205 @@ describe("#getRequestURL", () => {
 
   it("should get `/` baseURL if both baseURL and path is '/'", () => {
     expect(getRequestURL("/", "/")).toEqual("/");
+  });
+
+  it("should get correct url when contains renamed path params", () => {
+    const mockPathParams: CustomParameterWithOriginName[] = [
+      {
+        name: "dashboardIdInPath",
+        _originName: "dashboardId",
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+      },
+    ];
+
+    expect(getRequestURL("/api/dashboard/{dashboardId}/stage", "/", mockPathParams)).toEqual(
+      "/api/dashboard/${dashboardIdInPath}/stage",
+    );
+  });
+
+  it("should get correct url when contains multiple renamed path params", () => {
+    const mockPathParams: CustomParameterWithOriginName[] = [
+      {
+        name: "dashboardIdInPath",
+        _originName: "dashboardId",
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+      },
+      {
+        name: "idInPath",
+        _originName: "id",
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+      },
+    ];
+
+    expect(getRequestURL("/api/dashboard/{dashboardId}/{id}/stage", "/", mockPathParams)).toEqual(
+      "/api/dashboard/${dashboardIdInPath}/${idInPath}/stage",
+    );
+  });
+
+  it("should get correct url when contains renamed path params and other path params", () => {
+    const mockPathParams: CustomParameterWithOriginName[] = [
+      {
+        name: "dashboardIdInPath",
+        _originName: "dashboardId",
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+      },
+      {
+        name: "id",
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+      },
+    ];
+
+    expect(getRequestURL("/api/dashboard/{dashboardId}/{id}/stage", "/", mockPathParams)).toEqual(
+      "/api/dashboard/${dashboardIdInPath}/${id}/stage",
+    );
+  });
+});
+
+describe("#renameDuplicatedParams", () => {
+  it("should rename single duplicated param name", () => {
+    const pathParams: CustomParameter[] = [
+      {
+        name: "dashboardId",
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+      },
+      {
+        name: "id",
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+      },
+    ];
+    const queryParams: CustomParameter[] = [
+      {
+        name: "dashboardId",
+        in: "query",
+        description: "",
+        required: true,
+        type: "string",
+      },
+    ];
+
+    expect(renameDuplicatedParams(pathParams, queryParams, renamePathParam)).toEqual([
+      {
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+        name: "dashboardIdInPath",
+        _originName: "dashboardId",
+      },
+      {
+        name: "id",
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+      },
+    ]);
+  });
+
+  it("should rename multiple duplicated param names", () => {
+    const pathParams: CustomParameter[] = [
+      {
+        name: "dashboardId",
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+      },
+      {
+        name: "id",
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+      },
+    ];
+    const queryParams: CustomParameter[] = [
+      {
+        name: "dashboardId",
+        in: "query",
+        description: "",
+        required: true,
+        type: "string",
+      },
+      {
+        name: "id",
+        in: "query",
+        description: "",
+        required: true,
+        type: "string",
+      },
+    ];
+
+    expect(renameDuplicatedParams(pathParams, queryParams, renamePathParam)).toEqual([
+      {
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+        name: "dashboardIdInPath",
+        _originName: "dashboardId",
+      },
+      {
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+        name: "idInPath",
+        _originName: "id",
+      },
+    ]);
+  });
+
+  it("should not rename duplicated keys when data for compare is empty", () => {
+    const pathParams: CustomParameter[] = [
+      {
+        name: "id",
+        in: "path",
+        description: "",
+        required: true,
+        type: "string",
+      },
+    ];
+
+    expect(renameDuplicatedParams(pathParams, [], renamePathParam)).toEqual(pathParams);
+  });
+
+  it("should return empty array when given data is empty", () => {
+    expect(
+      renameDuplicatedParams(
+        [],
+        [
+          {
+            name: "dashboardId",
+            in: "query",
+            description: "",
+            required: true,
+            type: "string",
+          },
+        ],
+        renamePathParam,
+      ),
+    ).toEqual([]);
   });
 });

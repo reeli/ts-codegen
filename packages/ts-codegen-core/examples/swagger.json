@@ -191,6 +191,123 @@
         "deprecated": false
       }
     },
+    "/test/{id}": {
+      "get": {
+        "tags": ["attachment-controller"],
+        "summary": "download",
+        "operationId": "downloadUsingGET2",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "name": "Authorities",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "a_officer"
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "abc123456789"
+          },
+          {
+            "name": "User-Name",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "John Hopkins"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Resource"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      },
+      "delete": {
+        "tags": ["attachment-controller"],
+        "summary": "delete attachment by id",
+        "operationId": "deleteAttachmentUsingDELETE2",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "name": "Authorities",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "a_officer"
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "abc123456789"
+          },
+          {
+            "name": "User-Name",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "default": "John Hopkins"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Can not find attachment with specific id: {id}"
+          }
+        },
+        "deprecated": false
+      }
+    },
     "/book/{id}": {
       "get": {
         "tags": ["book-controller"],
