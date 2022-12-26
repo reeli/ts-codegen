@@ -1,6 +1,5 @@
 {
   "name": "@ts-tool/ts-codegen",
-  "private": true,
   "workspaces": [
     "packages/**"
   ],
