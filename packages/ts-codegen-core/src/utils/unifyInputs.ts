@@ -58,6 +58,10 @@ export const transformServers = (servers?: IServer[]): string => {
     return pathname || "";
   }
 
-  const data = new URL(server.url);
-  return data?.pathname || "";
+  try {
+    const data = new URL(server.url);
+    return data?.pathname || "";
+  } catch (e) {
+    return server.url;
+  }
 };

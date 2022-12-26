@@ -27,4 +27,8 @@ describe("#transformServers", () => {
   it("should pick basePath and host from url", () => {
     expect(transformServers([{ url: "http://petstore.swagger.io/api/v3" }])).toEqual("/api/v3");
   });
+
+  it("should return url if given url is not a valid url", () => {
+    expect(transformServers([{ url: "/api/v3" }])).toEqual("/api/v3");
+  });
 });

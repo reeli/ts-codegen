@@ -1585,20 +1585,7 @@
   },
   "servers": [
     {
-      "url": "https://{username}.gigantic-server.com:{port}/{basePath}",
-      "variables": {
-        "username": {
-          "default": "demo",
-          "description": "this value is assigned by the service provider, in this example `gigantic-server.com`"
-        },
-        "port": {
-          "enum": ["8443", "443"],
-          "default": "8443"
-        },
-        "basePath": {
-          "default": "api/v2"
-        }
-      }
+      "url": "/api/v2"
     }
   ],
   "components": {
