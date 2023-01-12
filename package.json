@@ -1,18 +1,12 @@
 {
   "name": "@ts-tool/ts-codegen",
-  "workspaces": [
-    "packages/**"
-  ],
+  "private": true,
   "description": "Typescript code generator, which is able to convert swagger to ts code.",
   "scripts": {
-    "postinstall": "husky install",
-    "test": "tsc && jest",
-    "clean": "rm -rf dist && lerna exec 'rm -rf dist'",
-    "copy": "npm run clean && npm run build:types && ts-node scripts/copy.ts",
-    "build:types": "tsc --build ./tsconfig.declarations.json",
-    "rollup": "lerna exec 'rollup -c ../../rollup.config.ts'",
-    "release": "npm test && npm run copy && npm run rollup",
-    "prepare": "npm run release"
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "dev": "turbo run dev",
+    "postinstall": "husky install"
   },
   "repository": {
     "type": "git",
@@ -42,39 +36,24 @@
     "husky": "^7.0.4",
     "jest": "27.4.x",
     "lerna": "^4.0.0",
+    "lint-staged": "^13.1.0",
     "lodash": "4.17.x",
     "prettier": "^2.5.x",
-    "pretty-quick": "^3.1.2",
     "rollup": "2.61.x",
     "rollup-plugin-babel": "4.4.x",
     "rollup-plugin-typescript": "1.0.x",
     "ts-jest": "27.1.x",
     "ts-node": "10.4.x",
     "tsconfig-paths": "3.12.0",
+    "turbo": "^1.6.1",
     "typescript": "4.5.x"
   },
   "dependencies": {
     "tslib": "^2.3.x"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "modulePaths": [
-      "<rootDir>"
-    ],
-    "moduleNameMapper": {
-      "^@ts-tool/([^/]+)$": "<rootDir>/packages/$1/src/index.ts"
-    },
-    "coverageDirectory": "coverage",
-    "testRegex": ".*/__tests__/.+\\.(generator|test|spec)\\.(ts|tsx)$",
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.{ts,tsx}",
-      "!src/__types__/**",
-      "!src/bootstrap.ts",
-      "!src/index.ts"
-    ],
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    }
+  "lint-staged": {
+    "*.{ts,tsx,js,json,html,yml,css,md}": [
+      "prettier --write --ignore-unknown"
+    ]
   }
 }

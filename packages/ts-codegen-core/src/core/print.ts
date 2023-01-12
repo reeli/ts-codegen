@@ -1,6 +1,6 @@
 import { IClientConfig, RequestType, ScanOptions } from "../__types__/types";
 import { IStore, DeclKinds } from "./createRegister";
-import { prettifyCode, objToTypeStr } from "../utils/common";
+import { prettifyCode, objToTypeStr } from "../utils";
 import { sortBy, isEmpty, compact, keys, mapValues, isString } from "lodash";
 import { CustomType } from "./Type";
 import { DEFAULT_SERVICE_NAME_IN_HEADER } from "..";

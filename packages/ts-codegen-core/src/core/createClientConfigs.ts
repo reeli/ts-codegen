@@ -21,7 +21,7 @@ import {
   getRequestURL,
   renameDuplicatedParams,
   renamePathParam,
-} from "../utils/common";
+} from "../utils";
 import { CustomType } from "./Type";
 import { Schema } from "./Schema";
 import {

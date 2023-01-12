@@ -9,7 +9,14 @@
     "README.md"
   ],
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register src/bootstrap.ts"
+    "start": "ts-node -r tsconfig-paths/register src/bootstrap.ts",
+    "dev": "pnpm start",
+    "build": "pnpm clean && pnpm build:types && pnpm copy && pnpm rollup",
+    "copy": "ts-node ../../scripts/copy.ts",
+    "rollup": "rollup -c ./rollup.config.ts",
+    "test": "tsc && jest",
+    "clean": "rm -rf dist",
+    "build:types": "tsc --build ./tsconfig.declarations.json"
   },
   "dependencies": {
     "axios": "0.21.x",

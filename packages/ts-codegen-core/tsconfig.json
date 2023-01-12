@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "alwaysStrict": true,
+    "pretty": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@ts-tool/*": ["../../packages/*/src", "@ts-tool/*"]
+    },
+    "rootDir": ".",
+    "resolveJsonModule": true,
+    "importHelpers": false
+  },
+  "exclude": ["node_modules"]
+}

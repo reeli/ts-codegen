@@ -22,5 +22,10 @@
   "bugs": {
     "url": "https://github.com/reeli/ts-codegen/issues"
   },
-  "homepage": "https://github.com/reeli/ts-codegen#readme"
+  "homepage": "https://github.com/reeli/ts-codegen#readme",
+  "scripts": {
+    "build": "pnpm clean && pnpm rollup",
+    "rollup": "rollup -c ./rollup.config.ts",
+    "clean": "rm -rf dist"
+  }
 }

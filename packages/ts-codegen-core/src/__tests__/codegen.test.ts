@@ -2,7 +2,7 @@ import { codegen } from "@ts-tool/ts-codegen-core";
 import path from "path";
 
 const codegenConfig = {
-  outputFolder: "packages/ts-codegen-core/clients",
+  outputFolder: "../clients",
   requestCreateLib: "../examples/utils/createRequest",
   requestCreateMethod: "createRequest",
   apiSpecsPaths: [
@@ -15,15 +15,15 @@ const codegenConfig = {
       name: "PetStoreService2",
     },
     {
-      path: path.resolve(process.cwd(), "packages/ts-codegen-core/examples/swagger.json"),
+      path: path.resolve(process.cwd(), "examples/swagger.json"),
       name: "SwaggerService",
     },
     {
-      path: path.resolve(process.cwd(), "packages/ts-codegen-core/examples/openapi.json"),
+      path: path.resolve(process.cwd(), "examples/openapi.json"),
       name: "OpenApiService",
     },
     {
-      path: path.resolve(process.cwd(), "packages/ts-codegen-core/examples/demo.yaml"),
+      path: path.resolve(process.cwd(), "examples/demo.yaml"),
       name: "DemoService",
     },
   ],

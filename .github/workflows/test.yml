@@ -1,0 +1,22 @@
+name: Test
+
+on: push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+
+      - name: Install and test
+        run: |
+          npm install pnpm -g
+          pnpm install
+          make test

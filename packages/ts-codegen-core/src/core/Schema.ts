@@ -1,4 +1,4 @@
-import { isObj, shouldUseExtends, toCapitalCase } from "../utils/common";
+import { isObj, shouldUseExtends, toCapitalCase } from "../utils";
 import { filter, isArray, isEmpty, map, reduce, compact } from "lodash";
 import { IReference, ISchema } from "../__types__/OpenAPI";
 import { CustomType, Obj, Type } from "./Type";
