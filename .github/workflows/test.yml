@@ -18,5 +18,6 @@ jobs:
       - name: Install and test
         run: |
           npm install pnpm -g
+          pnpm add turbo --global
           pnpm install
           make test
