@@ -6,6 +6,7 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "dev": "turbo run dev",
+    "release": "turbo run deploy",
     "postinstall": "husky install"
   },
   "repository": {

@@ -15,12 +15,11 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "18.16.0"
 
       - name: Install and test
         run: |
           npm install pnpm -g
-          pnpm setup
           pnpm add turbo --global
           pnpm install
           pnpm test
