@@ -22,7 +22,7 @@
     "axios": "0.21.x",
     "js-yaml": "4.0.x",
     "lodash": "4.17.x",
-    "prettier": "*"
+    "prettier": "2.8.8"
   },
   "publishConfig": {
     "access": "public"
